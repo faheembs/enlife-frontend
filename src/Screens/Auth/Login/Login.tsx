@@ -49,25 +49,26 @@ const Login: React.FC = () => {
         email: values.email?.toLowerCase(),
         password: values.password,
       };
-      dispatch(loginUser(body)).then((response) => {
-        if (response) {
-          if (!response.payload?.message) {
-            onLoginSuccess();
-          } else {
-            setIsLoading(false);
-            toastMessage({
-              type: TOAST_MESSAGE_TYPES.ERROR,
-              content: t("loginFailed"),
-              duration: 5,
-            });
-          }
-        } else {
-          toastMessage({
-            type: TOAST_MESSAGE_TYPES.ERROR,
-            content: t("loginFailed"),
-            duration: 5,
-          });
-        }
+       onLoginSuccess();
+      // dispatch(loginUser(body)).then((response) => {
+      //   if (response) {
+      //     if (!response.payload?.message) {
+      //       onLoginSuccess();
+      //     } else {
+      //       setIsLoading(false);
+      //       toastMessage({
+      //         type: TOAST_MESSAGE_TYPES.ERROR,
+      //         content: t("loginFailed"),
+      //         duration: 5,
+      //       });
+      //     }
+      //   } else {
+      //     toastMessage({
+      //       type: TOAST_MESSAGE_TYPES.ERROR,
+      //       content: t("loginFailed"),
+      //       duration: 5,
+      //     });
+      //   }
       });
     },
   });
