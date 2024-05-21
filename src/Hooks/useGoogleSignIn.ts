@@ -10,7 +10,6 @@ const useGoogleSignIn = () => {
 
   const signinWithGoogle = async () => {
     setLoading(true);
-    console.log('firebaseConfig -------------->',firebaseConfig)
     try {
       const app = initializeApp(firebaseConfig);
       const auth = getAuth(app);

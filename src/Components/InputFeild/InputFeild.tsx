@@ -1,5 +1,6 @@
 import React, { ReactNode } from "react";
 import { Input, Button } from "antd";
+import { theme } from "../../Theme/theme";
 
 export interface ErrorProps {
   isError: boolean;
@@ -102,6 +103,12 @@ const InputField: React.FC<IProps> = ({
             placeholder={placeholder}
             className="customInput"
             size={size}
+            style={{
+              backgroundColor: "transparent",
+              height: 44,
+              color: theme.palette.primary.light,
+              borderColor: theme.palette.primary.light,
+            }}
           />
         ) : (
           <Input
@@ -112,7 +119,12 @@ const InputField: React.FC<IProps> = ({
             onChange={handleChange}
             value={value}
             placeholder={placeholder}
-            style={inpuStyles}
+            style={{
+              backgroundColor: "transparent",
+              height: 44,
+              color: theme.palette.primary.light,
+              borderColor: theme.palette.primary.light,
+            }}
             size={size}
             suffix={suffix}
           />

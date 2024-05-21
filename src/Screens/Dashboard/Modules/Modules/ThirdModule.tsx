@@ -16,6 +16,7 @@ import DotPagination from "../../../../Components/DotPagination/DotPagination";
 import { MODULES } from "../../../../Utils/constants";
 import { toastMessage } from "../../../../Utils/helperFunctions";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
+import { theme } from "../../../../Theme/theme";
 
 const { Option } = Select;
 
@@ -193,7 +194,7 @@ const ThirdModule = () => {
                       boxShadow: selectedRoles.includes(role)
                         ? "rgb(0 146 255 / 28%) 2px 2px 16px"
                         : "none",
-                      backgroundColor: "#fff",
+                      backgroundColor: theme.palette.primary.light,
                       color: "#000",
                       borderRadius: 10,
                     }}
@@ -249,7 +250,11 @@ const ThirdModule = () => {
               <List
                 dataSource={identities}
                 renderItem={renderItem}
-                style={{ background: "#fff", padding: "20px", width: "100%" }}
+                style={{
+                  background: theme.palette.primary.light,
+                  padding: "20px",
+                  width: "100%",
+                }}
               />
             </div>
           )}

@@ -10,8 +10,9 @@ const MODULES_LABEL = {
 };
 
 const Images = {
-  logo: require(`../Assets/logo.png`),
+  logo: require(`../Assets/logoenlife.png`),
   google: require(`../Assets/google.png`),
+  bckImg: require(`../Assets/bck_banner.jpeg`),
 };
 
 const IconNames = {
@@ -213,12 +214,12 @@ const MODULES_SUMMARY = {
 };
 
 const firebaseConfig = {
-  apiKey: 'AIzaSyDLc9hZrioQbdQN1QWPfvxYOgu8jcX-66I',
-  authDomain: "enlife-bb0de.firebaseapp.com",
-  projectId: "enlife-bb0de",
-  storageBucket: "enlife-bb0de.appspot.com",
-  messagingSenderId: "836450151464",
-  appId: '1:836450151464:web:e84d0ed3313aa3260cd91d',
+  apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
+  authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.REACT_APP_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.REACT_APP_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.REACT_APP_FIREBASE_APP_ID,
 };
 
 export {

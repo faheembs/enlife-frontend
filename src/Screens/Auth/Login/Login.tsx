@@ -45,7 +45,11 @@ const Login: React.FC = () => {
     validationSchema: loginValidationSchema,
     onSubmit: (values: LoginFormProps) => {
       setIsLoading(true);
-      dispatch(loginUser(values)).then((response) => {
+      const body = {
+        email: values.email?.toLowerCase(),
+        password: values.password,
+      };
+      dispatch(loginUser(body)).then((response) => {
         if (response) {
           if (!response.payload?.message) {
             onLoginSuccess();
@@ -74,7 +78,7 @@ const Login: React.FC = () => {
       const body = {
         firstName: user?.displayName?.split(" ")[0],
         lastName: user?.displayName?.split(" ")[1],
-        email: user?.email,
+        email: user?.email?.toLowerCase(),
         accessToken: user.accessToken,
       };
       dispatch(socialLogin(body)).then((response) => {
@@ -118,8 +122,26 @@ const Login: React.FC = () => {
       }
     >
       <Box
-        sx={{ height: "100vh", backgroundColor: theme.palette.primary.main }}
+        sx={{
+          height: "100vh",
+          // backgroundColor: theme.palette.primary.main
+        }}
       >
+        <Box
+          sx={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundImage: `url(${Images.bckImg})`,
+            backgroundPosition: "center",
+            backgroundRepeat: "no-repeat",
+            backgroundSize: "cover",
+            filter: "blur(8px)",
+            zIndex: -1,
+          }}
+        />
         <Grid
           container
           justifyContent="center"
@@ -127,11 +149,19 @@ const Login: React.FC = () => {
           style={{ height: "100%" }}
         >
           <Grid item xs={7} sx={{ display: { xs: "none", sm: "block" } }}>
-            <Grid container direction="column" alignItems="center">
+            <Grid
+              container
+              direction="column"
+              style={{
+                position: "absolute",
+                top: 40,
+                left: 80,
+              }}
+            >
               <img
                 src={Images.logo}
                 alt="logo"
-                style={{ width: "40%", height: "10%" }}
+                style={{ width: 320, height: 160, objectFit: "contain" }}
               />
             </Grid>
           </Grid>
@@ -147,12 +177,17 @@ const Login: React.FC = () => {
                 height: { xs: "80%", sm: 400 },
                 padding: theme.spacing(4),
                 borderRadius: theme.spacing(2),
+                backgroundColor: "transparent",
+                borderWidth: 3,
+                borderColor: theme.palette.primary.light,
+                borderStyle: "solid",
               }}
             >
               <CardContent>
                 <Typography
                   variant="h5"
                   fontWeight="bold"
+                  color={theme.palette.primary.light}
                   pb={4}
                   align="center"
                 >

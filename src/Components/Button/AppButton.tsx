@@ -31,8 +31,8 @@ const AppButton: React.FC<ButtonProps> = ({
   size = "middle",
   bgColor = theme.palette.primary.main,
   borderColor = "none",
-  color = "#fff",
-  spinnerColor = "#fff",
+  color = theme.palette.primary.light,
+  spinnerColor = theme.palette.primary.light,
   ...rest
 }) => {
   const buttonStyle: React.CSSProperties = {

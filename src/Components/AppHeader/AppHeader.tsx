@@ -1,7 +1,7 @@
 import React from "react";
-import { useLocation, useNavigate } from "react-router-dom";
 import { Layout, Typography } from "antd";
 import { MessageOutlined, BellOutlined } from "@ant-design/icons";
+import { theme } from "../../Theme/theme";
 
 const { Header } = Layout;
 
@@ -25,7 +25,10 @@ const AppHeader = ({
         alignItems: "center",
       }}
     >
-      <Typography.Title level={3} style={{ marginLeft: "20px" }}>
+      <Typography.Title
+        level={3}
+        style={{ marginLeft: "20px", color: theme.palette.primary.light }}
+      >
         {screenName === "Modules" ? "" : screenName}
       </Typography.Title>
       <div
@@ -36,8 +39,12 @@ const AppHeader = ({
           display: "flex",
         }}
       >
-        <BellOutlined style={{ fontSize: 32 }} />
-        <MessageOutlined style={{ fontSize: 32 }} />
+        <BellOutlined
+          style={{ fontSize: 32, color: theme.palette.primary.light }}
+        />
+        <MessageOutlined
+          style={{ fontSize: 32, color: theme.palette.primary.light }}
+        />
       </div>
     </Header>
   );

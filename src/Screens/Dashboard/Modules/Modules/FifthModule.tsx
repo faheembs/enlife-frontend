@@ -8,6 +8,7 @@ import { RadioChangeEvent } from "antd/lib";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import { toastMessage } from "../../../../Utils/helperFunctions";
 import ReactHtmlString from "../../../../Components/ReactHtmlString/ReactHtmlString";
+import { theme } from "../../../../Theme/theme";
 
 const { TextArea } = Input;
 
@@ -230,7 +231,7 @@ const FifthModule = () => {
                     dataSource={identities}
                     renderItem={renderItem}
                     style={{
-                      background: "#fff",
+                      background: theme.palette.primary.light,
                       padding: "20px",
                       width: "100%",
                     }}
@@ -250,7 +251,7 @@ const FifthModule = () => {
                     dataSource={selectedIdentities?.name?.split("<br/>")}
                     renderItem={renderRecommendations}
                     style={{
-                      background: "#fff",
+                      background: theme.palette.primary.light,
                       padding: "20px",
                       width: "100%",
                     }}

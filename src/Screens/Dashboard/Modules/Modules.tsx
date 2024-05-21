@@ -70,8 +70,8 @@ const Modules: React.FC = () => {
             onChange={onChange}
             tabPosition="top"
             tabBarStyle={{
-              borderTop: "1px solid black",
-              borderBottom: "1px solid black",
+              borderTop: "1px solid #fff",
+              borderBottom: "1px solid #fff",
             }}
           />
         </Col>

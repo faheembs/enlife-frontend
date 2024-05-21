@@ -5,6 +5,7 @@ import {
   MODULES_SUMMARY_LABEL,
 } from "../../../Utils/constants";
 import ModulesCollapse from "../../../Components/CollapsedItem/ModulesCollapse";
+import { theme } from "../../../Theme/theme";
 // import "./home.css";
 
 const Home: React.FC = () => {
@@ -22,7 +23,7 @@ const Home: React.FC = () => {
           className="moduleContainer"
           style={{
             width: "100%",
-            backgroundColor: "#fff",
+            backgroundColor: theme.palette.primary.light,
             // justifyContent: "center",
             display: "flex",
             flexDirection: "column",
@@ -42,7 +43,7 @@ const Home: React.FC = () => {
           span={11}
           style={{
             width: "100%",
-            backgroundColor: "#fff",
+            backgroundColor: theme.palette.primary.light,
             justifyContent: "center",
             display: "flex",
             height: 380,
@@ -70,7 +71,7 @@ const Home: React.FC = () => {
           span={7}
           style={{
             width: "100%",
-            backgroundColor: "#fff",
+            backgroundColor: theme.palette.primary.light,
             justifyContent: "center",
             alignItems: "center",
             display: "flex",
@@ -85,7 +86,7 @@ const Home: React.FC = () => {
           span={7}
           style={{
             width: "100%",
-            backgroundColor: "#fff",
+            backgroundColor: theme.palette.primary.light,
             justifyContent: "center",
             alignItems: "center",
             display: "flex",
@@ -101,7 +102,7 @@ const Home: React.FC = () => {
           span={7}
           style={{
             width: "100%",
-            backgroundColor: "#fff",
+            backgroundColor: theme.palette.primary.light,
             justifyContent: "center",
             alignItems: "center",
             display: "flex",

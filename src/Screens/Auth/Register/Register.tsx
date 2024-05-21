@@ -9,13 +9,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Spin } from "antd";
 import { toastMessage } from "../../../Utils/helperFunctions";
 import { RegisterFormProps, TOAST_MESSAGE_TYPES } from "../types";
-import {
-  DummyAdminProfile,
-  Images,
-  LOADING_TIMOUT_DELAY,
-  USER_AUTH_TOKEN_KEY,
-  USER_SESSION_KEY,
-} from "../../../Utils/constants";
+import { Images, LOADING_TIMOUT_DELAY } from "../../../Utils/constants";
 import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "../../../Redux/store";
@@ -42,7 +36,7 @@ const Register: React.FC = () => {
       const body = {
         firstName: values.fullName.split(" ")[0],
         lastName: values.fullName.split(" ")[1] ?? "",
-        email: values.email,
+        email: values.email?.toLowerCase(),
         password: values.password,
       };
       dispatch(registerUser(body)).then((response) => {
@@ -85,8 +79,26 @@ const Register: React.FC = () => {
       }
     >
       <Box
-        sx={{ height: "100vh", backgroundColor: theme.palette.primary.main }}
+        sx={{
+          height: "100vh",
+          //  backgroundColor: theme.palette.primary.main
+        }}
       >
+        <Box
+          sx={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundImage: `url(${Images.bckImg})`,
+            backgroundPosition: "center",
+            backgroundRepeat: "no-repeat",
+            backgroundSize: "cover",
+            filter: "blur(8px)",
+            zIndex: -1,
+          }}
+        />
         <Grid
           container
           justifyContent="center"
@@ -94,11 +106,19 @@ const Register: React.FC = () => {
           style={{ height: "100%" }}
         >
           <Grid item xs={7} sx={{ display: { xs: "none", sm: "block" } }}>
-            <Grid container direction="column" alignItems="center">
+            <Grid
+              container
+              direction="column"
+              style={{
+                position: "absolute",
+                top: 40,
+                left: 80,
+              }}
+            >
               <img
                 src={Images.logo}
                 alt="logo"
-                style={{ width: "40%", height: "10%" }}
+                style={{ width: 320, height: 160, objectFit: "contain" }}
               />
             </Grid>
           </Grid>
@@ -114,6 +134,10 @@ const Register: React.FC = () => {
                 height: { xs: "80%", sm: "50%" },
                 padding: theme.spacing(4),
                 borderRadius: theme.spacing(2),
+                backgroundColor: "transparent",
+                borderWidth: 3,
+                borderColor: theme.palette.primary.light,
+                borderStyle: "solid",
               }}
             >
               <CardContent>
@@ -122,6 +146,7 @@ const Register: React.FC = () => {
                   fontWeight="bold"
                   pb={4}
                   align="center"
+                  color={theme.palette.primary.light}
                 >
                   {t("signUp")}
                 </Typography>

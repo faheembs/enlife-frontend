@@ -29,7 +29,6 @@ const AppSidebar: React.FC<{
   const navigate = useNavigate();
   const location = useLocation();
   const [isLogout, setLogout] = useState(false);
-  const [isCollapsed, setIsCollapsed] = useState(false);
 
   const menuItems: MenuItem[] = [
     {
@@ -80,10 +79,6 @@ const AppSidebar: React.FC<{
     setLogout(status);
   };
 
-  const handleSideBarCollapse = () => {
-    setIsCollapsed(!isCollapsed);
-  };
-
   const handleLogout = () => {
     handleLogoutModal(false);
     localStorage.clear();
@@ -103,7 +98,7 @@ const AppSidebar: React.FC<{
       }}
       width={220}
       collapsedWidth={100}
-      collapsed={isCollapsed}
+      collapsed={false}
     >
       <div
         style={{
@@ -123,7 +118,6 @@ const AppSidebar: React.FC<{
               marginTop: 12,
               marginBottom: 30,
             }}
-            onClick={handleSideBarCollapse}
             width={160}
             height={160}
           />

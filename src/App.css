@@ -24,6 +24,10 @@
   color: white;
 }
 
+.ant-layout,.ant-layout-content{
+background-color: transparent !important;
+}
+
 .App-link {
   color: #61dafb;
 }
