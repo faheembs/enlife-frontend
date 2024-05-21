@@ -1,13 +1,13 @@
 import React from "react";
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import routes, { CustomRoute } from "./Routes/routes";
 import { getToken } from "./Utils/helperFunctions";
 import AdminLayout from "./Layouts/AdminLayout";
 import "./index.css";
 
 const App = () => {
-  // const location = useLocation();
-  // console.log(location.state?.from);
+  const location = useLocation();
+  console.log(location.state?.from);
   const token = getToken();
 
   return (
