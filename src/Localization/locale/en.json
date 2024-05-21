@@ -1,0 +1,33 @@
+{
+    "translation": {
+        "login": {
+            "signIn": "Sign In",
+            "emailPlaceholder": "Enter Email",
+            "passwordPlaceholder": "Enter Password",
+            "forgotPassword": "Forgot Password?",
+            "proceed": "Proceed",
+            "loginSuccessfull": "Login successfull!",
+            "loginFailed": "Login failed. Email or password not correct",
+            "signInWithGoogle": "Sign in with Google",
+            "accountNotExists": "Don't have an account?",
+            "signUp": "SignUp"
+        },
+        "register": {
+            "signUp": "Sign Up",
+            "fullNamePlaceholder": "Enter Full Name",
+            "emailPlaceholder": "Enter Email",
+            "passwordPlaceholder": "Enter Password",
+            "proceed": "Proceed",
+            "loginSuccessfull": "Login successfull!",
+            "signInWithGoogle": "Sign in with Google",
+            "SignUpFailed": "SignUp failed. Email or password not correct",
+            "signUpSuccessfull": "SignUp successfull!",
+            "accountExists": "Already have an account?",
+            "signIn": "SignIn"
+        },
+        "logout": {
+            "title": "Logout",
+            "description": "Are you sure you want to logout?"
+        }
+    }
+}

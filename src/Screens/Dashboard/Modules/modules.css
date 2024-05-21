@@ -1,0 +1,72 @@
+.custom-tabs{
+    justify-content: center;
+    display: flex;
+}
+.ant-tabs .ant-tabs-tab {
+    font-size: 20px; 
+    display: flex;
+    justify-content: space-evenly;
+    padding: 0;
+    font-weight: 600;
+}
+.ant-tabs-tab-active {
+    border-bottom: 2px solid #11111f !important;
+    border-top: 2px solid #11111f !important;
+    z-index: 2;
+    padding: 0;
+  }
+.tabs {
+    /* display: flex; */
+    /* justify-content: center;
+    background-color: red; */
+    /* padding: 10px; */
+}  
+
+.ant-tabs-nav-list{
+    margin-left: 60px;
+    margin-right: 60px;
+}
+
+.ant-tabs .ant-tabs-tab-btn{
+    margin-left: 0px;
+    margin-right: 0px;
+    padding: 8px;
+    width: 180px;
+    align-items: center;
+    display: flex;
+    justify-content: center;
+}
+
+.custom-tabs .ant-tabs-nav .ant-tabs-tab {
+    color: #11111f; /* Default tab color */
+  }
+  
+  .custom-tabs .ant-tabs-nav .ant-tabs-tab-active {
+    color: #11111f; /* Active tab color */
+  }
+  
+  .custom-tabs .ant-tabs-nav .ant-tabs-tab:hover {
+    color: #fa8c16; /* Hover tab color */
+  }
+  
+  .custom-tabs .ant-tabs-ink-bar {
+    background-color: #11111f; /* Active tab underline color */
+  }
+  
+  /* Additional styles for tab bar */
+  .custom-tabs .ant-tabs-nav {
+    border-bottom: 2px solid #d9d9d9;
+  }
+
+  .ant-tabs-nav-operations{
+    margin-top: 0;
+  }
+  
+  /* Add more custom styles as needed */
+
+  /* .ant-card-body{
+    display: "flex";
+    flex-direction: "column";
+    background-color: "red";
+    align-items: "space-between";
+  } */
