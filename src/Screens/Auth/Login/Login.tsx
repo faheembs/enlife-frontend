@@ -27,7 +27,8 @@ const Login: React.FC = () => {
   const onLoginSuccess = () => {
     setTimeout(() => {
       setIsLoading(false);
-
+      localStorage.setItem(USER_AUTH_TOKEN_KEY, "token");
+      localStorage.setItem(USER_SESSION_KEY, "Data");
       toastMessage({
         type: TOAST_MESSAGE_TYPES.SUCCESS,
         content: t("loginSuccessfull"),
