@@ -9,9 +9,10 @@ import {
   UserOutlined,
   SettingOutlined,
 } from "@ant-design/icons";
-import { Layout, Menu, Typography } from "antd";
+import { Layout, Menu, Tooltip, Typography } from "antd";
 import AppModal from "../AppModal/AppModal";
 import { useTranslation } from "react-i18next";
+import "./AppSidebar.css";
 
 const { Sider } = Layout;
 
@@ -29,6 +30,7 @@ const AppSidebar: React.FC<{
   const navigate = useNavigate();
   const location = useLocation();
   const [isLogout, setLogout] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(false);
 
   const menuItems: MenuItem[] = [
     {
@@ -65,11 +67,12 @@ const AppSidebar: React.FC<{
       path: "/logout",
     },
   ];
-
+  const handleCollapsed = () => {
+    setIsCollapsed(!isCollapsed);
+  };
   const handleNavigate = (path: string) => {
     if (path === "/logout") {
       handleLogoutModal(true);
-
       return;
     }
     navigate(path);
@@ -98,7 +101,7 @@ const AppSidebar: React.FC<{
       }}
       width={220}
       collapsedWidth={100}
-      collapsed={false}
+      collapsed={isCollapsed}
     >
       <div
         style={{
@@ -112,12 +115,14 @@ const AppSidebar: React.FC<{
           <img
             src={Images.logo}
             alt="logo"
+            className={`logo ${isCollapsed ? "collapsed-logo" : ""}`}
             style={{
               objectFit: "contain",
               marginLeft: "27px",
               marginTop: 12,
               marginBottom: 30,
             }}
+            onClick={handleCollapsed}
             width={160}
             height={160}
           />
@@ -129,7 +134,78 @@ const AppSidebar: React.FC<{
           >
             {menuItems.map((item) => {
               return (
+                <Tooltip
+                  placement="rightTop"
+                  title={isCollapsed ? item.label : ""}
+                >
+                  <Menu.Item
+                    className={`menu-item ${
+                      selectedKey === item.key ? "selected-menu-item" : ""
+                    }`}
+                    style={{
+                      marginBottom: 10,
+                      height: 44,
+                      color:
+                        selectedKey === item.key
+                          ? customTheme.palette.primary.main
+                          : customTheme.palette.primary.light,
+                      backgroundColor:
+                        selectedKey === item.key
+                          ? customTheme.palette.primary.light
+                          : customTheme.palette.primary.main,
+                    }}
+                    onClick={() => handleNavigate(item.path)}
+                    key={item.key}
+                  >
+                    <div
+                      style={{
+                        alignItems: "center",
+                        display: "flex",
+                        marginLeft: !isCollapsed ? "51px" : "0px",
+                      }}
+                    >
+                      {item.icon}
+                      {!isCollapsed && (
+                        <Typography
+                          className={`menu-item-label ${
+                            isCollapsed ? "collapsed" : ""
+                          }`}
+                          style={{
+                            marginLeft: 10,
+                            color:
+                              selectedKey === item.key
+                                ? customTheme.palette.primary.main
+                                : customTheme.palette.primary.light,
+                          }}
+                        >
+                          {item.label}
+                        </Typography>
+                      )}
+                    </div>
+                  </Menu.Item>
+                </Tooltip>
+              );
+            })}
+          </Menu>
+        </div>
+        <Menu
+          theme="dark"
+          mode="inline"
+          style={{
+            backgroundColor: customTheme.palette.primary.main,
+            alignItems: "flex-end",
+          }}
+        >
+          {bottomMenu.map((item) => {
+            return (
+              <Tooltip
+                placement="rightTop"
+                title={isCollapsed ? item.label : ""}
+              >
                 <Menu.Item
+                  className={`menu-item ${
+                    selectedKey === item.key ? "selected-menu-item" : ""
+                  }`}
                   style={{
                     marginBottom: 10,
                     height: 44,
@@ -149,72 +225,26 @@ const AppSidebar: React.FC<{
                     style={{
                       alignItems: "center",
                       display: "flex",
+                      marginLeft: !isCollapsed ? "51px" : "0px",
                     }}
                   >
                     {item.icon}
-                    <Typography
-                      style={{
-                        marginLeft: 10,
-                        color:
-                          selectedKey === item.key
-                            ? customTheme.palette.primary.main
-                            : customTheme.palette.primary.light,
-                      }}
-                    >
-                      {item.label}
-                    </Typography>
+                    {!isCollapsed && (
+                      <Typography
+                        style={{
+                          marginLeft: 10,
+                          color:
+                            selectedKey === item.key
+                              ? customTheme.palette.primary.main
+                              : customTheme.palette.primary.light,
+                        }}
+                      >
+                        {item.label}
+                      </Typography>
+                    )}
                   </div>
                 </Menu.Item>
-              );
-            })}
-          </Menu>
-        </div>
-        <Menu
-          theme="dark"
-          mode="inline"
-          style={{
-            backgroundColor: customTheme.palette.primary.main,
-            alignItems: "flex-end",
-          }}
-        >
-          {bottomMenu.map((item) => {
-            return (
-              <Menu.Item
-                style={{
-                  marginBottom: 10,
-                  height: 44,
-                  color:
-                    selectedKey === item.key
-                      ? customTheme.palette.primary.main
-                      : customTheme.palette.primary.light,
-                  backgroundColor:
-                    selectedKey === item.key
-                      ? customTheme.palette.primary.light
-                      : customTheme.palette.primary.main,
-                }}
-                onClick={() => handleNavigate(item.path)}
-                key={item.key}
-              >
-                <div
-                  style={{
-                    alignItems: "center",
-                    display: "flex",
-                  }}
-                >
-                  {item.icon}
-                  <Typography
-                    style={{
-                      marginLeft: 10,
-                      color:
-                        selectedKey === item.key
-                          ? customTheme.palette.primary.main
-                          : customTheme.palette.primary.light,
-                    }}
-                  >
-                    {item.label}
-                  </Typography>
-                </div>
-              </Menu.Item>
+              </Tooltip>
             );
           })}
         </Menu>

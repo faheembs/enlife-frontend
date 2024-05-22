@@ -1,5 +1,6 @@
 import { message } from "antd";
 import { NoticeType } from "antd/es/message/interface";
+import { USER_AUTH_TOKEN_KEY, USER_SESSION_KEY } from "./constants";
 
 interface ToastMessageParams {
   type?: NoticeType;
@@ -21,12 +22,12 @@ export const toastMessage = ({
 };
 
 export const getToken = () => {
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem(USER_AUTH_TOKEN_KEY);
   return token;
 };
 
 export const getUserData = () => {
-  const user = localStorage.getItem("user");
+  const user = localStorage.getItem(USER_SESSION_KEY);
   const userData = user !== null && JSON.parse(user);
   return userData;
 };

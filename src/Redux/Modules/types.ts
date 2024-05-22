@@ -41,7 +41,7 @@ export interface Module {
             questionID?: string,
             question_text: string,
             response_type: string,
-            answers?: null,
+            answers?: string,
             selection?: [string],
             scale_value?: string,
         },

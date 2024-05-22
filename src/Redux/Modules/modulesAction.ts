@@ -3,7 +3,7 @@ import { ApiError, Module, ModuleBody } from "./types";
 import { BASE_URL, ENDPOINTS } from "../../Utils/urls";
 import { toastMessage } from "../../Utils/helperFunctions";
 
-export const createModule = createAsyncThunk<
+export const createOrUpdateModule = createAsyncThunk<
   Module,
   ModuleBody,
   { rejectValue: ApiError }

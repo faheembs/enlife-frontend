@@ -1,0 +1,54 @@
+.logo {
+    object-fit: contain;
+    margin-left: 27px;
+    margin-top: 12px;
+    margin-bottom: 30px;
+    cursor: pointer;
+    transition: margin 0.3s ease;
+  }
+  
+  .collapsed-logo {
+    margin-left: 27px;
+    width: 50px;
+    height: 50px;
+  }
+
+  .ant-menu-inline-collapsed-tooltip {
+    display: none;
+  }
+  .menu-item {
+    margin-bottom: 10px;
+    height: 44px;
+    transition: all 0.3s ease;
+  }
+  
+  .menu-item-content {
+    display: flex;
+    align-items: center;
+    position: relative;
+  }
+  
+  .menu-item-label {
+    margin-left: 10px;
+    white-space: nowrap;
+    opacity: 1;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+  }
+  
+  .menu-item-label.collapsed {
+    opacity: 0;
+    visibility: hidden;
+  }
+  
+  .menu-item-content:hover .menu-item-label.collapsed {
+    opacity: 1;
+    visibility: visible;
+    position: absolute;
+    left: 50px; 
+    background-color: rgba(0, 0, 0, 0.75);
+    padding: 5px 10px;
+    border-radius: 4px;
+    z-index: 1;
+    white-space: nowrap;
+  }
+  

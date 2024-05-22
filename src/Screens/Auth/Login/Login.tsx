@@ -9,7 +9,12 @@ import { Link, useNavigate } from "react-router-dom";
 import { Spin } from "antd";
 import { toastMessage } from "../../../Utils/helperFunctions";
 import { LoginFormProps, TOAST_MESSAGE_TYPES } from "../types";
-import { Images, LOADING_TIMOUT_DELAY } from "../../../Utils/constants";
+import {
+  Images,
+  LOADING_TIMOUT_DELAY,
+  USER_AUTH_TOKEN_KEY,
+  USER_SESSION_KEY,
+} from "../../../Utils/constants";
 import { useTranslation } from "react-i18next";
 import useGoogleSignIn from "../../../Hooks/useGoogleSignIn";
 import { useDispatch } from "react-redux";
@@ -27,8 +32,7 @@ const Login: React.FC = () => {
   const onLoginSuccess = () => {
     setTimeout(() => {
       setIsLoading(false);
-      localStorage.setItem("token", "token");
-      localStorage.setItem("user", "Data");
+
       toastMessage({
         type: TOAST_MESSAGE_TYPES.SUCCESS,
         content: t("loginSuccessfull"),
@@ -50,7 +54,31 @@ const Login: React.FC = () => {
         email: values.email?.toLowerCase(),
         password: values.password,
       };
-       onLoginSuccess();
+
+      localStorage.setItem(USER_AUTH_TOKEN_KEY, "token");
+      localStorage.setItem(
+        USER_SESSION_KEY,
+        JSON.stringify({
+          success: true,
+          data: {
+            isSocialAuth: false,
+            _id: "66461984c19da30e34b37ac3",
+            firstName: "John",
+            lastName: "Doe",
+            email: "john@test.com",
+            createdAt: "2024-05-16T14:34:44.453Z",
+            updatedAt: "2024-05-16T14:34:44.453Z",
+            __v: 0,
+            id: "66461984c19da30e34b37ac3",
+          },
+          token: {
+            token:
+              "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2NDYxOTg0YzE5ZGEzMGUzNGIzN2FjMyIsImV4cCI6MTcxOTA2OTY3NywiaWF0IjoxNzE2MzkxMjc3fQ.b916Jq_ft3P1zOwJBmg1dJa266H3TV0LO4tsjNJFSRo",
+            exp: "2024-06-22T15:21:17.847Z",
+          },
+        })
+      );
+      navigate("/");
       // dispatch(loginUser(body)).then((response) => {
       //   if (response) {
       //     if (!response.payload?.message) {
@@ -151,19 +179,18 @@ const Login: React.FC = () => {
           style={{ height: "100%" }}
         >
           <Grid item xs={7} sx={{ display: { xs: "none", sm: "block" } }}>
-            <Grid
-              container
-              direction="column"
-              style={{
-                position: "absolute",
-                top: 40,
-                left: 80,
-              }}
-            >
+            <Grid container direction="column">
               <img
                 src={Images.logo}
                 alt="logo"
-                style={{ width: 320, height: 160, objectFit: "contain" }}
+                style={{
+                  width: 320,
+                  height: 160,
+                  objectFit: "contain",
+                  position: "absolute",
+                  top: 40,
+                  left: 80,
+                }}
               />
             </Grid>
           </Grid>
@@ -229,7 +256,7 @@ const Login: React.FC = () => {
                         inputType={"password"}
                         size="large"
                       />
-                      <Typography
+                      {/* <Typography
                         variant="subtitle1"
                         sx={{
                           color: theme.palette.error.main,
@@ -237,9 +264,22 @@ const Login: React.FC = () => {
                           justifyContent: "flex-end",
                           fontSize: "14px",
                         }}
+                      > */}
+                      <Link
+                        style={{
+                          textDecoration: "underline",
+                          color: theme.palette.error.main,
+                          display: "flex",
+                          justifyContent: "flex-end",
+                          fontSize: "14px",
+                          fontWeight: "bold",
+                        }}
+                        to={"/forgot_credentials"}
                       >
+                        {" "}
                         {t("forgotPassword")}
-                      </Typography>
+                      </Link>
+                      {/* </Typography> */}
                     </Grid>
                     <Grid item xs={12} mb={2}>
                       <AppButton
@@ -251,7 +291,7 @@ const Login: React.FC = () => {
                         onClick={formik.handleSubmit}
                         loading={isLoading}
                       >
-                        {t("proceed")}
+                        {t("signIn")}
                       </AppButton>
                     </Grid>
                     <Grid item xs={12}>

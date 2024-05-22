@@ -14,7 +14,8 @@
         },
         "register": {
             "signUp": "Sign Up",
-            "fullNamePlaceholder": "Enter Full Name",
+            "firstNamePlaceholder": "Enter First Name",
+            "lastNamePlaceholder": "Enter Last Name",
             "emailPlaceholder": "Enter Email",
             "passwordPlaceholder": "Enter Password",
             "proceed": "Proceed",
@@ -28,6 +29,18 @@
         "logout": {
             "title": "Logout",
             "description": "Are you sure you want to logout?"
+        },
+        "forgotCredentials":{
+            "resetPassword": "Reset Password",
+            "resetEmail": "Reset Email",
+            "emailPlaceholder": "Enter Email",
+            "usernamePlaceholder": "Enter Username",
+            "forgotPasswordText": "Enter your Email to recover your account ",
+            "forgotEmailText": "Enter your username to recover your account",
+            "backToSignIn":"Go back to",
+            "signIn":"SignIn",
+            "forgotEmail":"Forget Email?",
+            "forgotPassword":"Forget Password?"
         }
     }
 }

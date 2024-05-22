@@ -17,6 +17,11 @@ const routes: CustomRoute[] = [
     path: "/register",
     element: lazy(() => import("../Screens/Auth/Register/Register")),
     name: "Register",
+  }, 
+  {
+    path: "/forgot_credentials",
+    element: lazy(() => import("../Screens/Auth/ForgotCredentials/ForgotCredentials")),
+    name: "Forgot Credentials",
   },
   {
     path: "/",

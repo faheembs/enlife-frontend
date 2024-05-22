@@ -4,7 +4,8 @@ export interface LoginFormProps {
   token?: string;
 }
 export interface RegisterFormProps {
-  fullName: string;
+  firstName: string;
+  lastName: string;
   email: string;
   password: string;
   token?: string;

@@ -3,18 +3,33 @@ import { Container } from "@mui/material";
 import { Card, Col, Input, Row, Typography } from "antd";
 import AppButton from "../../../../Components/Button/AppButton";
 import DotPagination from "../../../../Components/DotPagination/DotPagination";
-import { MODULES } from "../../../../Utils/constants";
+import { MODULES, MODULES_LABEL } from "../../../../Utils/constants";
+import { useAppDispatch } from "../../../../Hooks/reduxHook";
+import { createOrUpdateModule } from "../../../../Redux/Modules/modulesAction";
+import { getUserData } from "../../../../Utils/helperFunctions";
 
 const { TextArea } = Input;
 
 const FirstModule = () => {
   const [pageIndex, setPageIndex] = useState(0);
-
+  const dispatch = useAppDispatch();
   const onChange = (e: any) => {
     console.log("Change:", e.target.value);
   };
-
+  const user = getUserData();
   const handleNext = () => {
+    dispatch(
+      createOrUpdateModule({
+        userId: user.id,
+        moduleNumber: MODULES_LABEL.firstModule.label,
+        questionnaires: {
+          question_text:
+            "Imagine it's early morning, and you're watching the sunrise during a quiet jog. As you feel the energy of the new day, think about what drives your fitness journey.",
+          response_type: "free-response",
+          answers: "Answer for testing",
+        },
+      })
+    );
     setPageIndex((prevIndex) =>
       Math.min(prevIndex + 1, MODULES.FirstModules.length - 1)
     );
@@ -23,8 +38,8 @@ const FirstModule = () => {
   const handleBack = () => {
     setPageIndex((prevIndex) => Math.max(prevIndex - 1, 0));
   };
-
   const currentModule = MODULES.FirstModules[pageIndex];
+
   return (
     <Container
       maxWidth="md"

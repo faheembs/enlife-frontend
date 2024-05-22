@@ -34,7 +34,7 @@ const ModulesCollapse: React.FC<ModulesCollapseProps> = ({
     <Collapse
       style={{
         width: "100%",
-        background: "white",
+        background: "transparent",
         height: 200,
         flexWrap: "wrap",
       }}

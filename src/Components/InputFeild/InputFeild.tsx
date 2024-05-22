@@ -1,5 +1,5 @@
-import React, { ReactNode } from "react";
-import { Input, Button } from "antd";
+import React, { ReactNode, Suspense } from "react";
+import { Input, Button, Spin } from "antd";
 import { theme } from "../../Theme/theme";
 
 export interface ErrorProps {
@@ -78,69 +78,77 @@ const InputField: React.FC<IProps> = ({
   };
 
   return (
-    <div>
-      <div
-        className={`inputContainer ${error?.isError ? "errorWrapper" : ""}`}
-        style={{ ...style }}
-      >
-        {leftIcon && (
-          <Button
-            type="text"
-            onClick={handleLeftIconPress}
-            style={{ padding: 0, marginRight: 5 }}
-          >
-            <img src={leftIcon} alt="Left Icon" className="iconContainer" />
-          </Button>
-        )}
-        {countryCode && <span style={{ marginRight: 5 }}>{countryCode}</span>}
-        {inputType === "password" ? (
-          <Input.Password
-            autoFocus={isFocused}
-            onFocus={handleFocus}
-            onBlur={handleBlur}
-            onChange={handleChange}
-            value={value}
-            placeholder={placeholder}
-            className="customInput"
-            size={size}
-            style={{
-              backgroundColor: "transparent",
-              height: 44,
-              color: theme.palette.primary.light,
-              borderColor: theme.palette.primary.light,
-            }}
-          />
-        ) : (
-          <Input
-            autoFocus={isFocused}
-            type={inputType}
-            onFocus={handleFocus}
-            onBlur={handleBlur}
-            onChange={handleChange}
-            value={value}
-            placeholder={placeholder}
-            style={{
-              backgroundColor: "transparent",
-              height: 44,
-              color: theme.palette.primary.light,
-              borderColor: theme.palette.primary.light,
-            }}
-            size={size}
-            suffix={suffix}
-          />
-        )}
-        {rightIcon && (
-          <Button type="text" onClick={handleRightIconPress}>
-            <img src={rightIcon} alt="Right Icon" className="iconContainer" />
-          </Button>
-        )}
+    <Suspense
+      fallback={
+        <div className="spinnerContainer">
+          <Spin size="large" />
+        </div>
+      }
+    >
+      <div>
+        <div
+          className={`inputContainer ${error?.isError ? "errorWrapper" : ""}`}
+          style={{ ...style }}
+        >
+          {leftIcon && (
+            <Button
+              type="text"
+              onClick={handleLeftIconPress}
+              style={{ padding: 0, marginRight: 5 }}
+            >
+              <img src={leftIcon} alt="Left Icon" className="iconContainer" />
+            </Button>
+          )}
+          {countryCode && <span style={{ marginRight: 5 }}>{countryCode}</span>}
+          {inputType === "password" ? (
+            <Input.Password
+              autoFocus={isFocused}
+              onFocus={handleFocus}
+              onBlur={handleBlur}
+              onChange={handleChange}
+              value={value}
+              placeholder={placeholder}
+              className="customInput"
+              size={size}
+              style={{
+                backgroundColor: "transparent",
+                height: 44,
+                color: theme.palette.primary.light,
+                borderColor: theme.palette.primary.light,
+              }}
+            />
+          ) : (
+            <Input
+              autoFocus={isFocused}
+              type={inputType}
+              onFocus={handleFocus}
+              onBlur={handleBlur}
+              onChange={handleChange}
+              value={value}
+              placeholder={placeholder}
+              style={{
+                backgroundColor: "transparent",
+                height: 44,
+                color: theme.palette.primary.light,
+                borderColor: theme.palette.primary.light,
+              }}
+              size={size}
+              suffix={suffix}
+            />
+          )}
+          {rightIcon && (
+            <Button type="text" onClick={handleRightIconPress}>
+              <img src={rightIcon} alt="Right Icon" className="iconContainer" />
+            </Button>
+          )}
+        </div>
+        <div style={{ height: 25 }}>
+          {error?.isError && (
+            <span style={{ color: "red" }}>{error.message}</span>
+          )}
+        </div>
       </div>
-      <div style={{ height: 25 }}>
-        {error?.isError && (
-          <span style={{ color: "red" }}>{error.message}</span>
-        )}
-      </div>
-    </div>
+    </Suspense>
   );
 };
 

@@ -25,17 +25,18 @@ const Register: React.FC = () => {
 
   const formik = useFormik({
     initialValues: {
-      fullName: "",
+      firstName: "",
+      lastName: "",
       email: "",
       password: "",
     },
     validationSchema: RegisterValidationSchema,
     onSubmit: (values: RegisterFormProps) => {
       setIsLoading(true);
-
+      console.log("register", values);
       const body = {
-        firstName: values.fullName.split(" ")[0],
-        lastName: values.fullName.split(" ")[1] ?? "",
+        firstName: values.firstName,
+        lastName: values.lastName,
         email: values.email?.toLowerCase(),
         password: values.password,
       };
@@ -81,6 +82,7 @@ const Register: React.FC = () => {
       <Box
         sx={{
           height: "100vh",
+          overflow: "hidden",
           //  backgroundColor: theme.palette.primary.main
         }}
       >
@@ -97,6 +99,7 @@ const Register: React.FC = () => {
             backgroundSize: "cover",
             filter: "blur(8px)",
             zIndex: -1,
+            overflowX: "hidden",
           }}
         />
         <Grid
@@ -106,19 +109,18 @@ const Register: React.FC = () => {
           style={{ height: "100%" }}
         >
           <Grid item xs={7} sx={{ display: { xs: "none", sm: "block" } }}>
-            <Grid
-              container
-              direction="column"
-              style={{
-                position: "absolute",
-                top: 40,
-                left: 80,
-              }}
-            >
+            <Grid container direction="column">
               <img
                 src={Images.logo}
                 alt="logo"
-                style={{ width: 320, height: 160, objectFit: "contain" }}
+                style={{
+                  width: 320,
+                  height: 160,
+                  objectFit: "contain",
+                  position: "absolute",
+                  top: 40,
+                  left: 80,
+                }}
               />
             </Grid>
           </Grid>
@@ -152,16 +154,40 @@ const Register: React.FC = () => {
                 </Typography>
                 <form onSubmit={formik.handleSubmit}>
                   <Grid container spacing={0}>
-                    <Grid item xs={12} mb={1}>
+                    <Grid
+                      item
+                      xs={12}
+                      sm={12}
+                      mb={1}
+                      style={{
+                        display: "flex",
+                        flexDirection: "row",
+                      }}
+                    >
                       <InputField
-                        placeholder={t("fullNamePlaceholder")}
-                        value={formik.values.fullName}
-                        onChangeText={formik.handleChange("fullName")}
+                        style={{ marginRight: "5px" }}
+                        placeholder={t("firstNamePlaceholder")}
+                        value={formik.values.firstName}
+                        onChangeText={formik.handleChange("firstName")}
                         error={
-                          formik.touched.fullName && formik.errors.fullName
+                          formik.touched.firstName && formik.errors.firstName
                             ? {
                                 isError: true,
-                                message: formik.errors.fullName as string,
+                                message: formik.errors.firstName as string,
+                              }
+                            : undefined
+                        }
+                        size="large"
+                      />
+                      <InputField
+                        placeholder={t("lastNamePlaceholder")}
+                        value={formik.values.lastName}
+                        onChangeText={formik.handleChange("lastName")}
+                        error={
+                          formik.touched.lastName && formik.errors.lastName
+                            ? {
+                                isError: true,
+                                message: formik.errors.lastName as string,
                               }
                             : undefined
                         }
@@ -211,7 +237,7 @@ const Register: React.FC = () => {
                         onClick={formik.handleSubmit}
                         loading={isLoading}
                       >
-                        {t("proceed")}
+                        {t("signUp")}
                       </AppButton>
                     </Grid>
                     {/* <Grid item xs={12}>

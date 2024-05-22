@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import {  ModuleState } from "./types";
-import { createModule } from "./modulesAction";
+import { createOrUpdateModule } from "./modulesAction";
 
 const initialState: ModuleState = {
   module: null,
@@ -14,15 +14,15 @@ const moduleSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
-      .addCase(createModule.pending, (state) => {
+      .addCase(createOrUpdateModule.pending, (state) => {
         state.isLoading = true;
         state.error = null;
       })
-      .addCase(createModule.fulfilled, (state, action) => {
+      .addCase(createOrUpdateModule.fulfilled, (state, action) => {
         state.isLoading = false;
         state.module = action.payload;
       })
-      .addCase(createModule.rejected, (state, action) => {
+      .addCase(createOrUpdateModule.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload?.message || "An error occurred.";
       });
