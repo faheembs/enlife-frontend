@@ -19,7 +19,8 @@ const Home: React.FC = () => {
         }}
       >
         <Col
-          span={11}
+          sm={11}
+          xs={24}
           className="moduleContainer"
           style={{
             width: "100%",
@@ -31,6 +32,8 @@ const Home: React.FC = () => {
             borderRadius: 20,
             boxShadow: "#9e9e9e73 0px 2px 4px 2px",
             padding: 10,
+            marginTop: "10px",
+            margin: "5px",
           }}
         >
           <Typography.Title level={3}>Module 1 Summary</Typography.Title>
@@ -40,7 +43,8 @@ const Home: React.FC = () => {
           />
         </Col>
         <Col
-          span={11}
+          sm={11}
+          xs={24}
           style={{
             width: "100%",
             backgroundColor: theme.palette.primary.light,
@@ -50,6 +54,8 @@ const Home: React.FC = () => {
             borderRadius: 20,
             boxShadow: "#9e9e9e73 0px 2px 4px 2px",
             padding: 10,
+            marginTop: "10px",
+            margin: "5px",
           }}
         >
           <div style={{ padding: 20 }}>
@@ -68,7 +74,8 @@ const Home: React.FC = () => {
       </Row>
       <Row justify="space-evenly" align="middle">
         <Col
-          span={7}
+          sm={7}
+          xs={24}
           style={{
             width: "100%",
             backgroundColor: theme.palette.primary.light,
@@ -78,12 +85,15 @@ const Home: React.FC = () => {
             height: 320,
             borderRadius: 20,
             boxShadow: "#9e9e9e73 0px 2px 4px 2px",
+            marginTop: "10px",
+            margin: "5px",
           }}
         >
           Module 3
         </Col>
         <Col
-          span={7}
+          sm={7}
+          xs={24}
           style={{
             width: "100%",
             backgroundColor: theme.palette.primary.light,
@@ -93,13 +103,16 @@ const Home: React.FC = () => {
             height: 320,
             borderRadius: 20,
             boxShadow: "#9e9e9e73 0px 2px 4px 2px",
+            marginTop: "10px",
+            margin: "5px",
           }}
         >
           {" "}
           Module 4
         </Col>
         <Col
-          span={7}
+          sm={7}
+          xs={24}
           style={{
             width: "100%",
             backgroundColor: theme.palette.primary.light,
@@ -109,6 +122,8 @@ const Home: React.FC = () => {
             height: 320,
             borderRadius: 20,
             boxShadow: "#9e9e9e73 0px 2px 4px 2px",
+            marginTop: "10px",
+            margin: "5px",
           }}
         >
           Module 5

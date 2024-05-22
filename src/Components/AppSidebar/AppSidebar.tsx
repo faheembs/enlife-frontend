@@ -100,7 +100,7 @@ const AppSidebar: React.FC<{
         backgroundColor: customTheme.palette.primary.main,
       }}
       width={220}
-      collapsedWidth={100}
+      collapsedWidth={80}
       collapsed={isCollapsed}
     >
       <div
