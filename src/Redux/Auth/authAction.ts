@@ -18,7 +18,7 @@ export const loginUser = createAsyncThunk<
   try {
     const response = await fetch(`${BASE_URL}${ENDPOINTS.LOGIN}`, {
       method: "POST",
-      mode: 'no-cors',
+      // mode: 'no-cors',
       headers: {
         "Content-Type": "application/json",
       },
@@ -60,7 +60,7 @@ export const socialLogin = createAsyncThunk<
   try {
     const response = await fetch(`${BASE_URL}${ENDPOINTS.SOCIAL_LOGIN}`, {
       method: "POST",
-      mode: 'no-cors',
+      // mode: 'no-cors',
       headers: {
         "Content-Type": "application/json",
       },
@@ -102,7 +102,7 @@ export const registerUser = createAsyncThunk<
   try {
     const response = await fetch(`${BASE_URL}${ENDPOINTS.REGISTER}`, {
       method: "POST",
-      mode: 'no-cors',
+      // mode: 'no-cors',
       headers: {
         "Content-Type": "application/json",
       },

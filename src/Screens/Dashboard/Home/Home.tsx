@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Row, Col, Typography } from "antd";
 import {
   MODULES_SUMMARY,
@@ -6,9 +6,19 @@ import {
 } from "../../../Utils/constants";
 import ModulesCollapse from "../../../Components/CollapsedItem/ModulesCollapse";
 import { theme } from "../../../Theme/theme";
+import { getUserData } from "../../../Utils/helperFunctions";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "../../../Redux/store";
+import { getAllModulesByUserID } from "../../../Redux/Modules/modulesAction";
 // import "./home.css";
 
 const Home: React.FC = () => {
+  const dispatch = useDispatch<AppDispatch>();
+  const user = getUserData();
+  useEffect(() => {
+    dispatch(getAllModulesByUserID({ userId: user.id }));
+  });
+
   return (
     <>
       <Row

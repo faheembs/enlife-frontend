@@ -32,27 +32,45 @@ const DummyAdminProfile = {
 const MODULES = {
   FirstModules: [
     {
-      text: "Imagine it's early morning, and you're watching the sunrise during a quiet jog. As you feel the energy of the new day, think about what drives your fitness journey.",
+      text: `Let's visualize this setting: It is very early in the morning, and the day is about to break over the ocean. You're looking at the horizon and thinking about what is most important in your life. You think about what society wants you to be, the ideal people you see in the advertisements, and who your family and friends want you to be. They are not right or wrong. You don't fight with these opinions. You simply accept them as opinions. Thank them and put all of those images aside.Then you focus on what is really important for you. This is your journey and yours alone. You reach deep inside to see what you value most. When you get closer to the things that are important to you, excitement and a sense of urgency fill your heart. Now you remember the things you care about. You would work on these things even when things get tough.`
+      ,
       question:
-        "Beyond societal trends or expectations, what personal values guide your fitness goals?",
+        "What are the things that are most important for you?",
       caption:
-        "For instance, is it about discipline, self-respect, resillence, or perhaps the joy of challenging your limits?",
+        `(For example, being honest, adventurous, fun, hard-working, a leader, keep growing and improving, funny)(please note that being successful, wealthy, happy, etc., are important for most people, but they are generally byproducts of what we do. Not our core values. So here, let's try focusing on values rather than outcomes)`,
       type: "free-response",
     },
     {
-      text: "Imagine it's early morning, and you're watching the sunrise during a quiet jog. As you feel the energy of the new day, think about what drives your fitness journey.",
+      text: `When you focus on the horizon, you remember the time you were working on something that made you feel at your best. It was a time that you felt aremarkable sense of clarity, purpose, and enthusiasm. Every action flowed effortlessly. You were driven by a deep passion for what you were doing. You welcomed the challenges as chances for growth. You felt liberated, inspired, and fulfilled, making every moment rich with potential and meaning.`,
       question:
-        "Beyond societal trends or expectations, what personal values guide your fitness goals?",
+        "What three adjectives describes you in that moment when you were feeling at your best?",
       caption:
-        "For instance, is it about discipline, self-respect, resillence, or perhaps the joy of challenging your limits?",
+        "(e.g., kind, creative, energetic, fair, protective, romantic, respectful)",
       type: "free-response",
     },
     {
-      text: "Imagine it's early morning, and you're watching the sunrise during a quiet jog. As you feel the energy of the new day, think about what drives your fitness journey.",
+      text: `The cool ocean breeze fills you with energy. This reminds you of when you were full of energy and motivation. You feel like you can tackle everything that comes your way. This reminds you of when you were full of energy and motivation. It feels like you could work on that thing forever, and nothing could stop you! Think about that memory for a second.       `,
       question:
-        "Beyond societal trends or expectations, what personal values guide your fitness goals?",
+        "What were you doing at that time when you were feeling fully energized?",
       caption:
-        "For instance, is it about discipline, self-respect, resillence, or perhaps the joy of challenging your limits?",
+        "(e.g., solving a critical problem, giving a presentation on a meaningful topic, collaborating with a team to achieve a goal)",
+      type: "free-response",
+    },
+    {
+      text: `The first glimpses of light remind you of the actions that inspire you. When you think about these actions, you are filled with admiration and motivation. These actions resonate deeply with you and spark a connection with others. They motivate you to elevate yourself and strive for greater heights. Among those actions, one of them stands out the most.`,
+      question:
+        "What specific action inspired you and deeply moved you?",
+      caption:
+        "(e.g., Jennifer launching a non-profit organization for clean water, Dave starting a mentorship program for at-risk youth, Mia developing apps for accessibility)",
+      type: "free-response",
+    },
+    {
+      text: `When the gentle ocean breeze brushes your face, you close your eyes. In your mind's eye, the passage of time accelerates, and you find yourself transported through the years. Decades unfold like the pages of a book, revealing the chapters of your life's journey. You complete a full and meaningful life, then you find yourself watching your funeral from above. Your loved ones and admirers share memories about you.      
+      `,
+      question:
+        "How would you like to be remembered by those who gathered at your funeral to celebrate your life?",
+      caption:
+        "(e.g., a compassionate leader who fostered growth, an empathetic listener who lifted spirits, a fearless adventurer who spread joy, a boundless optimist who spread hope)",
       type: "free-response",
     },
   ],

@@ -78,13 +78,7 @@ const InputField: React.FC<IProps> = ({
   };
 
   return (
-    <Suspense
-      fallback={
-        <div className="spinnerContainer">
-          <Spin size="large" />
-        </div>
-      }
-    >
+    <Suspense fallback={<Spin size="large" />}>
       <div>
         <div
           className={`inputContainer ${error?.isError ? "errorWrapper" : ""}`}

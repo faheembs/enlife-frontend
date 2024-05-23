@@ -1,3 +1,4 @@
+
 export interface Module {
     ai_evaluation: {
         response_text: string,
@@ -25,10 +26,29 @@ export interface Module {
   
   export interface ModuleState {
     module: Module | null;
+    questionData: QuestionData | null;
+    modulesByUserId:  Module | null;
     isLoading: boolean;
     error: string | null;
   }
-  
+  export interface QuestionData {
+        questionID: string;
+        question_text:string;
+        response_type: string;
+        answers:string;
+        selection: [string];
+        scale_value: string;
+        _id: string;
+  }
+
+  export interface QuestionDataBody {
+    userId: string,
+    moduleNumber: string,
+    question: string,
+  }
+  export interface UserId {
+     userId: string;   
+  }
   export interface ModuleBody {
     ai_evaluation?: {
         response_text: string,

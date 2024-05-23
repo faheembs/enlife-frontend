@@ -9,12 +9,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Spin } from "antd";
 import { toastMessage } from "../../../Utils/helperFunctions";
 import { LoginFormProps, TOAST_MESSAGE_TYPES } from "../types";
-import {
-  Images,
-  LOADING_TIMOUT_DELAY,
-  USER_AUTH_TOKEN_KEY,
-  USER_SESSION_KEY,
-} from "../../../Utils/constants";
+import { Images, LOADING_TIMOUT_DELAY } from "../../../Utils/constants";
 import { useTranslation } from "react-i18next";
 import useGoogleSignIn from "../../../Hooks/useGoogleSignIn";
 import { useDispatch } from "react-redux";
@@ -55,50 +50,50 @@ const Login: React.FC = () => {
         password: values.password,
       };
 
-      localStorage.setItem(USER_AUTH_TOKEN_KEY, "token");
-      localStorage.setItem(
-        USER_SESSION_KEY,
-        JSON.stringify({
-          success: true,
-          data: {
-            isSocialAuth: false,
-            _id: "66461984c19da30e34b37ac3",
-            firstName: "John",
-            lastName: "Doe",
-            email: "john@test.com",
-            createdAt: "2024-05-16T14:34:44.453Z",
-            updatedAt: "2024-05-16T14:34:44.453Z",
-            __v: 0,
-            id: "66461984c19da30e34b37ac3",
-          },
-          token: {
-            token:
-              "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2NDYxOTg0YzE5ZGEzMGUzNGIzN2FjMyIsImV4cCI6MTcxOTA2OTY3NywiaWF0IjoxNzE2MzkxMjc3fQ.b916Jq_ft3P1zOwJBmg1dJa266H3TV0LO4tsjNJFSRo",
-            exp: "2024-06-22T15:21:17.847Z",
-          },
-        })
-      );
-      navigate("/");
-      // dispatch(loginUser(body)).then((response) => {
-      //   if (response) {
-      //     if (!response.payload?.message) {
-      //       onLoginSuccess();
-      //     } else {
-      //       setIsLoading(false);
-      //       toastMessage({
-      //         type: TOAST_MESSAGE_TYPES.ERROR,
-      //         content: t("loginFailed"),
-      //         duration: 5,
-      //       });
-      //     }
-      //   } else {
-      //     toastMessage({
-      //       type: TOAST_MESSAGE_TYPES.ERROR,
-      //       content: t("loginFailed"),
-      //       duration: 5,
-      //     });
-      //   }
-      // });
+      // localStorage.setItem(USER_AUTH_TOKEN_KEY, "token");
+      // localStorage.setItem(
+      //   USER_SESSION_KEY,
+      //   JSON.stringify({
+      //     success: true,
+      //     data: {
+      //       isSocialAuth: false,
+      //       _id: "66461984c19da30e34b37ac3",
+      //       firstName: "John",
+      //       lastName: "Doe",
+      //       email: "john@test.com",
+      //       createdAt: "2024-05-16T14:34:44.453Z",
+      //       updatedAt: "2024-05-16T14:34:44.453Z",
+      //       __v: 0,
+      //       id: "66461984c19da30e34b37ac3",
+      //     },
+      //     token: {
+      //       token:
+      //         "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2NDYxOTg0YzE5ZGEzMGUzNGIzN2FjMyIsImV4cCI6MTcxOTA2OTY3NywiaWF0IjoxNzE2MzkxMjc3fQ.b916Jq_ft3P1zOwJBmg1dJa266H3TV0LO4tsjNJFSRo",
+      //       exp: "2024-06-22T15:21:17.847Z",
+      //     },
+      //   })
+      // );
+      // navigate("/");
+      dispatch(loginUser(body)).then((response) => {
+        if (response) {
+          if (!response.payload?.message) {
+            onLoginSuccess();
+          } else {
+            setIsLoading(false);
+            toastMessage({
+              type: TOAST_MESSAGE_TYPES.ERROR,
+              content: t("loginFailed"),
+              duration: 5,
+            });
+          }
+        } else {
+          toastMessage({
+            type: TOAST_MESSAGE_TYPES.ERROR,
+            content: t("loginFailed"),
+            duration: 5,
+          });
+        }
+      });
     },
   });
 
