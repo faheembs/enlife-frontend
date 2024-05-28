@@ -1,46 +1,132 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Container } from "@mui/material";
-import { Card, Col, Input, Radio, Space, Row, Typography } from "antd";
+import { Card, Col, Input, Radio, Space, Row, Typography, message } from "antd";
 import AppButton from "../../../../Components/Button/AppButton";
 import DotPagination from "../../../../Components/DotPagination/DotPagination";
-import { MODULES } from "../../../../Utils/constants";
-import { toastMessage } from "../../../../Utils/helperFunctions";
-import { RadioChangeEvent } from "antd/lib";
+import { MODULES, MODULES_LABEL } from "../../../../Utils/constants";
+import { getUserData } from "../../../../Utils/helperFunctions";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "../../../../Redux/store";
+import {
+  createOrUpdateModule,
+  getQuestionData,
+} from "../../../../Redux/Modules/modulesAction";
+import { useAppSelector } from "../../../../Hooks/reduxHook";
 
 const { TextArea } = Input;
 
 const FourthModule = () => {
   const [pageIndex, setPageIndex] = useState(0);
-  const [value, setValue] = useState(null);
+  const [value, setValue] = useState<string | null>(null);
+  const [textResponse, setTextResponse] = useState("");
+  const { questionData, modulesByUserId } = useAppSelector(
+    (state: any) => state.module
+  );
+  const dispatch = useDispatch<AppDispatch>();
+  const user = getUserData();
+  console.log(questionData);
+  useEffect(() => {
+    if (questionData?.answers !== null) {
+      setTextResponse(questionData?.answers);
+    } else if (questionData?.scale_value !== null) {
+      setValue(questionData.scale_value);
+    }
+  }, [questionData]);
 
   const onChange = (e: any) => {
-    console.log("Change:", e.target.value);
+    setTextResponse(e.target.value);
   };
 
-  const onChangeOptions = (e: RadioChangeEvent) => {
-    console.log("radio checked", e.target.value);
+  const onChangeOptions = (e: any) => {
     setValue(e.target.value);
   };
+  console.log("modules", modulesByUserId);
+  const currentModule = MODULES.FourthModule[pageIndex];
+  const questions = `${currentModule.text} ${currentModule.question} ${currentModule.caption}`;
+  // console.log(
+  //   "modulesByUserId",
+  //   modulesByUserId.map((modules: any) =>
+  //     modules.questionnaires.map(
+  //       (question: any) => question.question_text === questions
+  //     )
+  //   )
+  // );
+  // console.log("ques", questions);
+  const moduleData = modulesByUserId?.find(
+    (module: any) => module.moduleNumber === MODULES_LABEL.fourthModule.label
+  );
 
+  const hasQuestionID = moduleData?.questionnaires.find(
+    (question: any) => question.question_text === questions
+  );
+
+  const result = hasQuestionID ? hasQuestionID.questionID : false;
+  // console.log("result", result);
   const handleNext = () => {
-    if (value === null && currentModule.type === "scale") {
-      toastMessage({
-        type: "error",
-        content: "Please select an option",
-        duration: 5,
-      });
+    if (
+      (currentModule.type !== "scale" && textResponse.trim() === "") ||
+      (currentModule.type === "scale" && value === null)
+    ) {
+      message.warning("Response is required");
       return;
     }
-    setPageIndex((prevIndex) =>
-      Math.min(prevIndex + 1, MODULES.FourthModule.length - 1)
+
+    dispatch(
+      createOrUpdateModule({
+        userId: user.id,
+        moduleNumber: MODULES_LABEL.fourthModule.label,
+        questionnaires: {
+          ...(result && { questionID: result }),
+          question_text: questions,
+          response_type: currentModule.type,
+          ...(currentModule.type === "scale"
+            ? { scale_value: value }
+            : { answers: textResponse }),
+        },
+      })
     );
+
+    if (pageIndex < MODULES.FourthModule.length - 1) {
+      setPageIndex(pageIndex + 1);
+    }
+
+    const nextQuestion = `${MODULES.FourthModule[pageIndex + 1]?.text} ${
+      MODULES.FourthModule[pageIndex + 1]?.question
+    } ${MODULES.FourthModule[pageIndex + 1]?.caption}`;
+
+    dispatch(
+      getQuestionData({
+        userId: user.id,
+        moduleNumber: MODULES_LABEL.fourthModule.label,
+        question: nextQuestion,
+      })
+    );
+
+    setTextResponse("");
+    setValue(null);
   };
 
   const handleBack = () => {
-    setPageIndex((prevIndex) => Math.max(prevIndex - 1, 0));
+    if (pageIndex > 0) {
+      setPageIndex(pageIndex - 1);
+
+      const prevQuestion = `${MODULES.FourthModule[pageIndex - 1]?.text} ${
+        MODULES.FourthModule[pageIndex - 1]?.question
+      } ${MODULES.FourthModule[pageIndex - 1]?.caption}`;
+
+      dispatch(
+        getQuestionData({
+          userId: user.id,
+          moduleNumber: MODULES_LABEL.fourthModule.label,
+          question: prevQuestion,
+        })
+      );
+
+      setTextResponse("");
+      setValue(null);
+    }
   };
 
-  const currentModule = MODULES.FourthModule[pageIndex];
   return (
     <Container
       maxWidth="md"
@@ -84,6 +170,7 @@ const FourthModule = () => {
             {currentModule.type === "free-response" && (
               <TextArea
                 showCount
+                value={textResponse}
                 maxLength={100}
                 onChange={onChange}
                 placeholder="Type your response"
@@ -99,7 +186,9 @@ const FourthModule = () => {
                 <Space direction="horizontal">
                   {currentModule?.options &&
                     currentModule.options.map((item) => (
-                      <Radio value={item}>{item}</Radio>
+                      <Radio key={item} value={item}>
+                        {item}
+                      </Radio>
                     ))}
                 </Space>
               </Radio.Group>
@@ -142,7 +231,6 @@ const FourthModule = () => {
               boxShadow: "none",
               color: "#000",
             }}
-            disabled={pageIndex === MODULES.FourthModule.length - 1}
           />
         </Col>
       </Row>

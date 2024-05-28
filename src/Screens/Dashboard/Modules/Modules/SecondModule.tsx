@@ -1,26 +1,98 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Container, List, ListItem } from "@mui/material";
-import { Card, Col, Input, Row, Typography } from "antd";
+import { Card, Col, Input, Row, Typography, message } from "antd";
 import AppButton from "../../../../Components/Button/AppButton";
 import DotPagination from "../../../../Components/DotPagination/DotPagination";
-import { MODULES } from "../../../../Utils/constants";
+import { MODULES, MODULES_LABEL } from "../../../../Utils/constants";
+import { useAppSelector } from "../../../../Hooks/reduxHook";
+import { AppDispatch } from "../../../../Redux/store";
+import { useDispatch } from "react-redux";
+import { getUserData } from "../../../../Utils/helperFunctions";
+import {
+  createOrUpdateModule,
+  getQuestionData,
+} from "../../../../Redux/Modules/modulesAction";
 
 const { TextArea } = Input;
 
 const SecondModule = () => {
   const [pageIndex, setPageIndex] = useState(0);
+  const [textResponse, setTextResponse] = useState<any>("");
+  const { questionData, modulesByUserId } = useAppSelector(
+    (state: { module: any }) => state.module
+  );
+  const dispatch = useDispatch<AppDispatch>();
+  const user = getUserData();
+  useEffect(() => {
+    const text = questionData?.answers;
+    setTextResponse(text);
+  }, [questionData]);
 
   const onChange = (e: any) => {
-    console.log("Change:", e.target.value);
+    setTextResponse(e.target.value);
   };
+
+  const question = `${MODULES.SecondModule[1].text} ${MODULES.SecondModule[1].question} ${MODULES.SecondModule[1].caption}`;
+  const moduleData = modulesByUserId?.find(
+    (module: any) => module.moduleNumber === MODULES_LABEL.fourthModule.label
+  );
+
+  const hasQuestionID = moduleData?.questionnaires.find(
+    (questions: any) => questions.question_text === question
+  );
+
+  const result = hasQuestionID ? hasQuestionID.questionID : false;
 
   const handleNext = () => {
-    setPageIndex((prevIndex) =>
-      Math.min(prevIndex + 1, MODULES.SecondModule.length - 1)
-    );
+    if (pageIndex === 0) {
+      // setTextResponse("");
+      setPageIndex((prevIndex) =>
+        Math.min(prevIndex + 1, MODULES.SecondModule.length - 1)
+      );
+      console.log("if");
+    } else {
+      if (textResponse?.trim() === "") {
+        message.warning("Response is required");
+        return;
+      }
+      dispatch(
+        createOrUpdateModule({
+          userId: user.id,
+          moduleNumber: MODULES_LABEL.secondModule.label,
+          questionnaires: {
+            ...(result && { questionID: result }),
+            question_text: question,
+            response_type: MODULES.SecondModule[1].type,
+            answers: textResponse,
+          },
+        })
+      );
+      dispatch(
+        getQuestionData({
+          userId: user.id,
+          moduleNumber: MODULES_LABEL.secondModule.label,
+          question: question,
+        })
+      );
+      // setTextResponse("");
+      setPageIndex((prevIndex) =>
+        Math.min(prevIndex + 1, MODULES.SecondModule.length - 1)
+      );
+      console.log("else");
+    }
   };
+  // console.log("module", MODULES.SecondModule[pageIndex].text);
 
   const handleBack = () => {
+    // setTextResponse("");
+    dispatch(
+      getQuestionData({
+        userId: user.id,
+        moduleNumber: MODULES_LABEL.secondModule.label,
+        question: question,
+      })
+    );
+
     setPageIndex((prevIndex) => Math.max(prevIndex - 1, 0));
   };
 
@@ -82,6 +154,7 @@ const SecondModule = () => {
                 </div>
                 <TextArea
                   showCount
+                  value={textResponse}
                   maxLength={100}
                   onChange={onChange}
                   placeholder="Type your response"
@@ -127,7 +200,6 @@ const SecondModule = () => {
               boxShadow: "none",
               color: "#000",
             }}
-            disabled={pageIndex === MODULES.SecondModule.length - 1}
           />
         </Col>
       </Row>

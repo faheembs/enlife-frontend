@@ -17,7 +17,7 @@ const Home: React.FC = () => {
   const user = getUserData();
   useEffect(() => {
     dispatch(getAllModulesByUserID({ userId: user.id }));
-  });
+  }, [dispatch, user.id]);
 
   return (
     <>

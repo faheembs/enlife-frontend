@@ -32,12 +32,9 @@ const DummyAdminProfile = {
 const MODULES = {
   FirstModules: [
     {
-      text: `Let's visualize this setting: It is very early in the morning, and the day is about to break over the ocean. You're looking at the horizon and thinking about what is most important in your life. You think about what society wants you to be, the ideal people you see in the advertisements, and who your family and friends want you to be. They are not right or wrong. You don't fight with these opinions. You simply accept them as opinions. Thank them and put all of those images aside.Then you focus on what is really important for you. This is your journey and yours alone. You reach deep inside to see what you value most. When you get closer to the things that are important to you, excitement and a sense of urgency fill your heart. Now you remember the things you care about. You would work on these things even when things get tough.`
-      ,
-      question:
-        "What are the things that are most important for you?",
-      caption:
-        `(For example, being honest, adventurous, fun, hard-working, a leader, keep growing and improving, funny)(please note that being successful, wealthy, happy, etc., are important for most people, but they are generally byproducts of what we do. Not our core values. So here, let's try focusing on values rather than outcomes)`,
+      text: `Let's visualize this setting: It is very early in the morning, and the day is about to break over the ocean. You're looking at the horizon and thinking about what is most important in your life. You think about what society wants you to be, the ideal people you see in the advertisements, and who your family and friends want you to be. They are not right or wrong. You don't fight with these opinions. You simply accept them as opinions. Thank them and put all of those images aside.Then you focus on what is really important for you. This is your journey and yours alone. You reach deep inside to see what you value most. When you get closer to the things that are important to you, excitement and a sense of urgency fill your heart. Now you remember the things you care about. You would work on these things even when things get tough.`,
+      question: "What are the things that are most important for you?",
+      caption: `(For example, being honest, adventurous, fun, hard-working, a leader, keep growing and improving, funny)(please note that being successful, wealthy, happy, etc., are important for most people, but they are generally byproducts of what we do. Not our core values. So here, let's try focusing on values rather than outcomes)`,
       type: "free-response",
     },
     {
@@ -58,8 +55,7 @@ const MODULES = {
     },
     {
       text: `The first glimpses of light remind you of the actions that inspire you. When you think about these actions, you are filled with admiration and motivation. These actions resonate deeply with you and spark a connection with others. They motivate you to elevate yourself and strive for greater heights. Among those actions, one of them stands out the most.`,
-      question:
-        "What specific action inspired you and deeply moved you?",
+      question: "What specific action inspired you and deeply moved you?",
       caption:
         "(e.g., Jennifer launching a non-profit organization for clean water, Dave starting a mentorship program for at-risk youth, Mia developing apps for accessibility)",
       type: "free-response",
@@ -72,6 +68,12 @@ const MODULES = {
       caption:
         "(e.g., a compassionate leader who fostered growth, an empathetic listener who lifted spirits, a fearless adventurer who spread joy, a boundless optimist who spread hope)",
       type: "free-response",
+    },
+    {
+      vision: "",
+      explaination: null,
+      meaningFulness: "",
+      type: "brief-description",
     },
   ],
   SecondModule: [
@@ -87,16 +89,17 @@ const MODULES = {
       type: "brief-description",
     },
     {
-      text: "As the day begins to brighten, you're filled with a sense of possibility",
+      text: "As the day begins to brighten, you're filled with a sense of possibility.",
       question:
         "It you had unlimited resources and support, what significant change or impact would you like to achieve through your fitness journey?",
       caption:
-        "Think about the broader impact on your life, health, or community",
+        "Think about the broader impact on your life, health, or community.",
       type: "free-response",
     },
   ],
   ThirdModule: [
     {
+      question: "Please select up to 3 roles",
       roles: [
         "Health Enthusiast",
         "Marathon Runner",
@@ -152,13 +155,6 @@ const MODULES = {
         "What do you believe should be your next step in your journey toward becoming the person you want to become? ",
       caption: "",
       type: "free-response",
-    },
-    {
-      text: "Imagine it's early morning, and you're watching the sunrise during a quiet jog. As you feel the energy of the new day, think about what drives your fitness journey.",
-      question:
-        "Beyond societal trends or expectations, what personal values guide your fitness goals?",
-      caption: "For instan",
-      type: "brief-description",
     },
   ],
   FifthModule: [
@@ -232,12 +228,12 @@ const MODULES_SUMMARY = {
 };
 
 const firebaseConfig = {
-  apiKey: 'AIzaSyDLc9hZrioQbdQN1QWPfvxYOgu8jcX-66I',
+  apiKey: "AIzaSyDLc9hZrioQbdQN1QWPfvxYOgu8jcX-66I",
   authDomain: "enlife-bb0de.firebaseapp.com",
   projectId: "enlife-bb0de",
   storageBucket: "enlife-bb0de.appspot.com",
   messagingSenderId: "836450151464",
-  appId: '1:836450151464:web:e84d0ed3313aa3260cd91d',
+  appId: "1:836450151464:web:e84d0ed3313aa3260cd91d",
 };
 
 export {

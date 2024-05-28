@@ -6,6 +6,7 @@ export const ENDPOINTS = {
   REGISTER: "auth/register",
   SOCIAL_LOGIN: "auth/social_login",
   CREATE_MODULE: "modules/",
-  GET_QUESTION_DATA:"modules/get-questionId",
-  ALL_MODULES_BY_USER_ID:"modules/",
+  GET_QUESTION_DATA: "modules/get-questionId",
+  ALL_MODULES_BY_USER_ID: "modules/",
+  MODULE_ASSESSMENT: "modules/assessment",
 };

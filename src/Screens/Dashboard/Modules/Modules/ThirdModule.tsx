@@ -13,10 +13,17 @@ import {
 } from "antd";
 import AppButton from "../../../../Components/Button/AppButton";
 import DotPagination from "../../../../Components/DotPagination/DotPagination";
-import { MODULES } from "../../../../Utils/constants";
-import { toastMessage } from "../../../../Utils/helperFunctions";
+import { MODULES, MODULES_LABEL } from "../../../../Utils/constants";
+import { getUserData, toastMessage } from "../../../../Utils/helperFunctions";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import { theme } from "../../../../Theme/theme";
+import {
+  createOrUpdateModule,
+  getQuestionData,
+} from "../../../../Redux/Modules/modulesAction";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "../../../../Redux/store";
+import { useAppSelector } from "../../../../Hooks/reduxHook";
 
 const { Option } = Select;
 
@@ -27,12 +34,31 @@ const ThirdModule = () => {
   const [customRoles, setCustomRoles] = useState<any>([]);
   const [inputVisible, setInputVisible] = useState(false);
   const [inputValue, setInputValue] = useState("");
-
+  const dispatch = useDispatch<AppDispatch>();
+  const user = getUserData();
   const currentModule = MODULES.ThirdModule[pageIndex];
 
   const [identities, setIdentities] = useState<
     { id: number; name: string }[] | undefined
   >([]);
+
+  const { questionData, modulesByUserId } = useAppSelector(
+    (state: { module: any }) => state.module
+  );
+  useEffect(() => {
+    const text = questionData?.selection;
+    setIdentities(text);
+  }, [questionData]);
+  const moduleData = modulesByUserId?.find(
+    (module: any) => module.moduleNumber === MODULES_LABEL.fourthModule.label
+  );
+
+  const hasQuestionID = moduleData?.questionnaires.find(
+    (question: any) =>
+      question.question_text === MODULES.ThirdModule[0].question
+  );
+
+  const result = hasQuestionID ? hasQuestionID.questionID : false;
 
   useEffect(() => {
     if (currentModule) {
@@ -62,6 +88,8 @@ const ThirdModule = () => {
     setSelectedRoles(nextSelectedRoles);
   };
 
+  console.log(selectedRoles);
+
   const showInput = () => {
     if (selectedRoles.length >= 3) {
       toastMessage({
@@ -88,14 +116,33 @@ const ThirdModule = () => {
   };
 
   const handleNext = () => {
-    if ([...selectedRoles, ...customRoles].length < 3) {
+    if ([...selectedRoles, ...customRoles].length < 1) {
       toastMessage({
         type: "error",
-        content: "Please select 3 options",
+        content: "Please select upto 3 options",
         duration: 5,
       });
       return;
     }
+    dispatch(
+      createOrUpdateModule({
+        userId: user.id,
+        moduleNumber: MODULES_LABEL.thirdModule.label,
+        questionnaires: {
+          ...(result && { questionID: result }),
+          question_text: MODULES.ThirdModule[0].question,
+          response_type: MODULES.ThirdModule[pageIndex].type,
+          selection: selectedRoles,
+        },
+      })
+    );
+    dispatch(
+      getQuestionData({
+        userId: user.id,
+        moduleNumber: MODULES_LABEL.thirdModule.label,
+        question: MODULES.ThirdModule[0].question,
+      })
+    );
     setPageIndex((prevIndex) =>
       Math.min(prevIndex + 1, MODULES.SecondModule.length - 1)
     );

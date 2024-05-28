@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/rules-of-hooks */
-import React, { Suspense } from "react";
+import React, { Suspense, useEffect } from "react";
 import { Col, Row, Spin, Tabs } from "antd";
 import type { TabsProps } from "antd";
 import FirstModule from "./Modules/FirstModule";
@@ -9,8 +9,18 @@ import ThirdModule from "./Modules/ThirdModule";
 import { MODULES_LABEL } from "../../../Utils/constants";
 import FourthModule from "./Modules/FourthModule";
 import FifthModule from "./Modules/FifthModule";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "../../../Redux/store";
+import { getAllModulesByUserID } from "../../../Redux/Modules/modulesAction";
+import { getUserData } from "../../../Utils/helperFunctions";
 
 const Modules: React.FC = () => {
+  const dispatch = useDispatch<AppDispatch>();
+  const user = getUserData();
+  useEffect(() => {
+    dispatch(getAllModulesByUserID({ userId: user.id }));
+  }, [dispatch, user.id]);
+
   const items: TabsProps["items"] = [
     {
       key: MODULES_LABEL.firstModule.key,

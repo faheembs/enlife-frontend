@@ -1,13 +1,19 @@
 import { createSlice } from "@reduxjs/toolkit";
-import {  ModuleState } from "./types";
-import { createOrUpdateModule, getAllModulesByUserID, getQuestionData } from "./modulesAction";
+import { ModuleState } from "./types";
+import {
+  createOrUpdateModule,
+  getAllModulesByUserID,
+  getQuestionData,
+  postQuestionAssessmentByModule,
+} from "./modulesAction";
 
 const initialState: ModuleState = {
   module: null,
   questionData: null,
-  modulesByUserId:null,
+  modulesByUserId: null,
   isLoading: false,
   error: null,
+  assessmentResponse: null,
 };
 
 const moduleSlice = createSlice({
@@ -27,7 +33,8 @@ const moduleSlice = createSlice({
       .addCase(createOrUpdateModule.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload?.message || "An error occurred.";
-      }).addCase(getQuestionData.pending, (state) => {
+      })
+      .addCase(getQuestionData.pending, (state) => {
         state.isLoading = true;
         state.error = null;
       })
@@ -38,7 +45,8 @@ const moduleSlice = createSlice({
       .addCase(getQuestionData.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload?.message || "An error occurred.";
-      }).addCase(getAllModulesByUserID.pending, (state) => {
+      })
+      .addCase(getAllModulesByUserID.pending, (state) => {
         state.isLoading = true;
         state.error = null;
       })
@@ -47,6 +55,18 @@ const moduleSlice = createSlice({
         state.modulesByUserId = action.payload;
       })
       .addCase(getAllModulesByUserID.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload?.message || "An error occurred.";
+      })
+      .addCase(postQuestionAssessmentByModule.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(postQuestionAssessmentByModule.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.assessmentResponse = action.payload;
+      })
+      .addCase(postQuestionAssessmentByModule.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload?.message || "An error occurred.";
       });

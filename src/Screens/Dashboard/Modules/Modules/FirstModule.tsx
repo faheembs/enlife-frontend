@@ -8,83 +8,136 @@ import { useAppSelector } from "../../../../Hooks/reduxHook";
 import {
   createOrUpdateModule,
   getQuestionData,
+  postQuestionAssessmentByModule,
 } from "../../../../Redux/Modules/modulesAction";
-import { getUserData } from "../../../../Utils/helperFunctions";
+import { getUserData, toastMessage } from "../../../../Utils/helperFunctions";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "../../../../Redux/store";
+import AppSpinner from "../../../../Components/AppSpinner/AppSpinner";
+import { theme } from "../../../../Theme/theme";
+import ReactHtmlString from "../../../../Components/ReactHtmlString/ReactHtmlString";
 
 const { TextArea } = Input;
 
 const FirstModule = () => {
   const [pageIndex, setPageIndex] = useState(0);
-  const [textResponse, setTextResponse] = useState<any>("");
-  const { questionData, modulesByUserId } = useAppSelector(
-    (state: { module: any }) => state.module
-  );
+  const [loading, setLoading] = useState(false);
+  const [textResponse, setTextResponse] = useState("");
+  const { questionData } = useAppSelector((state: any) => state.module);
+  const [assessmentResults, setAssessmentResults] = useState<any>(null);
   const dispatch = useDispatch<AppDispatch>();
   const user = getUserData();
+
   useEffect(() => {
-    const text = questionData?.answers;
-    setTextResponse(text);
+    if (pageIndex === 0) {
+      const nextQuestion = `${MODULES.FirstModules[0]?.text} ${MODULES.FirstModules[0]?.question} ${MODULES.FirstModules[0]?.caption}`;
+
+      dispatch(
+        getQuestionData({
+          userId: user.id,
+          moduleNumber: MODULES_LABEL.firstModule.label,
+          question: nextQuestion,
+        })
+      );
+    }
+  }, []);
+
+  useEffect(() => {
+    if (questionData?.answers !== null) {
+      setTextResponse(questionData?.answers);
+    }
   }, [questionData]);
+
   const onChange = (e: any) => {
-    // console.log("Change:", e.target.value);
     setTextResponse(e.target.value);
   };
 
-  const hasQuestionID =
-    modulesByUserId &&
-    modulesByUserId.questionnaires.find(
-      (question: any) =>
-        question.question_text === MODULES.FirstModules[pageIndex].question
-    );
+  const currentModule = MODULES.FirstModules[pageIndex];
+  const questions = `${currentModule.text} ${currentModule.question} ${currentModule.caption}`;
 
-  const result = hasQuestionID ? hasQuestionID.questionID : false;
   const handleNext = () => {
-    if (textResponse.trim() === "") {
+    setLoading(true);
+
+    if (pageIndex === MODULES.FirstModules.length - 1) {
+      toastMessage({
+        type: "error",
+        content: "Assessment is completed",
+        duration: 5,
+      });
+      setLoading(false);
+      return;
+    }
+
+    if (pageIndex === MODULES.FirstModules.length - 2) {
+      const body = {
+        moduleId: MODULES_LABEL.firstModule.label,
+        userId: user.id,
+      };
+      dispatch(postQuestionAssessmentByModule(body)).then((response) => {
+        setLoading(false);
+        setAssessmentResults(response?.payload);
+      });
+      setPageIndex(pageIndex + 1);
+      return;
+    }
+
+    if (textResponse === "" || textResponse === null) {
       message.warning("Response is required");
       return;
     }
+
     dispatch(
       createOrUpdateModule({
         userId: user.id,
         moduleNumber: MODULES_LABEL.firstModule.label,
         questionnaires: {
-          ...(result && { questionID: result }),
-          question_text: MODULES.FirstModules[pageIndex].question,
-          response_type: MODULES.FirstModules[pageIndex].type,
+          questionID: questionData?._id ?? false,
+          question_text: questions,
+          response_type: currentModule.type,
           answers: textResponse,
         },
       })
     );
-    dispatch(
-      getQuestionData({
-        userId: user.id,
-        moduleNumber: MODULES_LABEL.firstModule.label,
-        question:
-          MODULES.FirstModules[pageIndex === 0 ? 0 : pageIndex + 1].question,
-      })
-    );
-    setTextResponse("");
-    setPageIndex((prevIndex) =>
-      Math.min(prevIndex + 1, MODULES.FirstModules.length - 1)
-    );
+
+    if (pageIndex < MODULES.FirstModules.length - 1) {
+      setPageIndex(pageIndex + 1);
+
+      const nextQuestion = `${MODULES.FirstModules[pageIndex + 1]?.text} ${
+        MODULES.FirstModules[pageIndex + 1]?.question
+      } ${MODULES.FirstModules[pageIndex + 1]?.caption}`;
+
+      dispatch(
+        getQuestionData({
+          userId: user.id,
+          moduleNumber: MODULES_LABEL.firstModule.label,
+          question: nextQuestion,
+        })
+      );
+
+      setTextResponse("");
+      setLoading(false);
+    }
   };
-  // console.log("module", MODULES.FirstModules[pageIndex].text);
 
   const handleBack = () => {
-    setTextResponse("");
-    dispatch(
-      getQuestionData({
-        userId: user.id,
-        moduleNumber: MODULES_LABEL.firstModule.label,
-        question: MODULES.FirstModules[pageIndex - 1].question,
-      })
-    );
+    if (pageIndex > 0) {
+      const prevQuestion = `${MODULES.FirstModules[pageIndex - 1]?.text} ${
+        MODULES.FirstModules[pageIndex - 1]?.question
+      } ${MODULES.FirstModules[pageIndex - 1]?.caption}`;
 
-    setPageIndex((prevIndex) => Math.max(prevIndex - 1, 0));
+      dispatch(
+        getQuestionData({
+          userId: user.id,
+          moduleNumber: MODULES_LABEL.firstModule.label,
+          question: prevQuestion,
+        })
+      );
+
+      setAssessmentResults(null);
+      setPageIndex(pageIndex - 1);
+      setTextResponse("");
+    }
   };
-  const currentModule = MODULES.FirstModules[pageIndex];
 
   return (
     <Container
@@ -105,52 +158,75 @@ const FirstModule = () => {
             borderRadius: 12,
           }}
         >
-          <div
-            style={{
-              width: "100%",
-              height: 420,
-              borderWidth: 0,
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "space-between",
-            }}
-          >
-            <div>
-              <Typography>{currentModule.text}</Typography>
-              <br />
-              <Typography style={{ fontWeight: "600", padding: 5 }}>
-                {currentModule.question}
-              </Typography>
-              <br />
-              <Typography>{currentModule.caption}</Typography>
+          {loading ? (
+            <Col
+              xs={24}
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                height: 420,
+              }}
+            >
+              <AppSpinner color={theme.palette.primary.dark} size={120} />
+            </Col>
+          ) : assessmentResults &&
+            pageIndex === MODULES.FirstModules.length - 1 ? (
+            <ReactHtmlString html={assessmentResults} />
+          ) : (
+            <div
+              style={{
+                width: "100%",
+                height: 420,
+                borderWidth: 0,
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "space-between",
+              }}
+            >
+              <div>
+                <Typography>{currentModule.text}</Typography>
+                <br />
+                <Typography style={{ fontWeight: "600", padding: 5 }}>
+                  {currentModule.question}
+                </Typography>
+                <br />
+                {currentModule.caption && (
+                  <Typography>{currentModule.caption}</Typography>
+                )}
+              </div>
+              <TextArea
+                showCount
+                value={textResponse ?? ""}
+                maxLength={100}
+                onChange={onChange}
+                placeholder="Type your response"
+                style={{ height: 200, resize: "none" }}
+              />
             </div>
-            <TextArea
-              showCount
-              value={textResponse ?? ""}
-              maxLength={100}
-              onChange={onChange}
-              placeholder="Type your response"
-              style={{ height: 200, resize: "none" }}
-            />
-          </div>
+          )}
         </Card>
       </Row>
       <br />
       <Row justify={"space-between"} align={"middle"}>
         <Col span={4}>
-          <AppButton
-            text="Back"
-            onClick={handleBack}
-            style={{
-              width: "100%",
-              height: 44,
-              backgroundColor: "#ffffff90",
-              border: 0,
-              boxShadow: "none",
-              color: "#000",
-            }}
-            disabled={pageIndex === 0}
-          />
+          {pageIndex > 0 && (
+            <AppButton
+              text="Back"
+              onClick={handleBack}
+              style={{
+                width: "100%",
+                height: 44,
+                backgroundColor: "#ffffff90",
+                border: 0,
+                boxShadow: "none",
+                color: "#000",
+              }}
+              disabled={
+                pageIndex === 0 || pageIndex === MODULES.FirstModules.length - 1
+              }
+            />
+          )}
         </Col>
         <Col span={8}>
           <DotPagination
@@ -170,8 +246,6 @@ const FirstModule = () => {
               boxShadow: "none",
               color: "#000",
             }}
-            disabled={pageIndex === MODULES.FirstModules.length - 1}
-            // disabled={textResponse.trim() === ""}
           />
         </Col>
       </Row>

@@ -1,5 +1,12 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { ApiError, Module, ModuleBody, QuestionData, QuestionDataBody, UserId } from "./types";
+import {
+  ApiError,
+  Module,
+  ModuleBody,
+  QuestionData,
+  QuestionDataBody,
+  UserId,
+} from "./types";
 import { BASE_URL, ENDPOINTS } from "../../Utils/urls";
 import { toastMessage } from "../../Utils/helperFunctions";
 
@@ -24,13 +31,12 @@ export const createOrUpdateModule = createAsyncThunk<
 
     const apiResponse = await response.json();
 
-
     if (!apiResponse.moduleNumber) {
-        // toastMessage({
-        //   type: "error",
-        //   content: "Module creation failed",
-        //   duration: 5,
-        // });
+      // toastMessage({
+      //   type: "error",
+      //   content: "Module creation failed",
+      //   duration: 5,
+      // });
 
       return rejectWithValue({
         message: "Module creation failed",
@@ -43,7 +49,9 @@ export const createOrUpdateModule = createAsyncThunk<
     });
     return apiResponse;
   } catch (error) {
-    return rejectWithValue({ message: "An error occurred during module creation" });
+    return rejectWithValue({
+      message: "An error occurred during module creation",
+    });
   }
 });
 
@@ -74,7 +82,9 @@ export const getQuestionData = createAsyncThunk<
     }
     return apiResponse.data;
   } catch (error) {
-    return rejectWithValue({ message: "An error occurred during module creation" });
+    return rejectWithValue({
+      message: "An error occurred during module creation",
+    });
   }
 });
 
@@ -82,13 +92,49 @@ export const getAllModulesByUserID = createAsyncThunk<
   Module,
   UserId,
   { rejectValue: ApiError }
->("module/userId", async ({userId}, { rejectWithValue }) => {
+>("module/userId", async ({ userId }, { rejectWithValue }) => {
   try {
-    const response = await fetch(`${BASE_URL}${ENDPOINTS.ALL_MODULES_BY_USER_ID}/${userId}`, {
-      method: "GET",
+    const response = await fetch(
+      `${BASE_URL}${ENDPOINTS.ALL_MODULES_BY_USER_ID}/${userId}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    if (!response.ok) {
+      const errorMessage = await response.text();
+      return rejectWithValue({ message: errorMessage });
+    }
+
+    const apiResponse = await response.json();
+
+    if (!apiResponse.success) {
+      return rejectWithValue({
+        message: "An error occurred",
+      });
+    }
+    return apiResponse.data;
+  } catch (error) {
+    return rejectWithValue({ message: "An error occurred" });
+  }
+});
+
+export const postQuestionAssessmentByModule = createAsyncThunk<
+  Module,
+  UserId,
+  { rejectValue: ApiError }
+>("module/assessment", async (body, { rejectWithValue }) => {
+  try {
+    console.log("IN ACTION", body);
+    const response = await fetch(`${BASE_URL}${ENDPOINTS.MODULE_ASSESSMENT}`, {
+      method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
+      body: JSON.stringify(body),
     });
 
     if (!response.ok) {
@@ -99,7 +145,6 @@ export const getAllModulesByUserID = createAsyncThunk<
     const apiResponse = await response.json();
 
     if (!apiResponse.success) {
-
       return rejectWithValue({
         message: "An error occurred",
       });
