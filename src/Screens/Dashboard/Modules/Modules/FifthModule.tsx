@@ -1,14 +1,33 @@
 import React, { useEffect, useState } from "react";
 import { Container } from "@mui/material";
-import { Card, Radio, Col, Input, Row, Typography, Space, List } from "antd";
+import {
+  Card,
+  Radio,
+  Col,
+  Input,
+  Row,
+  Typography,
+  Space,
+  List,
+  message,
+} from "antd";
 import AppButton from "../../../../Components/Button/AppButton";
 import DotPagination from "../../../../Components/DotPagination/DotPagination";
-import { MODULES } from "../../../../Utils/constants";
+import { MODULES, MODULES_LABEL } from "../../../../Utils/constants";
 import { RadioChangeEvent } from "antd/lib";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
-import { toastMessage } from "../../../../Utils/helperFunctions";
+// import { toastMessage } from "../../../../Utils/helperFunctions";
 import ReactHtmlString from "../../../../Components/ReactHtmlString/ReactHtmlString";
 import { theme } from "../../../../Theme/theme";
+import { getUserData, toastMessage } from "../../../../Utils/helperFunctions";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "../../../../Redux/store";
+import {
+  createOrUpdateModule,
+  getQuestionData,
+  postQuestionAssessmentByModule,
+} from "../../../../Redux/Modules/modulesAction";
+import { useAppSelector } from "../../../../Hooks/reduxHook";
 
 const { TextArea } = Input;
 
@@ -16,7 +35,10 @@ const FifthModule = () => {
   const [pageIndex, setPageIndex] = useState(0);
   const [value, setValue] = useState(null);
   const [selectedIdentities, setSelectedIdentities] = useState<any>([]);
+  const [textResponse, setTextResponse] = useState("");
+  const [loading, setLoading] = useState(false);
   const [selectedFAP, setSelectedFAP] = useState<any>([]);
+  const [assessmentResults, setAssessmentResults] = useState<any>(null);
 
   const currentModule = MODULES.FifthModule[pageIndex];
 
@@ -24,14 +46,39 @@ const FifthModule = () => {
     { id: number; name: string }[] | undefined
   >([]);
 
+  const { questionData } = useAppSelector((state: any) => state.module);
+
+  const dispatch = useDispatch<AppDispatch>();
+  const user = getUserData();
+
+  useEffect(() => {
+    if (pageIndex === 0) {
+      const nextQuestion = `${MODULES.FifthModule[0]?.text} ${MODULES.FifthModule[0]?.question} ${MODULES.FifthModule[0]?.caption}`;
+
+      dispatch(
+        getQuestionData({
+          userId: user.id,
+          moduleNumber: MODULES_LABEL.fifthModule.label,
+          question: nextQuestion,
+        })
+      );
+    }
+  }, [pageIndex]);
+
+  useEffect(() => {
+    if (questionData?.answers !== null) {
+      setTextResponse(questionData?.answers);
+    }
+  }, [questionData]);
+  const questions = `${currentModule.text} ${currentModule.question} ${currentModule.caption}`;
   useEffect(() => {
     if (currentModule) {
       setIdentities(currentModule?.identities ?? []);
     }
-  }, [currentModule.identities]);
+  }, [currentModule, currentModule?.identities]);
 
   const onChange = (e: any) => {
-    console.log("Change:", e.target.value);
+    setTextResponse(e.target.value);
   };
 
   const handleDelete = (id: any) => {
@@ -71,9 +118,67 @@ const FifthModule = () => {
   // };
 
   const handleNext = () => {
-    setPageIndex((prevIndex) =>
-      Math.min(prevIndex + 1, MODULES.FifthModule.length - 1)
+    setLoading(true);
+
+    if (pageIndex === MODULES.FifthModule.length - 1) {
+      toastMessage({
+        type: "error",
+        content: "Assessment is completed",
+        duration: 5,
+      });
+      setLoading(false);
+      return;
+    }
+
+    if (pageIndex === MODULES.FifthModule.length - 2) {
+      const body = {
+        moduleId: MODULES_LABEL.fifthModule.label,
+        userId: user.id,
+      };
+      dispatch(postQuestionAssessmentByModule(body)).then((response) => {
+        setLoading(false);
+        setAssessmentResults(response?.payload);
+      });
+      setPageIndex(pageIndex + 1);
+      return;
+    }
+
+    if (textResponse === "" || textResponse === null) {
+      message.warning("Response is required");
+      return;
+    }
+
+    dispatch(
+      createOrUpdateModule({
+        userId: user.id,
+        moduleNumber: MODULES_LABEL.fifthModule.label,
+        questionnaires: {
+          questionID: questionData?._id ?? false,
+          question_text: questions,
+          response_type: currentModule.type,
+          answers: textResponse,
+        },
+      })
     );
+
+    if (pageIndex < MODULES.FifthModule.length - 1) {
+      setPageIndex(pageIndex + 1);
+
+      const nextQuestion = `${MODULES.FifthModule[pageIndex + 1]?.text} ${
+        MODULES.FifthModule[pageIndex + 1]?.question
+      } ${MODULES.FifthModule[pageIndex + 1]?.caption}`;
+
+      dispatch(
+        getQuestionData({
+          userId: user.id,
+          moduleNumber: MODULES_LABEL.fifthModule.label,
+          question: nextQuestion,
+        })
+      );
+
+      setTextResponse("");
+      setLoading(false);
+    }
   };
 
   const handleBack = () => {

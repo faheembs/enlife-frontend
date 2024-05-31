@@ -58,9 +58,9 @@ export interface ModuleBody {
     questionID?: string;
     question_text: string | undefined;
     response_type: string;
-    answers?: string;
-    selection?: [string];
-    scale_value?: string;
+    answers?: string | null;
+    selection?: [string] |  null;
+    scale_value?: string|  null;
   };
 }
 

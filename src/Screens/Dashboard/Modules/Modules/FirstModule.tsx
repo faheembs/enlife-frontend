@@ -40,7 +40,7 @@ const FirstModule = () => {
         })
       );
     }
-  }, []);
+  }, [pageIndex]);
 
   useEffect(() => {
     if (questionData?.answers !== null) {
@@ -198,7 +198,7 @@ const FirstModule = () => {
               <TextArea
                 showCount
                 value={textResponse ?? ""}
-                maxLength={100}
+                maxLength={1000}
                 onChange={onChange}
                 placeholder="Type your response"
                 style={{ height: 200, resize: "none" }}

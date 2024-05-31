@@ -78,23 +78,48 @@ const MODULES = {
   ],
   SecondModule: [
     {
-      vision: '"Your fitness vision is: Detailed Definition of Vision."',
-      explaination: [
-        "Alignment with Fitness Value 1: Explanation of how the vision aligns with this value.",
-        "Alignment with Fitness Value 2: Explanation of how the vision aligns with this value.",
-        "Alignment with Fitness Value 3: Explanation of how the vision aligns with this value.",
-      ],
-      meaningFulness:
-        "Meaningfulness: Discuss why this vision is personally meaningful to the user, meeting the criteria of a long-term aim and focusing beyond self.",
-      type: "brief-description",
+      text: `"You’re back on the shore overlooking the ocean. The day is about to break. The rhythmic sound of waves motivates you to make a meaningful change in the world. Your mind wanders into a realm where limitations are cast aside, and you possess all the resources and support needed to create a remarkable impact in the world. In this moment of clarity, you find out what you’re passionate about changing in the world.`,
+      question:
+        `If you had all the resources and support you needed, what would you like to change in the world?"`,
+      caption:
+        "",
+      type: "free-response",
     },
     {
-      text: "As the day begins to brighten, you're filled with a sense of possibility.",
-      question:
-        "It you had unlimited resources and support, what significant change or impact would you like to achieve through your fitness journey?",
-      caption:
-        "Think about the broader impact on your life, health, or community.",
+      text: `"When the dawn paints the horizon with its first light, you let your mind carry you to a place of profound introspection and clarity. As you feel the warm sunlight on your face, your mind turns to a singular cause worthy of dedicating your life to—a cause that would make every moment of your existence feel worthwhile.`,
+      question: `If you were to commit the entirety of your being to one cause, what would that cause be?"`,
+      caption: "",
       type: "free-response",
+    },
+    {
+      text: `"As you stand on the tranquil shore in the early morning light, gazing at the horizon, let your thoughts drift forward in time. You see yourself dedicating your life to a cause that resonates deeply with you. Then, you see the individuals whose lives were touched and transformed by your efforts.`,
+      question: `How did your tireless work benefit and uplift them?"`,
+      caption: "",
+      type: "free-response",
+    },
+    {
+      text: `"As you embrace the tranquility of the shore, your sense of purpose becomes clearer. You're on the brink of uncovering what truly resonates with your soul. The liberating feeling of being in sync with your purpose surrounds you. Now, let's complete this sentence:`,
+      question: `I am here (on this earth) to ____________, because I want to _________."`,
+      caption: "",
+      type: "free-response",
+    },
+    {
+      text: "",
+      question: `Why is this purpose meaningful for you? `,
+      caption: "",
+      type: "free-response",
+    },
+    {
+      text: "As you listen to the sound of the waves, you feel a surge of strength coursing through you. The clarity of your purpose helps you to think about your strengths. Now, consider this:",
+      question: "How can your strengths help you with your purpose?",
+      caption: "",
+      type: "free-response",
+    },
+    {
+      text: "",
+      question: "",
+      caption: "",
+      type: "brief-description",
     },
   ],
   ThirdModule: [
@@ -155,6 +180,23 @@ const MODULES = {
         "What do you believe should be your next step in your journey toward becoming the person you want to become? ",
       caption: "",
       type: "free-response",
+    },
+    {
+      identities: [
+        {
+          id: 1,
+          name: "30 day goal: Recommendation 1<br/>30 day goal: Recommendation 2<br/>30 day goal: Recommendation 3",
+        },
+        {
+          id: 2,
+          name: "30 day goal: Recommendation 4<br/>30 day goal: Recommendation 5<br/>30 day goal: Recommendation 6",
+        },
+        {
+          id: 3,
+          name: "30 day goal: Recommendation 7<br/>30 day goal: Recommendation 8<br/>30 day goal: Recommendation 9",
+        },
+      ],
+      type: "single-selection",
     },
   ],
   FifthModule: [

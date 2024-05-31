@@ -1,17 +1,31 @@
 import React, { useEffect, useState } from "react";
 import { Container } from "@mui/material";
-import { Card, Col, Input, Radio, Space, Row, Typography, message } from "antd";
+import {
+  Card,
+  Col,
+  Input,
+  Radio,
+  Space,
+  Row,
+  Typography,
+  message,
+  List,
+} from "antd";
 import AppButton from "../../../../Components/Button/AppButton";
 import DotPagination from "../../../../Components/DotPagination/DotPagination";
 import { MODULES, MODULES_LABEL } from "../../../../Utils/constants";
 import { getUserData } from "../../../../Utils/helperFunctions";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "../../../../Redux/store";
+import { EditOutlined, ReloadOutlined } from "@ant-design/icons";
 import {
   createOrUpdateModule,
   getQuestionData,
+  postQuestionAssessmentByModule,
 } from "../../../../Redux/Modules/modulesAction";
 import { useAppSelector } from "../../../../Hooks/reduxHook";
+import AppSpinner from "../../../../Components/AppSpinner/AppSpinner";
+import { theme } from "../../../../Theme/theme";
 
 const { TextArea } = Input;
 
@@ -19,12 +33,34 @@ const FourthModule = () => {
   const [pageIndex, setPageIndex] = useState(0);
   const [value, setValue] = useState<string | null>(null);
   const [textResponse, setTextResponse] = useState("");
-  const { questionData, modulesByUserId } = useAppSelector(
-    (state: any) => state.module
-  );
+  const [loading, setLoading] = useState(false);
+  const [aiResponse, setAiResponse] = useState<any>(null);
+  // const [module3Identity, setModule3Identity] = useState<any>(null);
+  const [selectedIdentities, setSelectedIdentities] = useState<any>([]);
+  const [identities, setIdentities] = useState<
+    { id: number; name: string }[] | undefined
+  >([]);
+
+  const { questionData } = useAppSelector((state: any) => state.module);
   const dispatch = useDispatch<AppDispatch>();
   const user = getUserData();
-  console.log(questionData);
+  useEffect(() => {
+    //  const res = dispatch(getAllModulesByUserID(user.id))
+    // const filtered =  res.filter((module:any)=>(
+    //   module.moduleNumber === MODULES_LABEL.thirdModule.label
+    //  ))
+    //  setModule3Identity(filtered)
+    if (pageIndex === 0) {
+      const nextQuestion = `${MODULES.FourthModule[0]?.question} ${MODULES.FourthModule[0]?.caption}`;
+      dispatch(
+        getQuestionData({
+          userId: user.id,
+          moduleNumber: MODULES_LABEL.fourthModule.label,
+          question: nextQuestion,
+        })
+      );
+    }
+  }, [dispatch, pageIndex, user.id]);
   useEffect(() => {
     if (questionData?.answers !== null) {
       setTextResponse(questionData?.answers);
@@ -40,80 +76,92 @@ const FourthModule = () => {
   const onChangeOptions = (e: any) => {
     setValue(e.target.value);
   };
-  console.log("modules", modulesByUserId);
+
   const currentModule = MODULES.FourthModule[pageIndex];
-  const questions = `${currentModule.text} ${currentModule.question} ${currentModule.caption}`;
-  // console.log(
-  //   "modulesByUserId",
-  //   modulesByUserId.map((modules: any) =>
-  //     modules.questionnaires.map(
-  //       (question: any) => question.question_text === questions
-  //     )
-  //   )
-  // );
-  // console.log("ques", questions);
-  const moduleData = modulesByUserId?.find(
-    (module: any) => module.moduleNumber === MODULES_LABEL.fourthModule.label
-  );
-
-  const hasQuestionID = moduleData?.questionnaires.find(
-    (question: any) => question.question_text === questions
-  );
-
-  const result = hasQuestionID ? hasQuestionID.questionID : false;
-  // console.log("result", result);
-  const handleNext = () => {
-    if (
-      (currentModule.type !== "scale" && textResponse.trim() === "") ||
-      (currentModule.type === "scale" && value === null)
-    ) {
-      message.warning("Response is required");
-      return;
+  useEffect(() => {
+    if (currentModule.identities) {
+      setIdentities(currentModule?.identities ?? []);
     }
+  }, [currentModule.identities]);
+  const questions = `${currentModule.question} ${currentModule.caption}`;
+  const handleNext = async () => {
+    try {
+      setLoading(true);
+      if (currentModule.type !== "single-selection") {
+        if (
+          (currentModule.type !== "scale" && textResponse.trim() === "") ||
+          (currentModule.type === "scale" && value === null)
+        ) {
+          message.warning("Response is required");
+          return;
+        }
+      }
+      await dispatch(
+        selectedIdentities.length === 0
+          ? createOrUpdateModule({
+              userId: user.id,
+              moduleNumber: MODULES_LABEL.fourthModule.label,
+              questionnaires: {
+                questionID: questionData?._id,
+                question_text: questions,
+                response_type: currentModule.type,
+                ...(currentModule.type === "scale"
+                  ? { scale_value: value }
+                  : { answers: textResponse }),
+              },
+            })
+          : createOrUpdateModule({
+              userId: user.id,
+              moduleNumber: MODULES_LABEL.fourthModule.label,
+              questionnaires: {
+                questionID: questionData?._id,
+                question_text: questions,
+                response_type: currentModule.type,
+              },
+              ai_evaluation: {
+                response_text: JSON.stringify(selectedIdentities[0]),
+                response_html: JSON.stringify(selectedIdentities[0]),
+              },
+            })
+      );
+      const nextQuestion = `${MODULES.FourthModule[pageIndex + 1]?.question} ${
+        MODULES.FourthModule[pageIndex + 1]?.caption
+      }`;
+      setTextResponse("");
+      setValue(null);
 
-    dispatch(
-      createOrUpdateModule({
-        userId: user.id,
-        moduleNumber: MODULES_LABEL.fourthModule.label,
-        questionnaires: {
-          ...(result && { questionID: result }),
-          question_text: questions,
-          response_type: currentModule.type,
-          ...(currentModule.type === "scale"
-            ? { scale_value: value }
-            : { answers: textResponse }),
-        },
-      })
-    );
-
-    if (pageIndex < MODULES.FourthModule.length - 1) {
-      setPageIndex(pageIndex + 1);
+      await dispatch(
+        getQuestionData({
+          userId: user.id,
+          moduleNumber: MODULES_LABEL.fourthModule.label,
+          question: nextQuestion,
+        })
+      );
+      if (pageIndex === MODULES.FourthModule.length - 2) {
+        const body = {
+          moduleId: MODULES_LABEL.fourthModule.label,
+          userId: user.id,
+        };
+        const response = await dispatch(postQuestionAssessmentByModule(body));
+        setAiResponse(response?.payload);
+        setPageIndex(pageIndex + 1);
+      }
+      if (pageIndex < MODULES.FourthModule.length - 1) {
+        setPageIndex(pageIndex + 1);
+      }
+    } catch (error) {
+      console.error("Failed to process the next step:", error);
+      message.error("An error occurred while processing your request");
+    } finally {
+      setLoading(false);
     }
-
-    const nextQuestion = `${MODULES.FourthModule[pageIndex + 1]?.text} ${
-      MODULES.FourthModule[pageIndex + 1]?.question
-    } ${MODULES.FourthModule[pageIndex + 1]?.caption}`;
-
-    dispatch(
-      getQuestionData({
-        userId: user.id,
-        moduleNumber: MODULES_LABEL.fourthModule.label,
-        question: nextQuestion,
-      })
-    );
-
-    setTextResponse("");
-    setValue(null);
   };
-
+  console.log("selectedIdentities", selectedIdentities);
   const handleBack = () => {
     if (pageIndex > 0) {
-      setPageIndex(pageIndex - 1);
-
-      const prevQuestion = `${MODULES.FourthModule[pageIndex - 1]?.text} ${
-        MODULES.FourthModule[pageIndex - 1]?.question
-      } ${MODULES.FourthModule[pageIndex - 1]?.caption}`;
-
+      const prevQuestion = `${MODULES.FourthModule[pageIndex - 1]?.question} ${
+        MODULES.FourthModule[pageIndex - 1]?.caption
+      }`;
       dispatch(
         getQuestionData({
           userId: user.id,
@@ -122,11 +170,55 @@ const FourthModule = () => {
         })
       );
 
-      setTextResponse("");
+      setPageIndex(pageIndex - 1);
       setValue(null);
+      setTextResponse("");
     }
   };
+  const handleIdentityChange = (item: any) => {
+    if (identities) {
+      const isSelected = selectedIdentities.includes(item);
+      const newSelection = isSelected ? [] : [item];
 
+      setSelectedIdentities(newSelection);
+    }
+    console.log("1", item);
+  };
+  const data = JSON.parse(aiResponse);
+  const renderItem = (item: any, index: number) => {
+    const [key, values]: [any, any] = Object.entries(item)[0];
+    console.log(key);
+    console.log(values);
+    return (
+      <List.Item
+        actions={[
+          <EditOutlined onClick={() => alert("Edit clicked")} />,
+          <ReloadOutlined />,
+        ]}
+        style={{
+          display: "flex",
+          padding: "10px",
+          flexDirection: "row",
+          border: "1px solid #f0f0f0",
+          borderRadius: "5px",
+          marginBottom: "20px",
+          cursor: "pointer",
+        }}
+        onClick={() => handleIdentityChange(item)}
+      >
+        {/* <Typography.Text style={{ width: "190px", fontWeight: "bold" }}>
+          {key}
+        </Typography.Text> */}
+        <ol style={{ width: "600px" }}>
+          {values.map((value: any, idx: any) => (
+            <li key={idx}>
+              <Typography.Text>{value}</Typography.Text>
+            </li>
+          ))}
+        </ol>
+      </List.Item>
+    );
+  };
   return (
     <Container
       maxWidth="md"
@@ -146,54 +238,118 @@ const FourthModule = () => {
             borderRadius: 12,
           }}
         >
-          <div
-            style={{
-              width: "100%",
-              height: 420,
-              borderWidth: 0,
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "space-between",
-            }}
-          >
-            <div>
-              <Typography>{currentModule.text}</Typography>
-              <br />
-              <Typography style={{ fontWeight: "600", padding: 20 }}>
-                {currentModule.question}
-              </Typography>
-              <br />
-              {currentModule.caption && (
-                <Typography>{currentModule.caption}</Typography>
-              )}
-            </div>
-            {currentModule.type === "free-response" && (
-              <TextArea
-                showCount
-                value={textResponse}
-                maxLength={100}
-                onChange={onChange}
-                placeholder="Type your response"
-                style={{ height: 200, resize: "none" }}
-              />
-            )}
-            {currentModule.type === "scale" && (
-              <Radio.Group
-                onChange={onChangeOptions}
-                value={value}
-                style={{ marginBottom: 50 }}
-              >
-                <Space direction="horizontal">
-                  {currentModule?.options &&
-                    currentModule.options.map((item) => (
-                      <Radio key={item} value={item}>
-                        {item}
-                      </Radio>
-                    ))}
-                </Space>
-              </Radio.Group>
-            )}
-          </div>
+          {loading ? (
+            <Col
+              xs={24}
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                height: 420,
+              }}
+            >
+              <AppSpinner color={theme.palette.primary.dark} size={120} />
+            </Col>
+          ) : (
+            <>
+              {
+                // assessmentResults &&
+                // pageIndex === MODULES.FourthModule.length - 1 ? (
+                //   <ReactHtmlString html={assessmentResults} />
+                // )
+                currentModule.identities ? (
+                  <div
+                    style={{
+                      width: "100%",
+                      height: 420,
+                      borderWidth: 0,
+                      display: "flex",
+                      flexDirection: "column",
+                    }}
+                  >
+                    <Typography style={{ fontWeight: "600" }}>
+                      Please select a Fitness Journey Plan
+                    </Typography>
+
+                    <List
+                      dataSource={data}
+                      renderItem={renderItem}
+                      style={{
+                        background: theme.palette.primary.light,
+                        padding: "20px",
+                        width: "100%",
+                      }}
+                    />
+                  </div>
+                ) : (
+                  <div
+                    style={{
+                      width: "100%",
+                      height: 420,
+                      borderWidth: 0,
+                      display: "flex",
+                      flexDirection: "column",
+                      justifyContent: "space-between",
+                    }}
+                  >
+                    <div>
+                      <Typography>{currentModule.text}</Typography>
+                      <br />
+                      <Typography style={{ fontWeight: "600", padding: 20 }}>
+                        {currentModule.question}
+                      </Typography>
+                      <br />
+                      {currentModule.caption && (
+                        <Typography>{currentModule.caption}</Typography>
+                      )}
+                    </div>
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "row",
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      <Typography style={{ fontWeight: "bold" }}>
+                        Selected Fitness Identity :
+                      </Typography>
+                      <Typography style={{ marginLeft: "10px" }}>
+                        {" "}
+                        Nutrition Advocate
+                      </Typography>
+                    </div>
+                    {currentModule.type === "free-response" && (
+                      <TextArea
+                        showCount
+                        value={textResponse}
+                        maxLength={1000}
+                        onChange={onChange}
+                        placeholder="Type your response"
+                        style={{ height: 200, resize: "none" }}
+                      />
+                    )}
+                    {currentModule.type === "scale" && (
+                      <Radio.Group
+                        onChange={onChangeOptions}
+                        value={value}
+                        style={{ marginBottom: 50 }}
+                      >
+                        <Space direction="horizontal">
+                          {currentModule?.options &&
+                            currentModule.options.map((item) => (
+                              <Radio key={item} value={item}>
+                                {item}
+                              </Radio>
+                            ))}
+                        </Space>
+                      </Radio.Group>
+                    )}
+                  </div>
+                )
+              }
+            </>
+          )}
         </Card>
       </Row>
       <br />

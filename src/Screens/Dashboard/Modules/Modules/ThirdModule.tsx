@@ -15,11 +15,12 @@ import AppButton from "../../../../Components/Button/AppButton";
 import DotPagination from "../../../../Components/DotPagination/DotPagination";
 import { MODULES, MODULES_LABEL } from "../../../../Utils/constants";
 import { getUserData, toastMessage } from "../../../../Utils/helperFunctions";
-import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
+import { EditOutlined, ReloadOutlined } from "@ant-design/icons";
 import { theme } from "../../../../Theme/theme";
 import {
   createOrUpdateModule,
   getQuestionData,
+  postQuestionAssessmentModule3,
 } from "../../../../Redux/Modules/modulesAction";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "../../../../Redux/store";
@@ -34,37 +35,29 @@ const ThirdModule = () => {
   const [customRoles, setCustomRoles] = useState<any>([]);
   const [inputVisible, setInputVisible] = useState(false);
   const [inputValue, setInputValue] = useState("");
+  const [aiResponse, setAiResponse] = useState<any>(null);
   const dispatch = useDispatch<AppDispatch>();
   const user = getUserData();
-  const currentModule = MODULES.ThirdModule[pageIndex];
 
   const [identities, setIdentities] = useState<
     { id: number; name: string }[] | undefined
   >([]);
 
-  const { questionData, modulesByUserId } = useAppSelector(
+  const { questionData } = useAppSelector(
     (state: { module: any }) => state.module
   );
   useEffect(() => {
     const text = questionData?.selection;
     setIdentities(text);
   }, [questionData]);
-  const moduleData = modulesByUserId?.find(
-    (module: any) => module.moduleNumber === MODULES_LABEL.fourthModule.label
-  );
 
-  const hasQuestionID = moduleData?.questionnaires.find(
-    (question: any) =>
-      question.question_text === MODULES.ThirdModule[0].question
-  );
-
-  const result = hasQuestionID ? hasQuestionID.questionID : false;
+  const currentModule = MODULES.ThirdModule[pageIndex];
 
   useEffect(() => {
     if (currentModule) {
       setIdentities(currentModule?.identities ?? []);
     }
-  }, [currentModule.identities]);
+  }, [currentModule, currentModule?.identities]);
 
   const handleDelete = (id: any) => {
     if (identities && identities.length > 0) {
@@ -87,8 +80,6 @@ const ThirdModule = () => {
     }
     setSelectedRoles(nextSelectedRoles);
   };
-
-  console.log(selectedRoles);
 
   const showInput = () => {
     if (selectedRoles.length >= 3) {
@@ -115,7 +106,7 @@ const ThirdModule = () => {
     setInputValue("");
   };
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if ([...selectedRoles, ...customRoles].length < 1) {
       toastMessage({
         type: "error",
@@ -124,18 +115,32 @@ const ThirdModule = () => {
       });
       return;
     }
-    dispatch(
-      createOrUpdateModule({
-        userId: user.id,
-        moduleNumber: MODULES_LABEL.thirdModule.label,
-        questionnaires: {
-          ...(result && { questionID: result }),
-          question_text: MODULES.ThirdModule[0].question,
-          response_type: MODULES.ThirdModule[pageIndex].type,
-          selection: selectedRoles,
-        },
-      })
-    );
+
+    if (pageIndex === MODULES.ThirdModule.length - 2) {
+      const body = {
+        selections: selectedRoles,
+      };
+      await dispatch(postQuestionAssessmentModule3(body)).then((res) => {
+        setAiResponse(res.payload);
+      });
+    } else {
+      dispatch(
+        createOrUpdateModule({
+          userId: user.id,
+          moduleNumber: MODULES_LABEL.thirdModule.label,
+          questionnaires: {
+            questionID: questionData?._id ?? false,
+            question_text: MODULES.ThirdModule[0].question,
+            response_type: MODULES.ThirdModule[0].type,
+            selection: selectedRoles,
+          },
+          ai_evaluation: {
+            response_text: JSON.stringify(selectedIdentities[0]),
+            response_html: JSON.stringify(selectedIdentities[0]),
+          },
+        })
+      );
+    }
     dispatch(
       getQuestionData({
         userId: user.id,
@@ -143,54 +148,69 @@ const ThirdModule = () => {
         question: MODULES.ThirdModule[0].question,
       })
     );
-    setPageIndex((prevIndex) =>
-      Math.min(prevIndex + 1, MODULES.SecondModule.length - 1)
-    );
-  };
-
-  const handleBack = () => {
-    setPageIndex((prevIndex) => Math.max(prevIndex - 1, 0));
-  };
-
-  const handleIdentityChange = (item: any) => {
-    if (identities) {
-      const identityItem = !selectedIdentities.includes(item)
-        ? [...selectedIdentities, item]
-        : selectedIdentities.filter((t: any) => t !== item);
-
-      if (identityItem.length >= 3 && !identityItem.includes(item)) {
-        toastMessage({
-          type: "error",
-          content: "Selection Limit Reached",
-          duration: 5,
-        });
-        return;
-      }
-      setSelectedIdentities(identityItem);
+    if (pageIndex !== 1) {
+      setPageIndex((prevIndex) =>
+        Math.min(prevIndex + 1, MODULES.ThirdModule.length - 1)
+      );
     }
   };
+  const handleBack = () => {
+    dispatch(
+      getQuestionData({
+        userId: user.id,
+        moduleNumber: MODULES_LABEL.thirdModule.label,
+        question: MODULES.ThirdModule[0].question,
+      })
+    );
+    setPageIndex((prevIndex) => Math.max(prevIndex - 1, 0));
+  };
+  const handleIdentityChange = (item: any) => {
+    if (identities) {
+      const isSelected = selectedIdentities.includes(item);
+      const newSelection = isSelected ? [] : [item];
 
-  const renderItem = (item: any, index: number) => (
-    <List.Item
-      actions={[
-        <EditOutlined onClick={() => alert("Edit clicked")} />,
-        <DeleteOutlined onClick={() => handleDelete(item.id)} />,
-      ]}
-      style={{
-        padding: "10px",
-        border: "1px solid #f0f0f0",
-        borderRadius: "5px",
-        marginBottom: "20px",
-        cursor: "pointer",
-        boxShadow: selectedIdentities.includes(item)
-          ? "rgb(0 146 255 / 28%) 2px 2px 16px"
-          : "none",
-      }}
-      onClick={() => handleIdentityChange(item)}
-    >
-      <Typography>{item.name}</Typography>
-    </List.Item>
-  );
+      setSelectedIdentities(newSelection);
+    }
+  };
+  const data = JSON.parse(aiResponse);
+  const renderItem = (item: any, index: number) => {
+    const [key, values]: [any, any] = Object.entries(item)[0];
+    console.log("id", selectedIdentities[0]);
+    console.log("item", item);
+    return (
+      <List.Item
+        actions={[
+          <EditOutlined onClick={() => alert("Edit clicked")} />,
+          <ReloadOutlined onClick={() => handleDelete(item.id)} />,
+        ]}
+        style={{
+          display: "flex",
+          padding: "10px",
+          flexDirection: "row",
+          border: "1px solid #f0f0f0",
+          borderRadius: "5px",
+          marginBottom: "20px",
+          cursor: "pointer",
+          boxShadow:
+            selectedIdentities[0] === item
+              ? "rgb(0 146 255 / 28%) 2px 2px 16px"
+              : "none",
+        }}
+        onClick={() => handleIdentityChange(item)}
+      >
+        <Typography.Text style={{ width: "190px", fontWeight: "bold" }}>
+          {key}
+        </Typography.Text>
+        <ol style={{ width: "400px" }}>
+          {values.map((value: any, idx: any) => (
+            <li key={idx}>
+              <Typography.Text>{value}</Typography.Text>
+            </li>
+          ))}
+        </ol>
+      </List.Item>
+    );
+  };
 
   return (
     <Container
@@ -295,7 +315,7 @@ const ThirdModule = () => {
               </Typography>
 
               <List
-                dataSource={identities}
+                dataSource={data}
                 renderItem={renderItem}
                 style={{
                   background: theme.palette.primary.light,
@@ -321,7 +341,9 @@ const ThirdModule = () => {
               boxShadow: "none",
               color: "#000",
             }}
-            disabled={pageIndex === 0}
+            disabled={
+              pageIndex === 0 || pageIndex === MODULES.ThirdModule.length - 1
+            }
           />
         </Col>
         <Col span={8}>
@@ -342,7 +364,6 @@ const ThirdModule = () => {
               boxShadow: "none",
               color: "#000",
             }}
-            disabled={pageIndex === MODULES.ThirdModule.length - 1}
           />
         </Col>
       </Row>
