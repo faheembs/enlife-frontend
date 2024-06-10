@@ -75,7 +75,6 @@ const SecondModule = () => {
 
   const currentModule = MODULES.SecondModule[pageIndex];
   const questions = `${currentModule.text} ${currentModule.question} ${currentModule.caption}`;
-  console.log("page", pageIndex, MODULES.SecondModule.length);
   const handleNext = () => {
     setLoading(true);
 

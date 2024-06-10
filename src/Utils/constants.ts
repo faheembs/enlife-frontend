@@ -203,7 +203,7 @@ const MODULES = {
     {
       text: "Please answer the following question:",
       question:
-        "Have you previously attempted to achieve your mid-term goal of *How to get there*?",
+        "Have you previously attempted to achieve your mid-term goal of",
       caption: "",
       options: ["Yes", "No"],
       type: "precursor-question",
@@ -227,6 +227,21 @@ const MODULES = {
       ],
       type: "single-selection",
     },
+    {
+      vision: "",
+      explaination: null,
+      meaningFulness: "",
+      type: "brief-description",
+    },
+    {
+      vision: "",
+      explaination: null,
+      meaningFulness: "",
+      type: "selection",
+    },
+    {
+      type: "single",
+    }
   ],
 };
 

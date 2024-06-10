@@ -10,4 +10,5 @@ export const ENDPOINTS = {
   ALL_MODULES_BY_USER_ID: "modules/",
   MODULE_ASSESSMENT: "modules/assessment",
   MODULE_ASSESSMENT_3: "modules/assessment-for-module3",
+  MODULE_ASSESSMENT_5: "modules/assessment-for-module5",
 };

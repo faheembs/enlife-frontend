@@ -61,6 +61,7 @@ export interface ModuleBody {
     answers?: string | null;
     selection?: [string] |  null;
     scale_value?: string|  null;
+    precursor_question?: string | null
   };
 }
 

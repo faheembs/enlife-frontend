@@ -96,7 +96,7 @@ export const getAllModulesByUserID = createAsyncThunk<
 >("module/userId", async ({ userId }, { rejectWithValue }) => {
   try {
     const response = await fetch(
-      `${BASE_URL}${ENDPOINTS.ALL_MODULES_BY_USER_ID}/${userId}`,
+      `${BASE_URL}${ENDPOINTS.ALL_MODULES_BY_USER_ID}${userId}`,
       {
         method: "GET",
         headers: {
@@ -164,6 +164,38 @@ export const postQuestionAssessmentModule3 = createAsyncThunk<
   try {
     console.log("IN ACTION", body);
     const response = await fetch(`${BASE_URL}${ENDPOINTS.MODULE_ASSESSMENT_3}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(body),
+    });
+
+    if (!response.ok) {
+      const errorMessage = await response.text();
+      return rejectWithValue({ message: errorMessage });
+    }
+
+    const apiResponse = await response.json();
+
+    if (!apiResponse.success) {
+      return rejectWithValue({
+        message: "An error occurred",
+      });
+    }
+    return apiResponse.data;
+  } catch (error) {
+    return rejectWithValue({ message: "An error occurred" });
+  }
+});
+
+export const postQuestionAssessmentModule5 = createAsyncThunk<
+  Module,
+  unknown,
+  { rejectValue: any }
+>("module/assessment-for-module3", async (body, { rejectWithValue }) => {
+  try {
+    const response = await fetch(`${BASE_URL}${ENDPOINTS.MODULE_ASSESSMENT_5}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

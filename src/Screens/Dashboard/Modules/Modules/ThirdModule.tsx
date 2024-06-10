@@ -175,8 +175,6 @@ const ThirdModule = () => {
   const data = JSON.parse(aiResponse);
   const renderItem = (item: any, index: number) => {
     const [key, values]: [any, any] = Object.entries(item)[0];
-    console.log("id", selectedIdentities[0]);
-    console.log("item", item);
     return (
       <List.Item
         actions={[

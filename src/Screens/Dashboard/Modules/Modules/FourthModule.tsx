@@ -156,7 +156,6 @@ const FourthModule = () => {
       setLoading(false);
     }
   };
-  console.log("selectedIdentities", selectedIdentities);
   const handleBack = () => {
     if (pageIndex > 0) {
       const prevQuestion = `${MODULES.FourthModule[pageIndex - 1]?.question} ${
@@ -182,13 +181,13 @@ const FourthModule = () => {
 
       setSelectedIdentities(newSelection);
     }
-    console.log("1", item);
   };
   const data = JSON.parse(aiResponse);
   const renderItem = (item: any, index: number) => {
     const [key, values]: [any, any] = Object.entries(item)[0];
-    console.log(key);
-    console.log(values);
+    // console.log(key);
+    // console.log(values);
+    // console.log(selectedIdentities[0], key);
     return (
       <List.Item
         actions={[
@@ -203,6 +202,10 @@ const FourthModule = () => {
           borderRadius: "5px",
           marginBottom: "20px",
           cursor: "pointer",
+          // boxShadow:
+          //   Object.keys(selectedIdentities[0])[0] === key
+          //     ? "rgb(0 146 255 / 28%) 2px 2px 16px"
+          //     : "none",
         }}
         onClick={() => handleIdentityChange(item)}
       >
