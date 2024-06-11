@@ -31,3 +31,13 @@ export const getUserData = () => {
   const userData = user !== null && JSON.parse(user);
   return userData;
 };
+
+export const formattedDate = (dateString: string) => {
+  const date = new Date(dateString);
+  return date.toLocaleDateString('en-US', {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  });
+}

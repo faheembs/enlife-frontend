@@ -23,6 +23,7 @@ export interface AuthState {
 export interface LoginCredentials {
   email: string;
   password: string;
+  newPassword?:string;
   accessToken?: string;
 }
 
