@@ -323,7 +323,7 @@ const FifthModule = () => {
           borderRadius: "15px",
           // marginBottom: "20px",
           cursor: "pointer",
-          height: "48px",
+          height: "103px",
           width: "100%",
           boxShadow:
             selectedFAP === item ? "rgb(0 146 255 / 28%) 2px 2px 16px" : "none",
