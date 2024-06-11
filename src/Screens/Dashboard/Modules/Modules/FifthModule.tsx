@@ -63,6 +63,9 @@ const FifthModule = () => {
     modulesByUserId.filter(
       (module: any) => module.moduleNumber === MODULES_LABEL.fourthModule.label
     );
+  console.log("filteredModules.length > 1", filteredModules);
+  console.log("filteredModules.length > 2", modulesByUserId);
+
   useEffect(() => {
     dispatch(getAllModulesByUserID({ userId: user.id }));
     if (pageIndex === 0) {
@@ -262,31 +265,33 @@ const FifthModule = () => {
     );
   };
   const renderItem2 = () => {
-    let item = JSON.parse(filteredModules[0].ai_evaluation.response_html);
-    const [key, values]: [any, any] = Object.entries(item)[0];
-    return (
-      <List.Item
-        style={{
-          display: "flex",
-          padding: "10px",
-          flexDirection: "row",
-          borderRadius: "5px",
-          cursor: "pointer",
-        }}
-        // onClick={() => handleIdentityChange(item)}
-      >
-        {/* <Typography.Text style={{ width: "190px", fontWeight: "bold" }}>
+    if (filteredModules?.length > 0) {
+      let item = JSON?.parse(filteredModules[0]?.ai_evaluation.response_html);
+      const [key, values]: [any, any] = Object.entries(item)[0];
+      return (
+        <List.Item
+          style={{
+            display: "flex",
+            padding: "10px",
+            flexDirection: "row",
+            borderRadius: "5px",
+            cursor: "pointer",
+          }}
+          // onClick={() => handleIdentityChange(item)}
+        >
+          {/* <Typography.Text style={{ width: "190px", fontWeight: "bold" }}>
           {key}
         </Typography.Text> */}
-        <ol style={{ width: "600px" }}>
-          {values.map((value: any, idx: any) => (
-            <li key={idx}>
-              <Typography.Text>{value}</Typography.Text>
-            </li>
-          ))}
-        </ol>
-      </List.Item>
-    );
+          <ol style={{ width: "600px" }}>
+            {values.map((value: any, idx: any) => (
+              <li key={idx}>
+                <Typography.Text>{value}</Typography.Text>
+              </li>
+            ))}
+          </ol>
+        </List.Item>
+      );
+    }
   };
   const renderRecommendations = (item: any, index: number) => {
     return (
@@ -480,7 +485,11 @@ const FifthModule = () => {
                     <br />
                     <Typography style={{ fontWeight: "600", padding: 20 }}>
                       {currentModule.question}
-                      {filteredModules && renderItem2()}
+                      {filteredModules !== null ||
+                      filteredModules !== undefined ||
+                      filteredModules.length > 1
+                        ? renderItem2()
+                        : ""}
                     </Typography>
                     <br />
                     <Typography>{currentModule.caption}</Typography>
