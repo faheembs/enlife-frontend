@@ -43,7 +43,7 @@ const FirstModule = ({ activeKey }: any) => {
   }, [pageIndex]);
 
   useEffect(() => {
-    if (questionData?.answers !== null) {
+    if (questionData && questionData?.answers !== null) {
       setTextResponse(questionData?.answers);
     }
   }, [questionData]);
@@ -63,6 +63,11 @@ const FirstModule = ({ activeKey }: any) => {
         content: "Assessment is completed",
         duration: 5,
       });
+      setLoading(false);
+      return;
+    }
+    if (textResponse === "" || textResponse === null) {
+      message.warning("Response is required");
       setLoading(false);
       return;
     }
@@ -92,11 +97,6 @@ const FirstModule = ({ activeKey }: any) => {
         setAssessmentResults(response?.payload);
       });
       setPageIndex(pageIndex + 1);
-      return;
-    }
-    if (textResponse === "" || textResponse === null) {
-      message.warning("Response is required");
-      setLoading(false);
       return;
     }
 
