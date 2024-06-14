@@ -24,11 +24,11 @@ const Home: React.FC = () => {
   useEffect(() => {
     dispatch(getAllModulesByUserID({ userId: user.id }));
   }, [dispatch, user.id]);
-  const module1 = modulesByUserId.find(
-    (module: any) => module.moduleNumber === "Module 1"
-  );
+  const module1 =
+    modulesByUserId.length > 0 &&
+    modulesByUserId.find((module: any) => module.moduleNumber === "Module 1");
   useEffect(() => {
-    if (modulesByUserId !== null) {
+    if (modulesByUserId !== null && modulesByUserId.length > 0) {
       const formattedLabels: any = {};
       const formattedSummaries: any = {};
 
