@@ -25,10 +25,10 @@ import {
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "../../../../Redux/store";
 import { useAppSelector } from "../../../../Hooks/reduxHook";
-
+import "./modulesContent.css";
 const { Option } = Select;
 
-const ThirdModule = () => {
+const ThirdModule = ({ activeKey }: any) => {
   const [pageIndex, setPageIndex] = useState(0);
   const [selectedRoles, setSelectedRoles] = useState<any>([]);
   const [selectedIdentities, setSelectedIdentities] = useState<any>([]);
@@ -148,6 +148,18 @@ const ThirdModule = () => {
         question: MODULES.ThirdModule[0].question,
       })
     );
+    if (
+      pageIndex === MODULES.ThirdModule.length - 1 &&
+      selectedIdentities.length > 0
+    ) {
+      activeKey("4");
+    } else {
+      toastMessage({
+        type: "warning",
+        content: "Please select one fitness Identity",
+        duration: 5,
+      });
+    }
     if (pageIndex !== 1) {
       setPageIndex((prevIndex) =>
         Math.min(prevIndex + 1, MODULES.ThirdModule.length - 1)
@@ -223,6 +235,7 @@ const ThirdModule = () => {
     >
       <Row>
         <Card
+          className="cardStyles"
           style={{
             width: "100%",
             padding: 12,
@@ -233,7 +246,8 @@ const ThirdModule = () => {
             <div
               style={{
                 width: "100%",
-                height: 420,
+                maxHeight: 420,
+                overflowY: "auto",
                 borderWidth: 0,
                 display: "flex",
                 flexDirection: "column",
@@ -256,6 +270,7 @@ const ThirdModule = () => {
                       width: 180,
                       padding: 5,
                       margin: 5,
+                      border: "1px solid grey",
                       boxShadow: selectedRoles.includes(role)
                         ? "rgb(0 146 255 / 28%) 2px 2px 16px"
                         : "none",
@@ -282,7 +297,7 @@ const ThirdModule = () => {
                 {inputVisible && (
                   <Input
                     type="text"
-                    size="small"
+                    size="middle"
                     style={{ width: 200 }}
                     value={inputValue}
                     onChange={handleInputChange}
@@ -291,8 +306,8 @@ const ThirdModule = () => {
                   />
                 )}
                 {!inputVisible && (
-                  <Button size="small" onClick={showInput}>
-                    + Add Your Own
+                  <Button size="middle" onClick={showInput}>
+                    + Add Your Own Role
                   </Button>
                 )}
               </div>
@@ -311,25 +326,27 @@ const ThirdModule = () => {
               <Typography style={{ fontWeight: "600" }}>
                 Please select a Fitness Identity
               </Typography>
-
-              <List
-                dataSource={data}
-                renderItem={renderItem}
-                style={{
-                  background: theme.palette.primary.light,
-                  padding: "20px",
-                  width: "100%",
-                }}
-              />
+              <div style={{ maxHeight: 420, overflowX: "auto" }}>
+                <List
+                  dataSource={data}
+                  renderItem={renderItem}
+                  style={{
+                    background: theme.palette.primary.light,
+                    padding: "20px",
+                    width: "100%",
+                  }}
+                />
+              </div>
             </div>
           )}
         </Card>
       </Row>
       <br />
       <Row justify={"space-between"} align={"middle"}>
-        <Col span={4}>
+        <Col span={4} xs={24} sm={4}>
           <AppButton
             text="Back"
+            className="buttons"
             onClick={handleBack}
             style={{
               width: "100%",
@@ -344,15 +361,16 @@ const ThirdModule = () => {
             }
           />
         </Col>
-        <Col span={8}>
+        <Col span={4} xs={24} sm={8}>
           <DotPagination
             pageIndex={pageIndex}
             dataLength={MODULES.ThirdModule.length}
           />
         </Col>
-        <Col span={4}>
+        <Col span={4} xs={24} sm={4}>
           <AppButton
             text="Next"
+            className="buttons"
             onClick={handleNext}
             style={{
               width: "100%",

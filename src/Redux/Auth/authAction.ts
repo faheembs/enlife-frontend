@@ -136,11 +136,11 @@ export const registerUser = createAsyncThunk<
 });
 
 
-export const updatePassword = createAsyncThunk<
+export const updateEmailOrPassword = createAsyncThunk<
   User,
   LoginCredentials,
   { rejectValue: ApiError }
->("auth/update-password", async (body, { rejectWithValue }) => {
+>("auth/update-email-or-password", async (body, { rejectWithValue }) => {
   try {
     const response = await fetch(`${BASE_URL}${ENDPOINTS.UPDATE_PASSWORD}`, {
       method: "POST",
@@ -174,6 +174,7 @@ export const updatePassword = createAsyncThunk<
         content: apiResponse.message,
         duration: 5,
     })
+    localStorage.setItem(USER_SESSION_KEY, JSON.stringify(apiResponse.user));
     return apiResponse;
   } catch (error) {
     return rejectWithValue({ message: "Failed to update password" });
@@ -188,7 +189,6 @@ export const updateProfile = createAsyncThunk<
   try {
     const response = await fetch(`${BASE_URL}${ENDPOINTS.UPDATE_PROFILE}`, {
       method: "PUT",
-      // mode: 'no-cors',
       headers: {
         "Content-Type": "application/json",
         "Authorization": `Bearer ${token}`

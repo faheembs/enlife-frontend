@@ -1,5 +1,6 @@
 import React from "react";
 import { Collapse, Divider } from "antd";
+import "./ModuleCollapse.css";
 
 const { Panel } = Collapse;
 
@@ -44,10 +45,20 @@ const ModulesCollapse: React.FC<ModulesCollapseProps> = ({
       {Object.entries(labels).map(([_, { key, label }]) => (
         <Panel header={label} key={key}>
           {summaries[`ModuleSummary${key}`].map((item, index) => (
-            <div key={index}>
-              <h4>{item.explanationHeading}</h4>
-              <p>{item.explanationText}</p>
-            </div>
+            // <div style={{display:"flex", flexDirection:"row"}} key={index}>
+            //<h4>{item.explanationHeading}</h4>
+            <p
+              style={{
+                lineHeight: "1.5",
+                maxHeight: "7.5em",
+                overflow: "hidden",
+                position: "relative",
+                overflowY: "auto",
+              }}
+            >
+              {item.explanationText}
+            </p>
+            // </div>
           ))}
         </Panel>
       ))}

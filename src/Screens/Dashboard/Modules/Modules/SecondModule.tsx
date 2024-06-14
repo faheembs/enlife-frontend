@@ -16,10 +16,11 @@ import { AppDispatch } from "../../../../Redux/store";
 import AppSpinner from "../../../../Components/AppSpinner/AppSpinner";
 import { theme } from "../../../../Theme/theme";
 import ReactHtmlString from "../../../../Components/ReactHtmlString/ReactHtmlString";
+import "./modulesContent.css";
 
 const { TextArea } = Input;
 
-const SecondModule = () => {
+const SecondModule = ({ activeKey }: any) => {
   const [pageIndex, setPageIndex] = useState(0);
   const [loading, setLoading] = useState(false);
   const [textResponse, setTextResponse] = useState("");
@@ -31,6 +32,7 @@ const SecondModule = () => {
   const user = getUserData();
 
   useEffect(() => {
+    setTextResponse("");
     if (pageIndex === 0) {
       const nextQuestion = `${MODULES.SecondModule[0]?.text} ${MODULES.SecondModule[0]?.question} ${MODULES.SecondModule[0]?.caption}`;
 
@@ -44,7 +46,10 @@ const SecondModule = () => {
     }
   }, [dispatch, pageIndex, user.id]);
 
+  const currentModule = MODULES.SecondModule[pageIndex];
+  const questions = `${currentModule.text} ${currentModule.question} ${currentModule.caption}`;
   useEffect(() => {
+    setTextResponse("");
     if (MODULES.SecondModule[3].question === currentModule.question) {
       if (questionData?.answers !== null) {
         const answer = questionData?.answers.split(",");
@@ -52,7 +57,10 @@ const SecondModule = () => {
         setPart2(answer[1] || "");
       }
     } else {
-      if (questionData?.answers !== null) {
+      if (
+        questionData?.answers !== null &&
+        questionData?.question_text === questions
+      ) {
         setTextResponse(questionData?.answers);
       }
     }
@@ -73,14 +81,13 @@ const SecondModule = () => {
     setTextResponse(e.target.value);
   };
 
-  const currentModule = MODULES.SecondModule[pageIndex];
-  const questions = `${currentModule.text} ${currentModule.question} ${currentModule.caption}`;
   const handleNext = () => {
     setLoading(true);
 
     if (pageIndex === MODULES.SecondModule.length - 1) {
+      activeKey("3");
       toastMessage({
-        type: "error",
+        type: "success",
         content: "Assessment is completed",
         duration: 5,
       });
@@ -90,6 +97,7 @@ const SecondModule = () => {
 
     if (textResponse === "" || textResponse === null) {
       message.warning("Response is required");
+      setLoading(false);
       return;
     }
 
@@ -117,9 +125,10 @@ const SecondModule = () => {
       setPageIndex(pageIndex + 1);
       return;
     }
+    setLoading(false);
     if (pageIndex < MODULES.SecondModule.length - 1) {
       setPageIndex(pageIndex + 1);
-
+      setLoading(false);
       const nextQuestion = `${MODULES.SecondModule[pageIndex + 1]?.text} ${
         MODULES.SecondModule[pageIndex + 1]?.question
       } ${MODULES.SecondModule[pageIndex + 1]?.caption}`;
@@ -176,7 +185,6 @@ const SecondModule = () => {
         <Card
           style={{
             width: "100%",
-            padding: 12,
             borderRadius: 12,
           }}
         >
@@ -194,16 +202,19 @@ const SecondModule = () => {
             </Col>
           ) : assessmentResults &&
             pageIndex === MODULES.SecondModule.length - 1 ? (
-            <ReactHtmlString html={assessmentResults} />
+            <div style={{ maxHeight: 420, overflowY: "auto" }}>
+              <ReactHtmlString html={assessmentResults} />
+            </div>
           ) : (
             <div
               style={{
                 width: "100%",
-                height: 420,
+                maxHeight: 420,
                 borderWidth: 0,
                 display: "flex",
                 flexDirection: "column",
                 justifyContent: "space-between",
+                overflowY: "auto",
               }}
             >
               <div>
@@ -218,7 +229,7 @@ const SecondModule = () => {
                 )}
               </div>
               {currentModule.question.includes(
-                'I am here (on this earth) to ____________, because I want to _________."'
+                "I am here (on this earth) to ____________, because I want to _________."
               ) ? (
                 <div
                   style={{ display: "flex", justifyContent: "space-between" }}
@@ -269,11 +280,12 @@ const SecondModule = () => {
       </Row>
       <br />
       <Row justify={"space-between"} align={"middle"}>
-        <Col span={4}>
+        <Col span={4} xs={24} sm={4}>
           {pageIndex > 0 && (
             <AppButton
               text="Back"
               onClick={handleBack}
+              className="buttons"
               style={{
                 width: "100%",
                 height: 44,
@@ -288,16 +300,17 @@ const SecondModule = () => {
             />
           )}
         </Col>
-        <Col span={8}>
+        <Col span={8} xs={24} sm={8}>
           <DotPagination
             pageIndex={pageIndex}
             dataLength={MODULES.SecondModule.length}
           />
         </Col>
-        <Col span={4}>
+        <Col span={4} xs={24} sm={4}>
           <AppButton
             text="Next"
             onClick={handleNext}
+            className="buttons"
             style={{
               width: "100%",
               height: 44,

@@ -1,31 +1,59 @@
-/* eslint-disable react-hooks/rules-of-hooks */
-import React, { Suspense } from "react";
-import { Spin, Form, Input, Button, Card } from "antd";
+import React, { Suspense, useEffect, useState } from "react";
+import { Spin, Form, Input, Card, Tabs, Typography } from "antd";
 import AppButton from "../../../Components/Button/AppButton";
 import { theme } from "../../../Theme/theme";
 import { getUserData } from "../../../Utils/helperFunctions";
 import { Container } from "@mui/material";
 import { useAppDispatch } from "../../../Hooks/reduxHook";
-import { updatePassword } from "../../../Redux/Auth/authAction";
+import { updateEmailOrPassword } from "../../../Redux/Auth/authAction";
+import { LoginCredentials } from "../../../Redux/Auth/types";
+
+interface UpdateData {
+  email: string;
+  newEmail?: string;
+  password?: string;
+  newPassword?: string;
+}
+
+const { TabPane } = Tabs;
 
 const Settings: React.FC = () => {
+  const [user, setUser] = useState(getUserData());
   const dispatch = useAppDispatch();
   const [form] = Form.useForm();
-  const user = getUserData();
-  const onFinish = (values: any) => {
-    console.log(
-      "Received values:",
-      values.email,
-      values.currentPassword,
-      values.newPassword
-    );
-    dispatch(
-      updatePassword({
-        email: values.email,
-        password: values.currentPassword,
-        newPassword: values.newPassword,
-      })
-    );
+
+  useEffect(() => {
+    form.setFieldsValue({
+      email: user.email,
+      currentPassword: "",
+      newPassword: "",
+      confirmNewPassword: "",
+      updateEmail: "",
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]);
+
+  const onFinish = async (values: any) => {
+    const updateData: UpdateData = {
+      email: values.email,
+    };
+
+    if (values.updateEmail) {
+      updateData.newEmail = values.updateEmail;
+    }
+
+    if (values.currentPassword) {
+      updateData.password = values.currentPassword;
+    }
+
+    if (values.newPassword) {
+      updateData.newPassword = values.newPassword;
+    }
+
+    await dispatch(updateEmailOrPassword(updateData as LoginCredentials));
+    const updatedUser = getUserData();
+    setUser(updatedUser);
+    form.resetFields();
   };
 
   return (
@@ -45,100 +73,126 @@ const Settings: React.FC = () => {
       }
     >
       <Container maxWidth="md">
-        <Card style={{}}>
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              marginBottom: "20px",
-              marginTop: "20px",
-            }}
-          >
-            {/* <h1>Settings</h1> */}
-            <Form
-              form={form}
-              name="settings"
-              layout="vertical"
-              onFinish={onFinish}
-              style={{ width: "100%", maxWidth: "600px" }}
-            >
-              <Form.Item
-                label="Email"
-                name="email"
-                initialValue={user.email ?? ""}
-              >
-                <Input
-                  size="large"
-                  disabled
-                  style={{ fontWeight: "bold", color: "black" }}
-                />
-              </Form.Item>
-              <Form.Item
-                label="Current Password"
-                name="currentPassword"
-                rules={[
-                  {
-                    required: true,
-                    message: "Please input your current password!",
-                  },
-                ]}
-              >
-                <Input.Password size="large" />
-              </Form.Item>
-              <Form.Item
-                label="New Password"
-                name="newPassword"
-                rules={[
-                  {
-                    required: true,
-                    message: "Please input your new password!",
-                  },
-                ]}
-              >
-                <Input.Password size="large" />
-              </Form.Item>
-              <Form.Item
-                label="Confirm New Password"
-                name="confirmNewPassword"
-                dependencies={["newPassword"]}
-                rules={[
-                  {
-                    required: true,
-                    message: "Please confirm your new password!",
-                  },
-                  ({ getFieldValue }) => ({
-                    validator(_, value) {
-                      if (!value || getFieldValue("newPassword") === value) {
-                        return Promise.resolve();
-                      }
-                      return Promise.reject(
-                        new Error("The two passwords do not match!")
-                      );
-                    },
-                  }),
-                ]}
-              >
-                <Input.Password size="large" />
-              </Form.Item>
-              <Form.Item
-                style={{ display: "flex", justifyContent: "flex-end" }}
-              >
-                <AppButton
-                  type="primary"
-                  htmlType="submit"
-                  block
-                  size="middle"
-                  bgColor={theme.palette.primary.main}
+        <Card>
+          <Typography.Title level={3} style={{ margin: "10px 0px" }}>
+            Account Settings
+          </Typography.Title>
+          <Tabs defaultActiveKey="email">
+            <TabPane tab="Change Email" key="email">
+              <div style={{ display: "flex", justifyContent: "center" }}>
+                <Form
+                  form={form}
+                  name="changeEmail"
+                  layout="vertical"
+                  onFinish={onFinish}
+                  style={{
+                    width: "100%",
+                    minHeight: "366px",
+                    maxWidth: "600px",
+                    paddingTop: "20px",
+                  }}
                 >
-                  Save Changes
-                </AppButton>
-                {/* <Button type="primary" htmlType="submit">
-              Save Changes
-            </Button> */}
-              </Form.Item>
-            </Form>
-          </div>
+                  <Form.Item
+                    label="Email"
+                    name="email"
+                    rules={[
+                      {
+                        type: "email",
+                        message: "The input is not valid E-mail!",
+                      },
+                    ]}
+                    initialValue={user.email ?? ""}
+                  >
+                    <Input disabled size="large" />
+                  </Form.Item>
+                  <Form.Item
+                    label="Update Email"
+                    name="updateEmail"
+                    rules={[
+                      {
+                        type: "email",
+                        message: "The input is not valid E-mail!",
+                      },
+                    ]}
+                    initialValue={""}
+                  >
+                    <Input size="large" />
+                  </Form.Item>
+                  <Form.Item
+                    style={{ display: "flex", justifyContent: "flex-end" }}
+                  >
+                    <AppButton
+                      type="primary"
+                      htmlType="submit"
+                      block
+                      size="large"
+                      bgColor={theme.palette.primary.main}
+                    >
+                      Save Changes
+                    </AppButton>
+                  </Form.Item>
+                </Form>
+              </div>
+            </TabPane>
+            <TabPane tab="Change Password" key="password">
+              <div style={{ display: "flex", justifyContent: "center" }}>
+                <Form
+                  form={form}
+                  name="changePassword"
+                  layout="vertical"
+                  onFinish={onFinish}
+                  style={{
+                    width: "100%",
+                    maxWidth: "600px",
+                    minHeight: "350px",
+                    paddingTop: "20px",
+                  }}
+                >
+                  <Form.Item label="Current Password" name="currentPassword">
+                    <Input.Password size="large" />
+                  </Form.Item>
+                  <Form.Item label="New Password" name="newPassword">
+                    <Input.Password size="large" />
+                  </Form.Item>
+                  <Form.Item
+                    label="Confirm New Password"
+                    name="confirmNewPassword"
+                    dependencies={["newPassword"]}
+                    rules={[
+                      ({ getFieldValue }) => ({
+                        validator(_, value) {
+                          if (
+                            !value ||
+                            getFieldValue("newPassword") === value
+                          ) {
+                            return Promise.resolve();
+                          }
+                          return Promise.reject(
+                            new Error("The two passwords do not match!")
+                          );
+                        },
+                      }),
+                    ]}
+                  >
+                    <Input.Password size="large" />
+                  </Form.Item>
+                  <Form.Item
+                    style={{ display: "flex", justifyContent: "flex-end" }}
+                  >
+                    <AppButton
+                      type="primary"
+                      htmlType="submit"
+                      block
+                      size="large"
+                      bgColor={theme.palette.primary.main}
+                    >
+                      Save Changes
+                    </AppButton>
+                  </Form.Item>
+                </Form>
+              </div>
+            </TabPane>
+          </Tabs>
         </Card>
       </Container>
     </Suspense>

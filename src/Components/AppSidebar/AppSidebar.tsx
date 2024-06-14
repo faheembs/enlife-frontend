@@ -30,7 +30,7 @@ const AppSidebar: React.FC<{
   const navigate = useNavigate();
   const location = useLocation();
   const [isLogout, setLogout] = useState(false);
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(true);
 
   const menuItems: MenuItem[] = [
     {
@@ -98,6 +98,7 @@ const AppSidebar: React.FC<{
     <Sider
       style={{
         backgroundColor: customTheme.palette.primary.main,
+        // position: "fixed",
       }}
       width={220}
       collapsedWidth={80}
@@ -109,11 +110,12 @@ const AppSidebar: React.FC<{
           display: "flex",
           flexDirection: "column",
           justifyContent: "space-between",
+          // alignSelf: "center",
         }}
       >
         <div>
           <img
-            src={Images.logo}
+            src={isCollapsed ? Images.logoIcon : Images.logo}
             alt="logo"
             className={`logo ${isCollapsed ? "collapsed-logo" : ""}`}
             style={{
@@ -130,7 +132,9 @@ const AppSidebar: React.FC<{
             theme="dark"
             defaultSelectedKeys={[selectedKey || "1"]}
             mode="inline"
-            style={{ backgroundColor: customTheme.palette.primary.main }}
+            style={{
+              backgroundColor: customTheme.palette.primary.main,
+            }}
           >
             {menuItems.map((item) => {
               return (

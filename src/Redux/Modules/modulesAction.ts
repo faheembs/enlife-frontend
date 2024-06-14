@@ -16,7 +16,6 @@ export const createOrUpdateModule = createAsyncThunk<
   { rejectValue: ApiError }
 >("module/create", async (body, { rejectWithValue }) => {
   try {
-    console.log("body", body)
     const response = await fetch(`${BASE_URL}${ENDPOINTS.CREATE_MODULE}`, {
       method: "POST",
       headers: {
@@ -111,7 +110,6 @@ export const getAllModulesByUserID = createAsyncThunk<
     }
 
     const apiResponse = await response.json();
-
     if (!apiResponse.success) {
       return rejectWithValue({
         message: "An error occurred",
@@ -129,7 +127,6 @@ export const postQuestionAssessmentByModule = createAsyncThunk<
   { rejectValue: ApiError }
 >("module/assessment", async (body, { rejectWithValue }) => {
   try {
-    console.log("IN ACTION", body);
     const response = await fetch(`${BASE_URL}${ENDPOINTS.MODULE_ASSESSMENT}`, {
       method: "POST",
       headers: {
@@ -162,7 +159,6 @@ export const postQuestionAssessmentModule3 = createAsyncThunk<
   { rejectValue: ApiError }
 >("module/assessment-for-module3", async (body, { rejectWithValue }) => {
   try {
-    console.log("IN ACTION", body);
     const response = await fetch(`${BASE_URL}${ENDPOINTS.MODULE_ASSESSMENT_3}`, {
       method: "POST",
       headers: {

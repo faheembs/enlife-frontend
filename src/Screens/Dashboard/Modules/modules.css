@@ -15,27 +15,21 @@
     z-index: 2;
     padding: 0;
   }
-.tabs {
-    /* display: flex; */
-    /* justify-content: center;
-    background-color: red; */
-    /* padding: 10px; */
-}  
-
 .ant-tabs-nav-list{
-    margin-left: 60px;
-    margin-right: 60px;
+margin-left: 60px;
+margin-right: 60px;
 }
 
 .ant-tabs .ant-tabs-tab-btn{
-    margin-left: 0px;
-    margin-right: 0px;
-    padding: 8px;
-    width: 180px;
-    align-items: center;
-    display: flex;
-    justify-content: center;
+margin-left: 0px;
+margin-right: 0px;
+padding: 8px;
+width: 180px;
+align-items: center;
+display: flex;
+justify-content: center;
 }
+
 
 .custom-tabs .ant-tabs-nav .ant-tabs-tab {
     color: #11111f; /* Default tab color */
@@ -60,13 +54,17 @@
 
   .ant-tabs-nav-operations{
     margin-top: 0;
+  }  
+  ::-webkit-scrollbar {
+    width: 6px;
   }
-  
-  /* Add more custom styles as needed */
-
-  /* .ant-card-body{
-    display: "flex";
-    flex-direction: "column";
-    background-color: "red";
-    align-items: "space-between";
-  } */
+  ::-webkit-scrollbar-track {
+    background-color: #f1f1f1;
+  }
+  ::-webkit-scrollbar-thumb {
+    background-color: #888; 
+    border-radius: 3px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: #555; 
+  }

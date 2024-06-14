@@ -24,6 +24,7 @@ export interface LoginCredentials {
   email: string;
   password: string;
   newPassword?:string;
+  newEmail?:string;
   accessToken?: string;
 }
 

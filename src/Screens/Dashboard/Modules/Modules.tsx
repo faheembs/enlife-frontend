@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/rules-of-hooks */
-import React, { Suspense, useEffect } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 import { Col, Row, Spin, Tabs } from "antd";
 import type { TabsProps } from "antd";
 import FirstModule from "./Modules/FirstModule";
@@ -21,26 +21,28 @@ const Modules: React.FC = () => {
     dispatch(getAllModulesByUserID({ userId: user.id }));
   }, [dispatch, user.id]);
 
+  const [activeModule, setActiveModule] = useState("1");
+
   const items: TabsProps["items"] = [
     {
       key: MODULES_LABEL.firstModule.key,
       label: MODULES_LABEL.firstModule.label,
-      children: <FirstModule />,
+      children: <FirstModule activeKey={setActiveModule} />,
     },
     {
       key: MODULES_LABEL.secondModule.key,
       label: MODULES_LABEL.secondModule.label,
-      children: <SecondModule />,
+      children: <SecondModule activeKey={setActiveModule} />,
     },
     {
       key: MODULES_LABEL.thirdModule.key,
       label: MODULES_LABEL.thirdModule.label,
-      children: <ThirdModule />,
+      children: <ThirdModule activeKey={setActiveModule} />,
     },
     {
       key: MODULES_LABEL.fourthModule.key,
       label: MODULES_LABEL.fourthModule.label,
-      children: <FourthModule />,
+      children: <FourthModule activeKey={setActiveModule} />,
     },
     {
       key: MODULES_LABEL.fifthModule.key,
@@ -75,6 +77,7 @@ const Modules: React.FC = () => {
         <Col span={20}>
           <Tabs
             defaultActiveKey="1"
+            activeKey={activeModule}
             items={items}
             centered={true}
             onChange={onChange}

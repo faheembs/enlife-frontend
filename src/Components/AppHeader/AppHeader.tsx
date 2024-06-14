@@ -12,6 +12,7 @@ import { theme } from "../../Theme/theme";
 import { useAppDispatch, useAppSelector } from "../../Hooks/reduxHook";
 import { getAllModulesByUserID } from "../../Redux/Modules/modulesAction";
 import { getUserData } from "../../Utils/helperFunctions";
+import { useLocation } from "react-router-dom";
 
 const { Header } = Layout;
 
@@ -28,6 +29,7 @@ const AppHeader = ({
   const [popoverVisible, setPopoverVisible] = useState(false);
   const [completedModules, setCompletedModules] = useState<string[]>([]);
   const dispatch = useAppDispatch();
+  const location = useLocation();
   const { modulesByUserId } = useAppSelector((state: any) => state.module);
   const handleVisibleChange = (visible: boolean) => {
     setPopoverVisible(visible);
@@ -35,6 +37,7 @@ const AppHeader = ({
   const user = getUserData();
   useEffect(() => {
     dispatch(getAllModulesByUserID({ userId: user.id }));
+    setPopoverVisible(true);
   }, []);
   const title = (
     <>
@@ -63,8 +66,6 @@ const AppHeader = ({
   const filtered =
     modulesByUserId &&
     modulesByUserId.map((module: any) => complete.push(module.moduleNumber));
-  console.log(filtered);
-  console.log(complete);
   let modules = ["Module 1", "Module 2", "Module 3", "Module 4", "Module 5"];
   const content = (
     <>
@@ -79,6 +80,8 @@ const AppHeader = ({
               cursor: "pointer",
               display: "flex",
               justifyContent: "flex-start",
+              border: "none",
+              padding: "5px 0px",
             }}
           >
             {complete.includes(item) ? (
@@ -88,8 +91,8 @@ const AppHeader = ({
             ) : (
               <span
                 style={{
-                  height: "10px",
-                  width: "10px",
+                  height: "12px",
+                  width: "12px",
                   backgroundColor: "white",
                   borderRadius: "50%",
                   border: "1px solid black",
@@ -102,6 +105,15 @@ const AppHeader = ({
           </List.Item>
         )}
       />
+      <Divider />
+      <div style={{ display: "flex", justifyContent: "center" }}>
+        <Typography.Text
+          onClick={() => setPopoverVisible(false)}
+          style={{ textAlign: "center", cursor: "pointer" }}
+        >
+          Don't show this again
+        </Typography.Text>
+      </div>
     </>
   );
 
@@ -136,6 +148,7 @@ const AppHeader = ({
           trigger="click"
           onVisibleChange={handleVisibleChange}
           visible={popoverVisible}
+          style={{ width: "400px" }}
         >
           <BellOutlined
             style={{ fontSize: 32, color: theme.palette.primary.light }}

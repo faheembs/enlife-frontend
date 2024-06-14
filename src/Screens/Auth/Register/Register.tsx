@@ -33,7 +33,6 @@ const Register: React.FC = () => {
     validationSchema: RegisterValidationSchema,
     onSubmit: (values: RegisterFormProps) => {
       setIsLoading(true);
-      console.log("register", values);
       const body = {
         firstName: values.firstName,
         lastName: values.lastName,

@@ -1,5 +1,5 @@
-import React, { useEffect } from "react";
-import { Row, Col, Typography } from "antd";
+import React, { useEffect, useState } from "react";
+import { Row, Col, Typography, List } from "antd";
 import {
   MODULES_SUMMARY,
   MODULES_SUMMARY_LABEL,
@@ -10,15 +10,103 @@ import { getUserData } from "../../../Utils/helperFunctions";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "../../../Redux/store";
 import { getAllModulesByUserID } from "../../../Redux/Modules/modulesAction";
+import { useAppSelector } from "../../../Hooks/reduxHook";
+import ReactHtmlString from "../../../Components/ReactHtmlString/ReactHtmlString";
 // import "./home.css";
 
 const Home: React.FC = () => {
+  const [labels, setLabels] = useState<any>({});
+  const [summaries, setSummaries] = useState<any>({});
   const dispatch = useDispatch<AppDispatch>();
+  const { modulesByUserId } = useAppSelector((state: any) => state.module);
+
   const user = getUserData();
   useEffect(() => {
     dispatch(getAllModulesByUserID({ userId: user.id }));
   }, [dispatch, user.id]);
+  const module1 = modulesByUserId.find(
+    (module: any) => module.moduleNumber === "Module 1"
+  );
+  useEffect(() => {
+    if (modulesByUserId !== null) {
+      const formattedLabels: any = {};
+      const formattedSummaries: any = {};
 
+      const module1 = modulesByUserId.find(
+        (module: any) => module.moduleNumber === "Module 1"
+      );
+
+      if (module1 && module1.ai_evaluation.response_text) {
+        const { response_text } = module1.ai_evaluation;
+
+        if (response_text) {
+          const coreValues = response_text.match(/·\s*([^:]*):\s*([^·]*)/g);
+          if (coreValues) {
+            coreValues.forEach((text: string, i: number) => {
+              const match = text.match(/·\s*([^:]*):\s*([^]*)/);
+              if (match) {
+                const [_, heading, textPart] = match;
+                const label = `Core Value ${i + 1}/${
+                  textPart.trim().split(" ")[0]
+                }`;
+                formattedLabels[`label${i + 1}`] = {
+                  key: String(i + 1),
+                  label,
+                };
+                formattedSummaries[`ModuleSummary${i + 1}`] = [
+                  {
+                    explanationHeading: heading.trim(),
+                    explanationText: textPart.trim(),
+                  },
+                ];
+              }
+            });
+          }
+        }
+      }
+
+      setLabels(formattedLabels);
+      setSummaries(formattedSummaries);
+    }
+  }, [modulesByUserId]);
+  const module2 = modulesByUserId.find(
+    (module: any) => module.moduleNumber === "Module 2"
+  );
+  const module3 = modulesByUserId.find(
+    (module: any) => module.moduleNumber === "Module 3"
+  );
+  const module4 = modulesByUserId.find(
+    (module: any) => module.moduleNumber === "Module 4"
+  );
+  const module5 = modulesByUserId.find(
+    (module: any) => module.moduleNumber === "Module 5"
+  );
+
+  let module4Keys = null;
+  let module4Values = null;
+
+  let keys = null;
+  let values = null;
+  // console.log("3", JSON.parse(module3.ai_evaluation.response_html));
+  if (module3 && module3.ai_evaluation.response_html) {
+    const [key, value]: [any, any] = Object.entries(
+      JSON.parse(module3.ai_evaluation.response_html)
+    )[0];
+    keys = key;
+    values = value;
+  }
+  if (module4 && module4.ai_evaluation.response_text) {
+    const [key, value]: [any, any] = Object.entries(
+      JSON.parse(module4.ai_evaluation.response_text)
+    )[0];
+    module4Keys = key;
+    module4Values = value;
+  }
+
+  const summary =
+    module2 && module2.ai_evaluation.response_html
+      ? module2.ai_evaluation.response_html
+      : "";
   return (
     <>
       <Row
@@ -47,10 +135,9 @@ const Home: React.FC = () => {
           }}
         >
           <Typography.Title level={3}>Module 1 Summary</Typography.Title>
-          <ModulesCollapse
-            labels={MODULES_SUMMARY_LABEL}
-            summaries={MODULES_SUMMARY}
-          />
+          {module1 && module1.ai_evaluation.response_text && (
+            <ModulesCollapse labels={labels} summaries={summaries} />
+          )}
         </Col>
         <Col
           sm={11}
@@ -58,8 +145,6 @@ const Home: React.FC = () => {
           style={{
             width: "100%",
             backgroundColor: theme.palette.primary.light,
-            justifyContent: "center",
-            display: "flex",
             height: 380,
             borderRadius: 20,
             boxShadow: "#9e9e9e73 0px 2px 4px 2px",
@@ -68,18 +153,14 @@ const Home: React.FC = () => {
             margin: "5px",
           }}
         >
-          <div style={{ padding: 20 }}>
-            <h4>Your fitness vision is: Detailed Definition of Vision</h4>
-            <p>
-              Explanation: Alignment with Fitness
-              <br />
-              Value 1: Explanation of hor • Complete Module 3 with this value.{" "}
-              <br />• Complete Module 4• Alignment with Fitness Value 2:
-              Explanation of hol Compiete Module 5 with this value. <br />•
-              Alignment with Fitness Value 3: Explanation of hor with this
-              value. 2/5 Mer, Ieting the crteria of a long term aim and
-            </p>
-          </div>
+          <Typography.Title style={{ padding: "0px 20px" }} level={3}>
+            Module 2 Summary
+          </Typography.Title>
+          {module2 && module2.ai_evaluation.response_html && (
+            <div style={{ padding: 20, overflowY: "scroll", height: 270 }}>
+              <ReactHtmlString html={summary ?? ""} />
+            </div>
+          )}
         </Col>
       </Row>
       <Row justify="space-evenly" align="middle">
@@ -89,9 +170,7 @@ const Home: React.FC = () => {
           style={{
             width: "100%",
             backgroundColor: theme.palette.primary.light,
-            justifyContent: "center",
-            alignItems: "center",
-            display: "flex",
+
             height: 320,
             borderRadius: 20,
             boxShadow: "#9e9e9e73 0px 2px 4px 2px",
@@ -99,7 +178,65 @@ const Home: React.FC = () => {
             margin: "5px",
           }}
         >
-          Module 3
+          <Typography.Title
+            style={{
+              padding: "0px 20px",
+              justifyContent: "center",
+              // alignItems: "center",
+              display: "flex",
+            }}
+            level={3}
+          >
+            Module 3 Summary
+          </Typography.Title>
+          {module3 && module3.ai_evaluation.response_html && (
+            <>
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "flex-start",
+                  justifyContent: "space-between",
+                  padding: "3px 15px",
+                }}
+              >
+                <span>Your selected Fitness identity:</span>
+                <Typography.Text
+                  style={{
+                    padding: "10px 0px",
+                    justifyContent: "flex-start",
+                    // alignItems: "center",
+                    display: "flex",
+                    fontWeight: "bold",
+                  }}
+                >
+                  {keys}
+                </Typography.Text>
+              </div>
+              <List
+                dataSource={values}
+                renderItem={(item: any, index: number) => {
+                  return (
+                    <List.Item
+                      style={{
+                        display: "flex",
+                        padding: "10px",
+                        flexDirection: "row",
+                        border: "none",
+                      }}
+                      key={index}
+                    >
+                      <ul style={{ width: "600px" }}>
+                        <li>
+                          <Typography.Text>{item}</Typography.Text>
+                        </li>
+                      </ul>
+                    </List.Item>
+                  );
+                }}
+              />
+            </>
+          )}
         </Col>
         <Col
           sm={7}
@@ -107,9 +244,6 @@ const Home: React.FC = () => {
           style={{
             width: "100%",
             backgroundColor: theme.palette.primary.light,
-            justifyContent: "center",
-            alignItems: "center",
-            display: "flex",
             height: 320,
             borderRadius: 20,
             boxShadow: "#9e9e9e73 0px 2px 4px 2px",
@@ -117,8 +251,54 @@ const Home: React.FC = () => {
             margin: "5px",
           }}
         >
-          {" "}
-          Module 4
+          <Typography.Title
+            style={{
+              padding: "0px 20px",
+              justifyContent: "center",
+              // alignItems: "center",
+              display: "flex",
+            }}
+            level={3}
+          >
+            Module 4 Summary
+          </Typography.Title>
+          {module4 && module4.ai_evaluation.response_text && (
+            <>
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "space-between",
+                  justifyContent: "center",
+                  padding: "3px 15px",
+                }}
+              >
+                <span>Your selected Fitness Journey Plan:</span>
+              </div>
+              <List
+                dataSource={module4Values}
+                renderItem={(item: any, index: number) => {
+                  return (
+                    <List.Item
+                      style={{
+                        display: "flex",
+                        padding: "10px",
+                        flexDirection: "row",
+                        border: "none",
+                      }}
+                      key={index}
+                    >
+                      <ul style={{ width: "600px" }}>
+                        <li>
+                          <Typography.Text>{item}</Typography.Text>
+                        </li>
+                      </ul>
+                    </List.Item>
+                  );
+                }}
+              />
+            </>
+          )}
         </Col>
         <Col
           sm={7}
@@ -126,9 +306,7 @@ const Home: React.FC = () => {
           style={{
             width: "100%",
             backgroundColor: theme.palette.primary.light,
-            justifyContent: "center",
-            alignItems: "center",
-            display: "flex",
+
             height: 320,
             borderRadius: 20,
             boxShadow: "#9e9e9e73 0px 2px 4px 2px",
@@ -136,7 +314,53 @@ const Home: React.FC = () => {
             margin: "5px",
           }}
         >
-          Module 5
+          <Typography.Title
+            style={{
+              padding: "0px 20px",
+              justifyContent: "center",
+              // alignItems: "center",
+              display: "flex",
+            }}
+            level={3}
+          >
+            Module 5 Summary
+          </Typography.Title>
+          {module5 && module5.ai_evaluation.response_text && (
+            <>
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "space-between",
+                  justifyContent: "center",
+                  padding: "3px 15px",
+                }}
+              >
+                <span>You selected this Task to start today:</span>
+                {module5 && module5.ai_evaluation.response_text && (
+                  <List
+                    dataSource={[module5.ai_evaluation.response_text]}
+                    renderItem={(item: any) => (
+                      <List.Item
+                        style={{
+                          display: "flex",
+                          padding: "10px",
+                          flexDirection: "row",
+                          border: "none",
+                        }}
+                      >
+                        <ul style={{ width: "600px" }}>
+                          <li>
+                            <Typography.Text>{item}</Typography.Text>
+                          </li>
+                        </ul>
+                      </List.Item>
+                    )}
+                  />
+                )}
+              </div>
+            </>
+          )}
         </Col>
       </Row>
     </>

@@ -26,10 +26,11 @@ import {
 import { useAppSelector } from "../../../../Hooks/reduxHook";
 import AppSpinner from "../../../../Components/AppSpinner/AppSpinner";
 import { theme } from "../../../../Theme/theme";
+import "./modulesContent.css";
 
 const { TextArea } = Input;
 
-const FourthModule = () => {
+const FourthModule = ({ activeKey }: any) => {
   const [pageIndex, setPageIndex] = useState(0);
   const [value, setValue] = useState<string | null>(null);
   const [textResponse, setTextResponse] = useState("");
@@ -37,6 +38,7 @@ const FourthModule = () => {
   const [aiResponse, setAiResponse] = useState<any>(null);
   // const [module3Identity, setModule3Identity] = useState<any>(null);
   const [selectedIdentities, setSelectedIdentities] = useState<any>([]);
+  const [windowWidth, setWindowWidth] = useState<boolean>(false);
   const [identities, setIdentities] = useState<
     { id: number; name: string }[] | undefined
   >([]);
@@ -62,6 +64,13 @@ const FourthModule = () => {
     }
   }, [dispatch, pageIndex, user.id]);
   useEffect(() => {
+    if (window.innerWidth <= 600) {
+      setWindowWidth(true);
+    } else {
+      setWindowWidth(false);
+    }
+  }, [window.innerWidth]);
+  useEffect(() => {
     if (questionData?.answers !== null) {
       setTextResponse(questionData?.answers);
     } else if (questionData?.scale_value !== null) {
@@ -84,6 +93,7 @@ const FourthModule = () => {
     }
   }, [currentModule.identities]);
   const questions = `${currentModule.question} ${currentModule.caption}`;
+
   const handleNext = async () => {
     try {
       setLoading(true);
@@ -145,6 +155,12 @@ const FourthModule = () => {
         const response = await dispatch(postQuestionAssessmentByModule(body));
         setAiResponse(response?.payload);
         setPageIndex(pageIndex + 1);
+      }
+      if (
+        pageIndex === MODULES.FourthModule.length - 1 &&
+        selectedIdentities.length > 0
+      ) {
+        activeKey("5");
       }
       if (pageIndex < MODULES.FourthModule.length - 1) {
         setPageIndex(pageIndex + 1);
@@ -235,6 +251,7 @@ const FourthModule = () => {
     >
       <Row>
         <Card
+          className="cardStyles"
           style={{
             width: "100%",
             padding: 12,
@@ -264,10 +281,11 @@ const FourthModule = () => {
                   <div
                     style={{
                       width: "100%",
-                      height: 420,
+                      maxHeight: 420,
                       borderWidth: 0,
                       display: "flex",
                       flexDirection: "column",
+                      overflowY: "auto",
                     }}
                   >
                     <Typography style={{ fontWeight: "600" }}>
@@ -288,17 +306,21 @@ const FourthModule = () => {
                   <div
                     style={{
                       width: "100%",
-                      height: 420,
+                      maxHeight: 420,
                       borderWidth: 0,
                       display: "flex",
                       flexDirection: "column",
                       justifyContent: "space-between",
+                      overflowY: "auto",
                     }}
                   >
                     <div>
                       <Typography>{currentModule.text}</Typography>
                       <br />
-                      <Typography style={{ fontWeight: "600", padding: 20 }}>
+                      <Typography
+                        className="question"
+                        style={{ fontWeight: "600", padding: 20 }}
+                      >
                         {currentModule.question}
                       </Typography>
                       <br />
@@ -312,13 +334,20 @@ const FourthModule = () => {
                         flexDirection: "row",
                         alignItems: "center",
                         justifyContent: "center",
+                        // maxHeight: "2px",
+                        marginBottom: "10px",
                       }}
                     >
-                      <Typography style={{ fontWeight: "bold" }}>
+                      <Typography
+                        className="typo"
+                        style={{ fontWeight: "bold" }}
+                      >
                         Selected Fitness Identity :
                       </Typography>
-                      <Typography style={{ marginLeft: "10px" }}>
-                        {" "}
+                      <Typography
+                        className="typo"
+                        style={{ marginLeft: "10px" }}
+                      >
                         Nutrition Advocate
                       </Typography>
                     </div>
@@ -329,7 +358,11 @@ const FourthModule = () => {
                         maxLength={1000}
                         onChange={onChange}
                         placeholder="Type your response"
-                        style={{ height: 200, resize: "none" }}
+                        style={{
+                          height: 200,
+                          resize: "none",
+                          marginTop: "10px",
+                        }}
                       />
                     )}
                     {currentModule.type === "scale" && (
@@ -338,7 +371,10 @@ const FourthModule = () => {
                         value={value}
                         style={{ marginBottom: 50 }}
                       >
-                        <Space direction="horizontal">
+                        <Space
+                          className="space"
+                          // direction={windowWidth ? "vertical" : "horizontal"}
+                        >
                           {currentModule?.options &&
                             currentModule.options.map((item) => (
                               <Radio key={item} value={item}>
@@ -357,9 +393,10 @@ const FourthModule = () => {
       </Row>
       <br />
       <Row justify={"space-between"} align={"middle"}>
-        <Col span={4}>
+        <Col span={4} xs={24} sm={4}>
           <AppButton
             text="Back"
+            className="buttons"
             onClick={handleBack}
             style={{
               width: "100%",
@@ -372,15 +409,16 @@ const FourthModule = () => {
             disabled={pageIndex === 0}
           />
         </Col>
-        <Col span={8}>
+        <Col span={4} xs={24} sm={8}>
           <DotPagination
             pageIndex={pageIndex}
             dataLength={MODULES.FourthModule.length}
           />
         </Col>
-        <Col span={4}>
+        <Col span={4} xs={24} sm={4}>
           <AppButton
             text="Next"
+            className="buttons"
             onClick={handleNext}
             style={{
               width: "100%",

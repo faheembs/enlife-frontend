@@ -8,9 +8,9 @@ import {
   Typography,
   Divider,
   Form,
-  Select,
   Input,
   InputNumber,
+  DatePicker,
 } from "antd";
 import { Container } from "@mui/material";
 import { formattedDate, getUserData } from "../../../Utils/helperFunctions";
@@ -18,9 +18,13 @@ import AppButton from "../../../Components/Button/AppButton";
 import { theme } from "../../../Theme/theme";
 import { useAppDispatch } from "../../../Hooks/reduxHook";
 import { updateProfile } from "../../../Redux/Auth/authAction";
+import dayjs from "dayjs";
+import customParseFormat from "dayjs/plugin/customParseFormat";
+
+dayjs.extend(customParseFormat);
 
 const { Title } = Typography;
-const { Option } = Select;
+const dateFormat = "YYYY-MM-DD";
 
 const Profile: React.FC = () => {
   const user = getUserData();
@@ -28,9 +32,23 @@ const Profile: React.FC = () => {
   const dispatch = useAppDispatch();
 
   const onFinish = async (values: any) => {
-    console.log(values);
-    dispatch(updateProfile(values));
+    const body = {
+      ...values,
+      dateOfBirth: dayjs(values.dateOfBirth).format("YYYY-MM-DD"),
+    };
+    // console.log(body);
+    dispatch(updateProfile(body));
   };
+  // const onChange: DatePickerProps["onChange"] = (date, dateString) => {
+  //   // const dates = dateString;
+  //   // console.log(date.toISOString(), "---", dateString);
+
+  //   const tempDate = dayjs(date).format("YYYY-MM-DD");
+  //   console.log("temp", tempDate);
+  //   form.setFieldsValue({
+  //     dateOfBirth: tempDate,
+  //   });
+  // };
   return (
     <Suspense
       fallback={
@@ -53,17 +71,14 @@ const Profile: React.FC = () => {
           display: "flex",
           flexDirection: "column",
           justifyContent: "center",
-          paddingBottom: 5,
+          paddingBottom: 2,
           backgroundColor: "white",
           boxShadow: 3,
           borderRadius: 2,
+          mx: { xs: 1, sm: "auto" },
         }}
       >
-        <Row
-          align="middle"
-          justify={"center"}
-          style={{ marginTop: 10, marginBottom: 20 }}
-        >
+        <Row align="middle" justify={"center"} style={{ padding: 30 }}>
           <Col span={24} style={{ textAlign: "center" }}>
             <Avatar size={64} style={{ backgroundColor: "#87d068" }}>
               {user.firstName.charAt(0)}
@@ -72,15 +87,26 @@ const Profile: React.FC = () => {
             <Title level={2} style={{ marginTop: 10 }}>
               {user.firstName} {user.lastName}
             </Title>
+            <Typography.Text
+              style={{
+                fontWeight: "bold",
+                // fontWeight: "bold",
+                color: "grey",
+                marginRight: "10px",
+                // fontSize: "18px",
+              }}
+            >
+              Joined:
+            </Typography.Text>
+            <Typography.Text style={{ fontWeight: "bold", color: "grey" }}>
+              {formattedDate(user.createdAt)}
+            </Typography.Text>
           </Col>
         </Row>
-        <Row align="middle" justify={"center"}>
-          <Typography.Text style={{ fontWeight: "bold", marginRight: "10px" }}>
-            Joined enlife on:
-          </Typography.Text>
-          {formattedDate(user.createdAt)}
-        </Row>
-        <Divider style={{ margin: "40px 0px" }} />
+        {/* <Row align="middle" justify={"center"}>
+          
+        </Row> */}
+        <Divider style={{ margin: "10px 0px" }} />
         <Form
           form={form}
           name="editProfile"
@@ -91,11 +117,12 @@ const Profile: React.FC = () => {
             lastName: user.lastName,
             email: user.email,
             phoneNumber: user.phoneNumber,
-            gender: user.gender,
+            dateOfBirth: undefined,
           }}
+          style={{ padding: "0px 20px" }}
         >
           <Row justify={"space-between"}>
-            <Col>
+            <Col span={11} sm={11} xs={24}>
               <Form.Item
                 label="First Name"
                 name="firstName"
@@ -109,7 +136,7 @@ const Profile: React.FC = () => {
                 <Input size="large" />
               </Form.Item>
             </Col>
-            <Col>
+            <Col span={11} sm={11} xs={24}>
               <Form.Item
                 label="Last Name"
                 name="lastName"
@@ -124,9 +151,8 @@ const Profile: React.FC = () => {
               </Form.Item>
             </Col>
           </Row>
-
           <Row justify={"space-between"}>
-            <Col>
+            <Col span={24} xs={24}>
               <Form.Item
                 label="Email"
                 name="email"
@@ -144,44 +170,48 @@ const Profile: React.FC = () => {
                 <Input size="large" disabled />
               </Form.Item>
             </Col>
-            <Col>
+          </Row>
+          <Row justify={"space-between"}>
+            <Col span={11} sm={11} xs={24}>
               <Form.Item
-                label="Gender"
-                name="gender"
+                label="Phone Number"
+                name="phoneNumber"
                 rules={[
                   {
                     required: true,
-                    message: "Please select your gender!",
+                    message: "Please input your phone number!",
                   },
                 ]}
               >
-                <Select style={{ width: "225px" }} size="large">
-                  <Option value="Male">Male</Option>
-                  <Option value="Female">Female</Option>
-                </Select>
+                <InputNumber style={{ width: "100%" }} size="large" />
+              </Form.Item>
+            </Col>
+            <Col span={11} sm={11} xs={24}>
+              <Form.Item label="Date of birth" name="dateOfBirth">
+                <DatePicker
+                  style={{ width: "100%" }}
+                  maxDate={dayjs(
+                    new Date(Date.now()).toISOString(),
+                    dateFormat
+                  )}
+                  defaultValue={dayjs(
+                    new Date(Date.now()).toISOString(),
+                    dateFormat
+                  )}
+                  format={dateFormat}
+                  size="large"
+                />
               </Form.Item>
             </Col>
           </Row>
-          <Form.Item
-            label="Phone Number"
-            name="phoneNumber"
-            rules={[
-              {
-                required: true,
-                message: "Please input your phone number!",
-              },
-            ]}
-          >
-            <InputNumber style={{ width: "225px" }} size="large" />
-          </Form.Item>
+
           <Form.Item style={{ display: "flex", justifyContent: "center" }}>
             <AppButton
               type="primary"
               htmlType="submit"
               block
-              size="middle"
+              size="large"
               bgColor={theme.palette.primary.main}
-              textStyle={{ width: "300px" }}
             >
               Save Changes
             </AppButton>

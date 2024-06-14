@@ -32,6 +32,7 @@ import {
 } from "../../../../Redux/Modules/modulesAction";
 import { useAppSelector } from "../../../../Hooks/reduxHook";
 import AppSpinner from "../../../../Components/AppSpinner/AppSpinner";
+import "./modulesContent.css";
 
 const { TextArea } = Input;
 
@@ -63,8 +64,6 @@ const FifthModule = () => {
     modulesByUserId.filter(
       (module: any) => module.moduleNumber === MODULES_LABEL.fourthModule.label
     );
-  console.log("filteredModules.length > 1", filteredModules);
-  console.log("filteredModules.length > 2", modulesByUserId);
 
   useEffect(() => {
     dispatch(getAllModulesByUserID({ userId: user.id }));
@@ -124,13 +123,14 @@ const FifthModule = () => {
     setInputVisible(false);
     setInputValue("");
   };
+
   const handleNext = async () => {
     setLoading(true);
 
     if (pageIndex === MODULES.FifthModule.length) {
       setLoading(false);
       toastMessage({
-        type: "error",
+        type: "success",
         content: "Assessment is completed",
         duration: 5,
       });
@@ -163,6 +163,23 @@ const FifthModule = () => {
         })
       );
     }
+    if (pageIndex === MODULES.FifthModule.length - 2) {
+      await dispatch(
+        createOrUpdateModule({
+          userId: user.id,
+          moduleNumber: MODULES_LABEL.fifthModule.label,
+          questionnaires: {
+            questionID: questionData?._id ?? false,
+            question_text: questions,
+            response_type: currentModule.type,
+          },
+          ai_evaluation: {
+            response_text: selectedTask,
+            response_html: selectedTask,
+          },
+        })
+      );
+    }
 
     const body = {
       userId: user.id,
@@ -178,6 +195,7 @@ const FifthModule = () => {
         }
       }
     }
+    setLoading(false);
     // AI
     // }
 
@@ -265,34 +283,45 @@ const FifthModule = () => {
     );
   };
   const renderItem2 = () => {
-    if (filteredModules?.length > 0) {
-      let item = JSON?.parse(filteredModules[0]?.ai_evaluation.response_html);
-      const [key, values]: [any, any] = Object.entries(item)[0];
-      return (
-        <List.Item
-          style={{
-            display: "flex",
-            padding: "10px",
-            flexDirection: "row",
-            borderRadius: "5px",
-            cursor: "pointer",
-          }}
-          // onClick={() => handleIdentityChange(item)}
-        >
-          {/* <Typography.Text style={{ width: "190px", fontWeight: "bold" }}>
+    // console.log(JSON.parse(filteredModules[0].ai_evaluation.response_text));
+    if (filteredModules.length > 0) {
+      // return "bb";
+      if (
+        filteredModules[0].ai_evaluation?.response_html !== null &&
+        filteredModules[0].ai_evaluation?.response_html !== undefined
+      ) {
+        let item = JSON.parse(filteredModules[0]?.ai_evaluation.response_html);
+
+        const [key, values]: [any, any] = Object.entries(item)[0];
+        return (
+          <List.Item
+            style={{
+              display: "flex",
+              padding: "10px",
+              flexDirection: "row",
+              borderRadius: "5px",
+              cursor: "pointer",
+            }}
+            // onClick={() => handleIdentityChange(item)}
+          >
+            {/* <Typography.Text style={{ width: "190px", fontWeight: "bold" }}>
           {key}
         </Typography.Text> */}
-          <ol style={{ width: "600px" }}>
-            {values.map((value: any, idx: any) => (
-              <li key={idx}>
-                <Typography.Text>{value}</Typography.Text>
-              </li>
-            ))}
-          </ol>
-        </List.Item>
-      );
+            <ol style={{ width: "600px" }}>
+              {values.map((valuess: any, idx: any) => (
+                <li key={idx}>
+                  <Typography.Text>{valuess}</Typography.Text>
+                </li>
+              ))}
+            </ol>
+          </List.Item>
+        );
+      }
+    } else {
+      return "";
     }
   };
+
   const renderRecommendations = (item: any, index: number) => {
     return (
       <List.Item
@@ -324,9 +353,11 @@ const FifthModule = () => {
           // marginBottom: "20px",
           cursor: "pointer",
           height: "103px",
-          width: "100%",
+          // width: "100%",
           boxShadow:
             selectedFAP === item ? "rgb(0 146 255 / 28%) 2px 2px 16px" : "none",
+          marginRight: "10px",
+          justifyContent: "flex-end",
         }}
         // onClick={() => handleFAPChange(item)}
       >
@@ -348,6 +379,7 @@ const FifthModule = () => {
     >
       <Row>
         <Card
+          className="cardStyles"
           style={{
             width: "100%",
             padding: 12,
@@ -370,11 +402,12 @@ const FifthModule = () => {
             <div
               style={{
                 width: "100%",
-                height: 460,
+                maxHeight: 490,
                 borderWidth: 0,
                 display: "flex",
                 flexDirection: "column",
                 justifyContent: "space-between",
+                overflowY: "auto",
               }}
             >
               {currentModule.type !== "brief-description" ? (
@@ -385,7 +418,7 @@ const FifthModule = () => {
                       Please select one Task to start today!
                     </Typography.Text>
                     <List
-                      grid={{ gutter: 16, column: 2 }}
+                      grid={{ column: 2 }}
                       dataSource={necessaryTasks}
                       style={{ marginTop: "45px" }}
                       renderItem={(task: string) => (
@@ -403,6 +436,7 @@ const FifthModule = () => {
                               selectedTask === task
                                 ? "rgb(0 146 255 / 28%) 2px 2px 16px"
                                 : "none",
+                            marginRight: "10px",
                           }}
                           onClick={() => setSelectedTask(task)}
                         >
@@ -432,7 +466,14 @@ const FifthModule = () => {
                       </Typography.Text>
                     </div>
                     <List
-                      grid={{ gutter: 16, column: 3 }}
+                      grid={{
+                        xs: 1,
+                        sm: 3,
+                        md: 3,
+                        lg: 3,
+                        xl: 3,
+                        xxl: 3,
+                      }}
                       dataSource={selectedIdentities["30-day goal"]}
                       renderItem={renderRecommendationsForSummary}
                       style={{
@@ -444,7 +485,14 @@ const FifthModule = () => {
                       }}
                     />
                     <List
-                      grid={{ gutter: 16, column: 2 }}
+                      grid={{
+                        xs: 1,
+                        sm: 2,
+                        md: 2,
+                        lg: 2,
+                        xl: 2,
+                        xxl: 2,
+                      }}
                       dataSource={necessaryTasks}
                       style={{ marginTop: "15px" }}
                       renderItem={(task: string) => (
@@ -459,7 +507,7 @@ const FifthModule = () => {
                             alignItems: "center",
                             flexDirection: "row",
                             height: "68px",
-                            justifyContent: "space-between",
+                            justifyContent: "flex-end",
                             padding: "5px",
                             border: "1px solid #f0f0f0",
                             borderRadius: "15px",
@@ -469,6 +517,7 @@ const FifthModule = () => {
                               selectedTask === task
                                 ? "rgb(0 146 255 / 28%) 2px 2px 16px"
                                 : "none",
+                            marginRight: "10px",
                           }}
                           // onClick={() => setSelectedTask(task)}
                         >
@@ -485,11 +534,7 @@ const FifthModule = () => {
                     <br />
                     <Typography style={{ fontWeight: "600", padding: 20 }}>
                       {currentModule.question}
-                      {filteredModules !== null ||
-                      filteredModules !== undefined ||
-                      filteredModules.length > 1
-                        ? renderItem2()
-                        : ""}
+                      {renderItem2()}
                     </Typography>
                     <br />
                     <Typography>{currentModule.caption}</Typography>
@@ -582,7 +627,7 @@ const FifthModule = () => {
                     }}
                   >
                     <List
-                      grid={{ gutter: 16, column: 2 }}
+                      grid={{ column: 2 }}
                       dataSource={necessaryTasks}
                       renderItem={(task: string) => (
                         <List.Item
@@ -592,6 +637,7 @@ const FifthModule = () => {
                             />,
                             <ReloadOutlined />,
                           ]}
+                          // className="question"
                           style={{
                             display: "flex",
                             alignItems: "center",
@@ -601,6 +647,7 @@ const FifthModule = () => {
                             borderRadius: "5px",
                             marginBottom: "20px",
                             cursor: "pointer",
+                            marginRight: "10px",
                             // boxShadow:
                             //   selectedTask === task
                             //     ? "rgb(0 146 255 / 28%) 2px 2px 16px"
@@ -675,7 +722,7 @@ const FifthModule = () => {
               )}
 
               {currentModule.type === "precursor-question" && (
-                <>
+                <div>
                   <Radio.Group
                     onChange={onChangeOptions}
                     value={value}
@@ -691,18 +738,21 @@ const FifthModule = () => {
                     </Space>
                   </Radio.Group>
                   {value === "Yes" && (
-                    <>
+                    <div style={{ marginRight: "5px" }}>
                       <Typography>{currentModule.q_conditional}</Typography>
                       <TextArea
                         showCount
                         maxLength={1000}
                         onChange={onChange}
                         placeholder="Type your response"
-                        style={{ height: 300, resize: "none" }}
+                        style={{
+                          height: 200,
+                          resize: "none",
+                        }}
                       />
-                    </>
+                    </div>
                   )}
-                </>
+                </div>
               )}
             </div>
           )}
@@ -710,10 +760,11 @@ const FifthModule = () => {
       </Row>
       <br />
       <Row justify={"space-between"} align={"middle"}>
-        <Col span={4}>
+        <Col span={4} xs={24} sm={4}>
           <AppButton
             text="Back"
             onClick={handleBack}
+            className="buttons"
             style={{
               width: "100%",
               height: 44,
@@ -725,16 +776,17 @@ const FifthModule = () => {
             disabled={pageIndex === 0}
           />
         </Col>
-        <Col span={8}>
+        <Col span={4} xs={24} sm={8}>
           <DotPagination
             pageIndex={pageIndex}
             dataLength={MODULES.FifthModule.length}
           />
         </Col>
-        <Col span={4}>
+        <Col span={4} xs={24} sm={4}>
           <AppButton
             text="Next"
             onClick={handleNext}
+            className="buttons"
             style={{
               width: "100%",
               height: 44,

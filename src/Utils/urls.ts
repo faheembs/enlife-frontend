@@ -4,8 +4,8 @@ export const BASE_URL = "http://18.224.45.222:8000/";
 export const ENDPOINTS = {
   LOGIN: "auth/login",
   REGISTER: "auth/register",
-  UPDATE_PASSWORD:"auth/update-password",
-  UPDATE_PROFILE:"auth/profile",
+  UPDATE_PASSWORD: "auth/update-password",
+  UPDATE_PROFILE: "auth/profile",
   SOCIAL_LOGIN: "auth/social_login",
   CREATE_MODULE: "modules/",
   GET_QUESTION_DATA: "modules/get-questionId",

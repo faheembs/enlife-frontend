@@ -16,10 +16,10 @@ import { AppDispatch } from "../../../../Redux/store";
 import AppSpinner from "../../../../Components/AppSpinner/AppSpinner";
 import { theme } from "../../../../Theme/theme";
 import ReactHtmlString from "../../../../Components/ReactHtmlString/ReactHtmlString";
-
+import "./modulesContent.css";
 const { TextArea } = Input;
 
-const FirstModule = () => {
+const FirstModule = ({ activeKey }: any) => {
   const [pageIndex, setPageIndex] = useState(0);
   const [loading, setLoading] = useState(false);
   const [textResponse, setTextResponse] = useState("");
@@ -51,16 +51,15 @@ const FirstModule = () => {
   const onChange = (e: any) => {
     setTextResponse(e.target.value);
   };
-
   const currentModule = MODULES.FirstModules[pageIndex];
   const questions = `${currentModule.text} ${currentModule.question} ${currentModule.caption}`;
-
-  const handleNext = () => {
+  const handleNext = async () => {
     setLoading(true);
 
     if (pageIndex === MODULES.FirstModules.length - 1) {
+      activeKey("2");
       toastMessage({
-        type: "error",
+        type: "success",
         content: "Assessment is completed",
         duration: 5,
       });
@@ -73,6 +72,21 @@ const FirstModule = () => {
         moduleId: MODULES_LABEL.firstModule.label,
         userId: user.id,
       };
+      await dispatch(
+        createOrUpdateModule({
+          userId: user.id,
+          moduleNumber: MODULES_LABEL.firstModule.label,
+          questionnaires: {
+            questionID:
+              questionData?.question_text === questions
+                ? questionData?._id
+                : false,
+            question_text: questions,
+            response_type: currentModule.type,
+            answers: textResponse,
+          },
+        })
+      );
       dispatch(postQuestionAssessmentByModule(body)).then((response) => {
         setLoading(false);
         setAssessmentResults(response?.payload);
@@ -80,9 +94,9 @@ const FirstModule = () => {
       setPageIndex(pageIndex + 1);
       return;
     }
-
     if (textResponse === "" || textResponse === null) {
       message.warning("Response is required");
+      setLoading(false);
       return;
     }
 
@@ -91,16 +105,21 @@ const FirstModule = () => {
         userId: user.id,
         moduleNumber: MODULES_LABEL.firstModule.label,
         questionnaires: {
-          questionID: questionData?._id ?? false,
+          questionID:
+            questionData?.question_text === questions
+              ? questionData?._id
+              : false,
           question_text: questions,
           response_type: currentModule.type,
           answers: textResponse,
         },
       })
     );
+    setLoading(false);
 
     if (pageIndex < MODULES.FirstModules.length - 1) {
       setPageIndex(pageIndex + 1);
+      setLoading(false);
 
       const nextQuestion = `${MODULES.FirstModules[pageIndex + 1]?.text} ${
         MODULES.FirstModules[pageIndex + 1]?.question
@@ -152,6 +171,7 @@ const FirstModule = () => {
     >
       <Row>
         <Card
+          className="cardStyles"
           style={{
             width: "100%",
             padding: 12,
@@ -172,16 +192,19 @@ const FirstModule = () => {
             </Col>
           ) : assessmentResults &&
             pageIndex === MODULES.FirstModules.length - 1 ? (
-            <ReactHtmlString html={assessmentResults} />
+            <div style={{ maxHeight: 420, overflowX: "auto" }}>
+              <ReactHtmlString html={assessmentResults} />
+            </div>
           ) : (
             <div
               style={{
                 width: "100%",
-                height: 420,
+                maxHeight: 420,
                 borderWidth: 0,
                 display: "flex",
                 flexDirection: "column",
                 justifyContent: "space-between",
+                overflowX: "auto",
               }}
             >
               <div>
@@ -209,10 +232,11 @@ const FirstModule = () => {
       </Row>
       <br />
       <Row justify={"space-between"} align={"middle"}>
-        <Col span={4}>
+        <Col span={4} xs={24} sm={4}>
           {pageIndex > 0 && (
             <AppButton
               text="Back"
+              className="buttons"
               onClick={handleBack}
               style={{
                 width: "100%",
@@ -228,15 +252,16 @@ const FirstModule = () => {
             />
           )}
         </Col>
-        <Col span={8}>
+        <Col span={4} xs={24} sm={8}>
           <DotPagination
             pageIndex={pageIndex}
             dataLength={MODULES.FirstModules.length}
           />
         </Col>
-        <Col span={4}>
+        <Col span={4} xs={24} sm={4}>
           <AppButton
             text="Next"
+            className="buttons"
             onClick={handleNext}
             style={{
               width: "100%",

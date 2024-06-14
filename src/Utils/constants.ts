@@ -11,6 +11,7 @@ const MODULES_LABEL = {
 
 const Images = {
   logo: require(`../Assets/logoenlife.png`),
+  logoIcon: require(`../Assets/logo-icon2.png`),
   google: require(`../Assets/google.png`),
   bckImg: require(`../Assets/bck_banner.jpeg`),
 };
@@ -78,7 +79,7 @@ const MODULES = {
   ],
   SecondModule: [
     {
-      text: `"You’re back on the shore overlooking the ocean. The day is about to break. The rhythmic sound of waves motivates you to make a meaningful change in the world. Your mind wanders into a realm where limitations are cast aside, and you possess all the resources and support needed to create a remarkable impact in the world. In this moment of clarity, you find out what you’re passionate about changing in the world.`,
+      text: `You’re back on the shore overlooking the ocean. The day is about to break. The rhythmic sound of waves motivates you to make a meaningful change in the world. Your mind wanders into a realm where limitations are cast aside, and you possess all the resources and support needed to create a remarkable impact in the world. In this moment of clarity, you find out what you’re passionate about changing in the world.`,
       question:
         `If you had all the resources and support you needed, what would you like to change in the world?"`,
       caption:
@@ -86,20 +87,20 @@ const MODULES = {
       type: "free-response",
     },
     {
-      text: `"When the dawn paints the horizon with its first light, you let your mind carry you to a place of profound introspection and clarity. As you feel the warm sunlight on your face, your mind turns to a singular cause worthy of dedicating your life to—a cause that would make every moment of your existence feel worthwhile.`,
-      question: `If you were to commit the entirety of your being to one cause, what would that cause be?"`,
+      text: `When the dawn paints the horizon with its first light, you let your mind carry you to a place of profound introspection and clarity. As you feel the warm sunlight on your face, your mind turns to a singular cause worthy of dedicating your life to—a cause that would make every moment of your existence feel worthwhile.`,
+      question: `If you were to commit the entirety of your being to one cause, what would that cause be?`,
       caption: "",
       type: "free-response",
     },
     {
-      text: `"As you stand on the tranquil shore in the early morning light, gazing at the horizon, let your thoughts drift forward in time. You see yourself dedicating your life to a cause that resonates deeply with you. Then, you see the individuals whose lives were touched and transformed by your efforts.`,
-      question: `How did your tireless work benefit and uplift them?"`,
+      text: `As you stand on the tranquil shore in the early morning light, gazing at the horizon, let your thoughts drift forward in time. You see yourself dedicating your life to a cause that resonates deeply with you. Then, you see the individuals whose lives were touched and transformed by your efforts.`,
+      question: `How did your tireless work benefit and uplift them?`,
       caption: "",
       type: "free-response",
     },
     {
-      text: `"As you embrace the tranquility of the shore, your sense of purpose becomes clearer. You're on the brink of uncovering what truly resonates with your soul. The liberating feeling of being in sync with your purpose surrounds you. Now, let's complete this sentence:`,
-      question: `I am here (on this earth) to ____________, because I want to _________."`,
+      text: `As you embrace the tranquility of the shore, your sense of purpose becomes clearer. You're on the brink of uncovering what truly resonates with your soul. The liberating feeling of being in sync with your purpose surrounds you. Now, let's complete this sentence:`,
+      question: `I am here (on this earth) to ____________, because I want to _________.`,
       caption: "",
       type: "free-response",
     },
@@ -126,21 +127,22 @@ const MODULES = {
     {
       question: "Please select up to 3 roles",
       roles: [
-        "Health Enthusiast",
-        "Marathon Runner",
-        "Yoga Practitioner",
-        "Fitness Coach",
-        "Strength Trainer",
-        "Nutrition Advocate",
-        "Outdoor Adventurer",
-        "Mindfulness Practitioner",
-        "Sports Competitor",
-        "Dance Fitness Enthusiast",
-        "Swimming Enthusiast",
-        "Cyclic Alicionado",
-        "Bodybuiling Aspiriant",
-        "Gymnastic Amateur",
-        "Wellness Advocate",
+        'Educator/Teacher',
+        'Entrepreneur',
+        'Healer/Doctor',
+        'Innovator/Creator',
+        'Artist',
+        'Researcher/Scientist',
+        'Philanthropist',
+        'Advocate/Activist',
+        'Mentor/Coach',
+        'Athlete',
+        'Explorer/Adventurer',
+        'Spiritual Leader',
+        'Environmentalist',
+        'Public Servant/Politician',
+        'Writer/Author',
+        'Counselor/Therapist'
       ],
       type: "multiple-selection",
     },
