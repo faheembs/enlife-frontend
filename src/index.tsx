@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Suspense } from "react";
 import ReactDOM from "react-dom/client";
 import "./Localization/i18n";
 import App from "./App";
@@ -8,7 +8,7 @@ import { BrowserRouter } from "react-router-dom";
 import { ThemeProvider } from "@emotion/react";
 import { theme } from "./Theme/theme";
 import "./index.css";
-import { ConfigProvider } from "antd";
+import { ConfigProvider, Spin } from "antd";
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
@@ -16,23 +16,31 @@ const root = ReactDOM.createRoot(
 
 root.render(
   <BrowserRouter>
-    <Provider store={store}>
-      <ThemeProvider theme={theme}>
-        <ConfigProvider
-          theme={{
-            token: {
-              fontFamily: "Poppins",
-            },
-            components: {
-              Menu: {
-                darkItemSelectedBg: "#000000e0",
+    <Suspense
+      fallback={
+        <div className="spinnerContainer">
+          <Spin size="large" />
+        </div>
+      }
+    >
+      <Provider store={store}>
+        <ThemeProvider theme={theme}>
+          <ConfigProvider
+            theme={{
+              token: {
+                fontFamily: "Poppins",
               },
-            },
-          }}
-        >
-          <App />
-        </ConfigProvider>
-      </ThemeProvider>
-    </Provider>
+              components: {
+                Menu: {
+                  darkItemSelectedBg: "#000000e0",
+                },
+              },
+            }}
+          >
+            <App />
+          </ConfigProvider>
+        </ThemeProvider>
+      </Provider>
+    </Suspense>
   </BrowserRouter>
 );
