@@ -77,7 +77,7 @@ const Modules: React.FC = () => {
         <Col span={20}>
           <Tabs
             defaultActiveKey="1"
-            // activeKey={activeModule}
+            activeKey={activeModule}
             items={items}
             centered={true}
             onChange={onChange}
