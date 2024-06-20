@@ -19,12 +19,12 @@ const Home: React.FC = () => {
   const [summaries, setSummaries] = useState<any>({});
   const dispatch = useDispatch<AppDispatch>();
   const { modulesByUserId } = useAppSelector((state: any) => state.module);
-
   const user = getUserData();
   useEffect(() => {
     dispatch(getAllModulesByUserID({ userId: user.id }));
   }, [dispatch, user.id]);
   const module1 =
+    modulesByUserId &&
     modulesByUserId.length > 0 &&
     modulesByUserId.find((module: any) => module.moduleNumber === "Module 1");
   useEffect(() => {
