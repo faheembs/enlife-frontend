@@ -1,20 +1,25 @@
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 import React, { useEffect, useRef, useState } from "react";
-import { Divider, Layout, List, Popover, Typography, notification } from "antd";
+import { Divider, Input, Layout, List, Popover, Typography } from "antd";
 import {
   MessageOutlined,
   BellOutlined,
   CloseOutlined,
   CheckCircleFilled,
-  CheckCircleOutlined,
 } from "@ant-design/icons";
 import { theme } from "../../Theme/theme";
 import { useAppDispatch, useAppSelector } from "../../Hooks/reduxHook";
 import { getAllModulesByUserID } from "../../Redux/Modules/modulesAction";
-import { getUserData } from "../../Utils/helperFunctions";
+import { getUserData, toastMessage } from "../../Utils/helperFunctions";
 import { useLocation } from "react-router-dom";
+import AppButton from "../Button/AppButton";
+import {
+  getFeedbackByUserID,
+  postFeedback,
+} from "../../Redux/Feedback/feedbackAction";
 
 const { Header } = Layout;
+const { TextArea } = Input;
 
 interface AppHeaderProps {
   children?: any;
@@ -27,20 +32,54 @@ const AppHeader = ({
   screenName,
 }: AppHeaderProps) => {
   const [popoverVisible, setPopoverVisible] = useState(false);
+  const [feedbackVisible, setFeedbackVisible] = useState(false);
   const [completedModules, setCompletedModules] = useState<string[]>([]);
+  const [feedback, setFeedback] = useState("");
   const dispatch = useAppDispatch();
   const location = useLocation();
   const { modulesByUserId } = useAppSelector((state: any) => state.module);
+  const { feedbackByUserID } = useAppSelector((state: any) => state.feedback);
   const handleVisibleChange = (visible: boolean) => {
     setPopoverVisible(visible);
   };
+  const handleFeedbackVisibleChange = (visible: boolean) => {
+    setFeedbackVisible(visible);
+  };
   const user = getUserData();
   useEffect(() => {
+    dispatch(getFeedbackByUserID({ userId: user.id }));
     dispatch(getAllModulesByUserID({ userId: user.id }));
     if (location.pathname === "/") {
       setPopoverVisible(true);
+      const module5 =
+        modulesByUserId &&
+        modulesByUserId.find(
+          (module: any) => module.moduleNumber === "Module 5"
+        );
+      console.log("feed", feedbackByUserID);
+      if (module5 && feedbackByUserID == null) {
+        setFeedbackVisible(true);
+      }
     }
   }, [dispatch, location.pathname, user.id]);
+  console.log("---------", feedbackByUserID);
+  const onChange = (e: any) => {
+    setFeedback(e.target.value);
+  };
+
+  const handleFeedbackSubmit = async () => {
+    if (feedback === "") {
+      toastMessage({
+        type: "error",
+        content: "Please enter your feedback!",
+        duration: 5,
+      });
+    } else {
+      await dispatch(postFeedback({ userId: user.id, feedbackText: feedback }));
+      setFeedbackVisible(false);
+    }
+  };
+
   const title = (
     <>
       <div style={{ display: "flex", justifyContent: "space-between" }}>
@@ -119,6 +158,31 @@ const AppHeader = ({
     </>
   );
 
+  const feedbackTitle = (
+    <Typography.Text style={{ marginTop: "0px", width: "80px" }}>
+      We appreciate your feedback!
+    </Typography.Text>
+  );
+  const feedbackContent = (
+    <>
+      <TextArea
+        maxLength={100}
+        onChange={onChange}
+        placeholder="Enter your feedback"
+        style={{
+          height: 120,
+          margin: "20px 0px",
+          resize: "none",
+          borderRadius: "20px",
+        }}
+      />
+      <span
+        style={{ display: "flex", justifyContent: "flex-end", width: "100%" }}
+      >
+        <AppButton text="Submit" onClick={handleFeedbackSubmit} size="small" />
+      </span>
+    </>
+  );
   return (
     <Header
       style={{
@@ -156,9 +220,19 @@ const AppHeader = ({
             style={{ fontSize: 32, color: theme.palette.primary.light }}
           />
         </Popover>
-        <MessageOutlined
-          style={{ fontSize: 32, color: theme.palette.primary.light }}
-        />
+        <Popover
+          placement="bottom"
+          title={feedbackTitle}
+          content={feedbackContent}
+          trigger="click"
+          onVisibleChange={handleFeedbackVisibleChange}
+          visible={feedbackVisible}
+          style={{ width: "400px" }}
+        >
+          <MessageOutlined
+            style={{ fontSize: 32, color: theme.palette.primary.light }}
+          />
+        </Popover>
       </div>
     </Header>
   );

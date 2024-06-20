@@ -13,4 +13,6 @@ export const ENDPOINTS = {
   MODULE_ASSESSMENT: "modules/assessment",
   MODULE_ASSESSMENT_3: "modules/assessment-for-module3",
   MODULE_ASSESSMENT_5: "modules/assessment-for-module5",
+  POST_FEEDBACK:"feedback",
+  GET_FEEBACK_BY_USER_ID:"feedback"
 };

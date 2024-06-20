@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useEffect, useState } from "react";
 import { Row, Col, Typography, List } from "antd";
 import {
@@ -42,31 +43,38 @@ const Home: React.FC = () => {
           (module: any) => module.moduleNumber === "Module 1"
         );
 
-      if (module1 && module1.ai_evaluation.response_text) {
+      if (
+        module1 &&
+        module1.ai_evaluation &&
+        module1.ai_evaluation.response_text
+      ) {
         const { response_text } = module1.ai_evaluation;
 
         if (response_text) {
-          const coreValues = response_text.match(/·\s*([^:]*):\s*([^·]*)/g);
-          if (coreValues) {
-            coreValues.forEach((text: string, i: number) => {
-              const match = text.match(/·\s*([^:]*):\s*([^]*)/);
-              if (match) {
-                const [_, heading, textPart] = match;
-                const label = `Core Value ${i + 1}/${
-                  textPart.trim().split(" ")[0]
-                }`;
-                formattedLabels[`label${i + 1}`] = {
-                  key: String(i + 1),
-                  label,
-                };
-                formattedSummaries[`ModuleSummary${i + 1}`] = [
-                  {
-                    explanationHeading: heading.trim(),
-                    explanationText: textPart.trim(),
-                  },
-                ];
-              }
-            });
+          const coreValuesPattern =
+            /Core Value \d+: ([^-–\n\r]+)(?: - ([^·\n\r]+)(?:[^\n\r]*\n([^-–\n\r]*)|[^-–\n\r]*))/g;
+
+          let match;
+          let i = 0;
+          while (
+            (match = coreValuesPattern.exec(response_text)) !== null &&
+            i < 3
+          ) {
+            const [, heading, description, additionalInfo] = match;
+
+            const label = `Core Value ${i + 1}: ${heading.trim()}`;
+            formattedLabels[`label${i + 1}`] = { key: String(i + 1), label };
+
+            formattedSummaries[`ModuleSummary${i + 1}`] = [
+              {
+                explanationHeading: heading.trim(),
+                explanationText: `${description.trim()} ${
+                  additionalInfo ? additionalInfo.trim() : ""
+                }`.trim(),
+              },
+            ];
+
+            i++;
           }
         }
       }
@@ -129,7 +137,6 @@ const Home: React.FC = () => {
           style={{
             width: "100%",
             backgroundColor: theme.palette.primary.light,
-            // justifyContent: "center",
             display: "flex",
             flexDirection: "column",
             height: 380,
@@ -188,7 +195,6 @@ const Home: React.FC = () => {
             style={{
               padding: "0px 20px",
               justifyContent: "center",
-              // alignItems: "center",
               display: "flex",
             }}
             level={3}
