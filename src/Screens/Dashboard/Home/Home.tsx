@@ -28,13 +28,19 @@ const Home: React.FC = () => {
     modulesByUserId.length > 0 &&
     modulesByUserId.find((module: any) => module.moduleNumber === "Module 1");
   useEffect(() => {
-    if (modulesByUserId !== null && modulesByUserId.length > 0) {
+    if (
+      modulesByUserId &&
+      modulesByUserId !== null &&
+      modulesByUserId.length > 0
+    ) {
       const formattedLabels: any = {};
       const formattedSummaries: any = {};
 
-      const module1 = modulesByUserId.find(
-        (module: any) => module.moduleNumber === "Module 1"
-      );
+      const module1 =
+        modulesByUserId &&
+        modulesByUserId.find(
+          (module: any) => module.moduleNumber === "Module 1"
+        );
 
       if (module1 && module1.ai_evaluation.response_text) {
         const { response_text } = module1.ai_evaluation;
@@ -69,18 +75,18 @@ const Home: React.FC = () => {
       setSummaries(formattedSummaries);
     }
   }, [modulesByUserId]);
-  const module2 = modulesByUserId.find(
-    (module: any) => module.moduleNumber === "Module 2"
-  );
-  const module3 = modulesByUserId.find(
-    (module: any) => module.moduleNumber === "Module 3"
-  );
-  const module4 = modulesByUserId.find(
-    (module: any) => module.moduleNumber === "Module 4"
-  );
-  const module5 = modulesByUserId.find(
-    (module: any) => module.moduleNumber === "Module 5"
-  );
+  const module2 =
+    modulesByUserId &&
+    modulesByUserId.find((module: any) => module.moduleNumber === "Module 2");
+  const module3 =
+    modulesByUserId &&
+    modulesByUserId.find((module: any) => module.moduleNumber === "Module 3");
+  const module4 =
+    modulesByUserId &&
+    modulesByUserId.find((module: any) => module.moduleNumber === "Module 4");
+  const module5 =
+    modulesByUserId &&
+    modulesByUserId.find((module: any) => module.moduleNumber === "Module 5");
 
   let module4Keys = null;
   let module4Values = null;

@@ -37,8 +37,10 @@ const AppHeader = ({
   const user = getUserData();
   useEffect(() => {
     dispatch(getAllModulesByUserID({ userId: user.id }));
-    setPopoverVisible(true);
-  }, []);
+    if (location.pathname === "/") {
+      setPopoverVisible(true);
+    }
+  }, [dispatch, location.pathname, user.id]);
   const title = (
     <>
       <div style={{ display: "flex", justifyContent: "space-between" }}>
