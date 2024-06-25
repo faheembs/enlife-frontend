@@ -53,7 +53,6 @@ const Home: React.FC = () => {
         module1.ai_evaluation.response_text
       ) {
         const { response_text } = module1.ai_evaluation;
-        console.log(response_text);
         if (response_text) {
           const coreValuesPattern =
             /Core Value (\d+):\s*([^\n\r]+?)\s*-\s*([^\n\r]+?)(?=\n|$)/g;
@@ -80,8 +79,6 @@ const Home: React.FC = () => {
           }
         }
       }
-      console.log("labels----", formattedLabels);
-      console.log("summaries----", formattedSummaries);
       setLabels(formattedLabels);
       setSummaries(formattedSummaries);
     }
@@ -110,7 +107,6 @@ const Home: React.FC = () => {
     const [key, value]: [any, any] = Object.entries(
       JSON.parse(module3.ai_evaluation.response_html)
     )[0];
-    console.log("3", key, "---", value);
     keys = key;
     values = value;
   }

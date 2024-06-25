@@ -295,7 +295,7 @@ const FifthModule = () => {
         let item = JSON.parse(filteredModules[0]?.ai_evaluation.response_html);
 
         const [key, values]: [any, any] = Object.entries(item)[0];
-        console.log(key, values);
+        // console.log(key, values);
         return (
           <List.Item
             style={{

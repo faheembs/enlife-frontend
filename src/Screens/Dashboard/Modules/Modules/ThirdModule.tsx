@@ -66,13 +66,13 @@ const ThirdModule = ({ activeKey }: any) => {
     }
   }, [selectedIdentities]);
   useEffect(() => {
-    console.log(questionData);
+    // console.log(questionData);
     if (questionData.selection.length > 0) {
       const roles = questionData.selection;
       setSelectedRoles(roles);
     }
   }, [questionData]);
-  console.log("selectedIdentities", selectedIdentities);
+  // console.log("selectedIdentities", selectedIdentities);
   const currentModule = MODULES.ThirdModule[pageIndex];
 
   useEffect(() => {

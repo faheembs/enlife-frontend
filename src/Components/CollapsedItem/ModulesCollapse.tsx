@@ -31,9 +31,6 @@ const ModulesCollapse: React.FC<ModulesCollapseProps> = ({
   labels,
   summaries,
 }) => {
-  console.log("labels", labels);
-  const check: any = Array.isArray(summaries) ? summaries : [summaries];
-  console.log("check", check, [summaries]);
   return (
     <Collapse
       style={{

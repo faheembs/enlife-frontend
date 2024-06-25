@@ -221,9 +221,9 @@ const FourthModule = ({ activeKey }: any) => {
   const data = aiResponse && JSON.parse(aiResponse);
   const renderItem = (item: any, index: number) => {
     const [key, values]: [any, any] = Object.entries(item)[0];
-    console.log(key);
+    // console.log(key);
     // console.log(values);
-    console.log("id key", identityKeys);
+    // console.log("id key", identityKeys);
     return (
       <List.Item
         actions={[

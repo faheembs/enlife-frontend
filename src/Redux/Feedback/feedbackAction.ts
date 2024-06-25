@@ -31,7 +31,6 @@ if(response.status === 409){
     }
 
     const apiResponse = await response.json();
-    console.log(apiResponse.success)
     if (!apiResponse.success) {
       toastMessage({
         type: "error",
@@ -75,7 +74,6 @@ export const getFeedbackByUserID = createAsyncThunk<
     }
 
     const apiResponse = await response.json();
-    console.log(apiResponse.success)
     if (!apiResponse.success) {
     //   toastMessage({
     //     type: "error",

@@ -56,13 +56,11 @@ const AppHeader = ({
         modulesByUserId.find(
           (module: any) => module.moduleNumber === "Module 5"
         );
-      console.log("feed", feedbackByUserID);
       if (module5 && feedbackByUserID == null) {
         setFeedbackVisible(true);
       }
     }
   }, [dispatch, location.pathname, user.id]);
-  console.log("---------", feedbackByUserID);
   const onChange = (e: any) => {
     setFeedback(e.target.value);
   };
