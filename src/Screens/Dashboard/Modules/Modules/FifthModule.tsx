@@ -64,9 +64,11 @@ const FifthModule = () => {
     modulesByUserId.filter(
       (module: any) => module.moduleNumber === MODULES_LABEL.fourthModule.label
     );
-
   useEffect(() => {
     dispatch(getAllModulesByUserID({ userId: user.id }));
+  }, []);
+  useEffect(() => {
+    // dispatch(getAllModulesByUserID({ userId: user.id }));
     if (pageIndex === 0) {
       const nextQuestion = `${MODULES.FifthModule[0]?.text} ${MODULES.FifthModule[0]?.question} ${MODULES.FifthModule[0]?.caption}`;
 
@@ -293,6 +295,7 @@ const FifthModule = () => {
         let item = JSON.parse(filteredModules[0]?.ai_evaluation.response_html);
 
         const [key, values]: [any, any] = Object.entries(item)[0];
+        console.log(key, values);
         return (
           <List.Item
             style={{
@@ -308,11 +311,12 @@ const FifthModule = () => {
           {key}
         </Typography.Text> */}
             <ol style={{ width: "600px" }}>
-              {values.map((valuess: any, idx: any) => (
-                <li key={idx}>
-                  <Typography.Text>{valuess}</Typography.Text>
-                </li>
-              ))}
+              {values &&
+                values.map((valuess: any, idx: any) => (
+                  <li key={idx}>
+                    <Typography.Text>{valuess}</Typography.Text>
+                  </li>
+                ))}
             </ol>
           </List.Item>
         );
@@ -368,7 +372,7 @@ const FifthModule = () => {
 
   return (
     <Container
-      maxWidth="md"
+      maxWidth="lg"
       sx={{
         display: "flex",
         flexDirection: "column",
@@ -382,7 +386,8 @@ const FifthModule = () => {
           className="cardStyles"
           style={{
             width: "100%",
-            padding: 12,
+            height: 490,
+            // padding: 12,
             borderRadius: 12,
           }}
         >

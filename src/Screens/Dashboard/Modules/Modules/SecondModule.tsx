@@ -172,7 +172,7 @@ const SecondModule = ({ activeKey }: any) => {
 
   return (
     <Container
-      maxWidth="md"
+      maxWidth="lg"
       sx={{
         display: "flex",
         flexDirection: "column",
@@ -183,8 +183,11 @@ const SecondModule = ({ activeKey }: any) => {
     >
       <Row>
         <Card
+          className="cardStyles"
           style={{
             width: "100%",
+            height: 490,
+            // padding: 12,
             borderRadius: 12,
           }}
         >
@@ -214,7 +217,6 @@ const SecondModule = ({ activeKey }: any) => {
                 display: "flex",
                 flexDirection: "column",
                 justifyContent: "space-between",
-                overflowY: "auto",
               }}
             >
               <div>
@@ -294,9 +296,9 @@ const SecondModule = ({ activeKey }: any) => {
                 boxShadow: "none",
                 color: "#000",
               }}
-              disabled={
-                pageIndex === 0 || pageIndex === MODULES.SecondModule.length - 1
-              }
+              // disabled={
+              //   pageIndex === 0 || pageIndex === MODULES.SecondModule.length - 1
+              // }
             />
           )}
         </Col>

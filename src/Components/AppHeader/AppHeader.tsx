@@ -186,7 +186,7 @@ const AppHeader = ({
   return (
     <Header
       style={{
-        padding: "50px 0px",
+        padding: "10px 0px",
         background: colorBgContainer,
         display: "flex",
         justifyContent: "space-between",
@@ -217,7 +217,7 @@ const AppHeader = ({
           style={{ width: "400px" }}
         >
           <BellOutlined
-            style={{ fontSize: 32, color: theme.palette.primary.light }}
+            style={{ fontSize: 24, color: theme.palette.primary.light }}
           />
         </Popover>
         <Popover
@@ -230,7 +230,7 @@ const AppHeader = ({
           style={{ width: "400px" }}
         >
           <MessageOutlined
-            style={{ fontSize: 32, color: theme.palette.primary.light }}
+            style={{ fontSize: 24, color: theme.palette.primary.light }}
           />
         </Popover>
       </div>

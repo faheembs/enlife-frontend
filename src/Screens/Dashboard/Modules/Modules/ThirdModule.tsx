@@ -32,6 +32,7 @@ const ThirdModule = ({ activeKey }: any) => {
   const [pageIndex, setPageIndex] = useState(0);
   const [selectedRoles, setSelectedRoles] = useState<any>([]);
   const [selectedIdentities, setSelectedIdentities] = useState<any>([]);
+  const [identityKeys, setIdentityKeys] = useState<any>(null);
   const [customRoles, setCustomRoles] = useState<any>([]);
   const [inputVisible, setInputVisible] = useState(false);
   const [inputValue, setInputValue] = useState("");
@@ -43,14 +44,35 @@ const ThirdModule = ({ activeKey }: any) => {
     { id: number; name: string }[] | undefined
   >([]);
 
+  useEffect(() => {
+    dispatch(
+      getQuestionData({
+        userId: user.id,
+        moduleNumber: MODULES_LABEL.thirdModule.label,
+        question: MODULES.ThirdModule[0].question,
+      })
+    );
+  }, []);
+
   const { questionData } = useAppSelector(
     (state: { module: any }) => state.module
   );
   useEffect(() => {
-    const text = questionData?.selection;
-    setIdentities(text);
+    if (selectedIdentities.length > 0) {
+      const [identitiesKey, identitiesValue]: [any, any] = Object.entries(
+        selectedIdentities[0]
+      )[0];
+      setIdentityKeys(identitiesKey);
+    }
+  }, [selectedIdentities]);
+  useEffect(() => {
+    console.log(questionData);
+    if (questionData.selection.length > 0) {
+      const roles = questionData.selection;
+      setSelectedRoles(roles);
+    }
   }, [questionData]);
-
+  console.log("selectedIdentities", selectedIdentities);
   const currentModule = MODULES.ThirdModule[pageIndex];
 
   useEffect(() => {
@@ -123,6 +145,7 @@ const ThirdModule = ({ activeKey }: any) => {
       await dispatch(postQuestionAssessmentModule3(body)).then((res) => {
         setAiResponse(res.payload);
       });
+      // console.log(JSON.parse(aiResponse));
     } else {
       dispatch(
         createOrUpdateModule({
@@ -184,9 +207,14 @@ const ThirdModule = ({ activeKey }: any) => {
       setSelectedIdentities(newSelection);
     }
   };
-  const data = JSON.parse(aiResponse);
+  // console.log(JSON.parse(aiResponse));
+  const data = aiResponse
+    ? JSON.parse(aiResponse.replace(/'/g, '"').replace(/(\w+):/g, '"$1":'))
+    : [];
   const renderItem = (item: any, index: number) => {
     const [key, values]: [any, any] = Object.entries(item)[0];
+
+    // console.log("identity key value", identitiesKey, identitiesValue, key);
     return (
       <List.Item
         actions={[
@@ -202,29 +230,29 @@ const ThirdModule = ({ activeKey }: any) => {
           marginBottom: "20px",
           cursor: "pointer",
           boxShadow:
-            selectedIdentities[0] === item
-              ? "rgb(0 146 255 / 28%) 2px 2px 16px"
+            identityKeys === key
+              ? "rgb(0, 146, 255, 0.6) 1px 1px 16px"
               : "none",
         }}
         onClick={() => handleIdentityChange(item)}
       >
-        <Typography.Text style={{ width: "190px", fontWeight: "bold" }}>
+        {/* <Typography.Text style={{ width: "190px", fontWeight: "bold" }}>
           {key}
-        </Typography.Text>
-        <ol style={{ width: "400px" }}>
-          {values.map((value: any, idx: any) => (
-            <li key={idx}>
-              <Typography.Text>{value}</Typography.Text>
-            </li>
-          ))}
-        </ol>
+        </Typography.Text> */}
+        {/* <ul style={{ width: "600px" }}> */}
+        {/* {values.map((value: any, idx: any) => ( */}
+        {/* <li> */}
+        <Typography.Text>{values}</Typography.Text>
+        {/* </li> */}
+        {/* ))} */}
+        {/* </ul> */}
       </List.Item>
     );
   };
 
   return (
     <Container
-      maxWidth="md"
+      maxWidth="lg"
       sx={{
         display: "flex",
         flexDirection: "column",
@@ -238,7 +266,8 @@ const ThirdModule = ({ activeKey }: any) => {
           className="cardStyles"
           style={{
             width: "100%",
-            padding: 12,
+            height: 490,
+            // padding: 12,
             borderRadius: 12,
           }}
         >
@@ -270,9 +299,9 @@ const ThirdModule = ({ activeKey }: any) => {
                       width: 180,
                       padding: 5,
                       margin: 5,
-                      border: "1px solid grey",
+                      border: "1px solid #ccc",
                       boxShadow: selectedRoles.includes(role)
-                        ? "rgb(0 146 255 / 28%) 2px 2px 16px"
+                        ? "rgba(0, 146, 255, 9.28) 0px 1px 5px 3px"
                         : "none",
                       backgroundColor: theme.palette.primary.light,
                       color: "#000",
@@ -324,7 +353,7 @@ const ThirdModule = ({ activeKey }: any) => {
               }}
             >
               <Typography style={{ fontWeight: "600" }}>
-                Please select a Fitness Identity
+                Who do you want to be?
               </Typography>
               <div style={{ maxHeight: 420, overflowX: "auto" }}>
                 <List
@@ -356,9 +385,9 @@ const ThirdModule = ({ activeKey }: any) => {
               boxShadow: "none",
               color: "#000",
             }}
-            disabled={
-              pageIndex === 0 || pageIndex === MODULES.ThirdModule.length - 1
-            }
+            // disabled={
+            //   pageIndex === 0 || pageIndex === MODULES.ThirdModule.length - 1
+            // }
           />
         </Col>
         <Col span={4} xs={24} sm={8}>

@@ -20,6 +20,7 @@ import { AppDispatch } from "../../../../Redux/store";
 import { EditOutlined, ReloadOutlined } from "@ant-design/icons";
 import {
   createOrUpdateModule,
+  getAllModulesByUserID,
   getQuestionData,
   postQuestionAssessmentByModule,
 } from "../../../../Redux/Modules/modulesAction";
@@ -31,21 +32,38 @@ import "./modulesContent.css";
 const { TextArea } = Input;
 
 const FourthModule = ({ activeKey }: any) => {
+  const dispatch = useDispatch<AppDispatch>();
   const [pageIndex, setPageIndex] = useState(0);
   const [value, setValue] = useState<string | null>(null);
   const [textResponse, setTextResponse] = useState("");
   const [loading, setLoading] = useState(false);
+  const [identityKeys, setIdentityKeys] = useState<any>([]);
   const [aiResponse, setAiResponse] = useState<any>(null);
   // const [module3Identity, setModule3Identity] = useState<any>(null);
   const [selectedIdentities, setSelectedIdentities] = useState<any>([]);
-  const [windowWidth, setWindowWidth] = useState<boolean>(false);
   const [identities, setIdentities] = useState<
     { id: number; name: string }[] | undefined
   >([]);
-
-  const { questionData } = useAppSelector((state: any) => state.module);
-  const dispatch = useDispatch<AppDispatch>();
   const user = getUserData();
+  useEffect(() => {
+    dispatch(getAllModulesByUserID({ userId: user.id }));
+  }, [dispatch, user.id]);
+  const { questionData, modulesByUserId } = useAppSelector(
+    (state: any) => state.module
+  );
+  const module3 =
+    modulesByUserId &&
+    modulesByUserId.length > 0 &&
+    modulesByUserId.find((module: any) => module.moduleNumber === "Module 3");
+  const module3Key = () => {
+    if (module3) {
+      const parsed = JSON.parse(module3.ai_evaluation.response_text);
+      const [key, values]: [any, any] = Object.entries(parsed)[0];
+
+      return values;
+    }
+  };
+
   useEffect(() => {
     //  const res = dispatch(getAllModulesByUserID(user.id))
     // const filtered =  res.filter((module:any)=>(
@@ -63,13 +81,7 @@ const FourthModule = ({ activeKey }: any) => {
       );
     }
   }, [dispatch, pageIndex, user.id]);
-  useEffect(() => {
-    if (window.innerWidth <= 600) {
-      setWindowWidth(true);
-    } else {
-      setWindowWidth(false);
-    }
-  }, [window.innerWidth]);
+
   useEffect(() => {
     if (questionData?.answers !== null) {
       setTextResponse(questionData?.answers);
@@ -93,7 +105,14 @@ const FourthModule = ({ activeKey }: any) => {
     }
   }, [currentModule.identities]);
   const questions = `${currentModule.question} ${currentModule.caption}`;
-
+  useEffect(() => {
+    if (selectedIdentities.length > 0) {
+      const [identitiesKey, identitiesValue]: [any, any] = Object.entries(
+        selectedIdentities[0]
+      )[0];
+      setIdentityKeys(identitiesValue);
+    }
+  }, [selectedIdentities]);
   const handleNext = async () => {
     try {
       setLoading(true);
@@ -198,12 +217,13 @@ const FourthModule = ({ activeKey }: any) => {
       setSelectedIdentities(newSelection);
     }
   };
-  const data = JSON.parse(aiResponse);
+  console.log(JSON.parse(aiResponse));
+  const data = aiResponse && JSON.parse(aiResponse);
   const renderItem = (item: any, index: number) => {
     const [key, values]: [any, any] = Object.entries(item)[0];
-    // console.log(key);
+    console.log(key);
     // console.log(values);
-    // console.log(selectedIdentities[0], key);
+    console.log("id key", identityKeys);
     return (
       <List.Item
         actions={[
@@ -218,10 +238,9 @@ const FourthModule = ({ activeKey }: any) => {
           borderRadius: "5px",
           marginBottom: "20px",
           cursor: "pointer",
-          // boxShadow:
-          //   Object.keys(selectedIdentities[0])[0] === key
-          //     ? "rgb(0 146 255 / 28%) 2px 2px 16px"
-          //     : "none",
+          boxShadow: identityKeys.includes(values[0])
+            ? "rgb(0, 146, 255, 0.6) 1px 1px 16px"
+            : "none",
         }}
         onClick={() => handleIdentityChange(item)}
       >
@@ -231,7 +250,9 @@ const FourthModule = ({ activeKey }: any) => {
         <ol style={{ width: "600px" }}>
           {values.map((value: any, idx: any) => (
             <li key={idx}>
-              <Typography.Text>{value}</Typography.Text>
+              <Typography.Text style={{ width: "100%" }}>
+                {value}
+              </Typography.Text>
             </li>
           ))}
         </ol>
@@ -240,7 +261,7 @@ const FourthModule = ({ activeKey }: any) => {
   };
   return (
     <Container
-      maxWidth="md"
+      maxWidth="lg"
       sx={{
         display: "flex",
         flexDirection: "column",
@@ -254,7 +275,8 @@ const FourthModule = ({ activeKey }: any) => {
           className="cardStyles"
           style={{
             width: "100%",
-            padding: 12,
+            height: 490,
+            // padding: 12,
             borderRadius: 12,
           }}
         >
@@ -311,7 +333,7 @@ const FourthModule = ({ activeKey }: any) => {
                       display: "flex",
                       flexDirection: "column",
                       justifyContent: "space-between",
-                      overflowY: "auto",
+                      // overflowY: "auto",
                     }}
                   >
                     <div>
@@ -328,29 +350,31 @@ const FourthModule = ({ activeKey }: any) => {
                         <Typography>{currentModule.caption}</Typography>
                       )}
                     </div>
-                    <div
-                      style={{
-                        display: "flex",
-                        flexDirection: "row",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        // maxHeight: "2px",
-                        marginBottom: "10px",
-                      }}
-                    >
-                      <Typography
-                        className="typo"
-                        style={{ fontWeight: "bold" }}
+                    {module3 && (
+                      <div
+                        style={{
+                          display: "flex",
+                          flexDirection: "column",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          // maxHeight: "2px",
+                          marginBottom: "10px",
+                        }}
                       >
-                        Selected Fitness Identity :
-                      </Typography>
-                      <Typography
-                        className="typo"
-                        style={{ marginLeft: "10px" }}
-                      >
-                        Nutrition Advocate
-                      </Typography>
-                    </div>
+                        <Typography
+                          className="typo"
+                          style={{ fontWeight: "bold" }}
+                        >
+                          Who do you want to be?
+                        </Typography>
+                        <Typography
+                          className="typo"
+                          style={{ marginLeft: "10px" }}
+                        >
+                          {module3 && module3Key()}
+                        </Typography>
+                      </div>
+                    )}
                     {currentModule.type === "free-response" && (
                       <TextArea
                         showCount
@@ -369,7 +393,7 @@ const FourthModule = ({ activeKey }: any) => {
                       <Radio.Group
                         onChange={onChangeOptions}
                         value={value}
-                        style={{ marginBottom: 50 }}
+                        style={{ marginBottom: 50, marginTop: 50 }}
                       >
                         <Space
                           className="space"

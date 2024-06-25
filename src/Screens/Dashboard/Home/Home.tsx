@@ -15,6 +15,16 @@ import { useAppSelector } from "../../../Hooks/reduxHook";
 import ReactHtmlString from "../../../Components/ReactHtmlString/ReactHtmlString";
 // import "./home.css";
 
+interface Label {
+  key: string;
+  label: string;
+}
+
+interface Summary {
+  explanationHeading: string;
+  explanationText: string;
+}
+
 const Home: React.FC = () => {
   const [labels, setLabels] = useState<any>({});
   const [summaries, setSummaries] = useState<any>({});
@@ -29,19 +39,13 @@ const Home: React.FC = () => {
     modulesByUserId.length > 0 &&
     modulesByUserId.find((module: any) => module.moduleNumber === "Module 1");
   useEffect(() => {
-    if (
-      modulesByUserId &&
-      modulesByUserId !== null &&
-      modulesByUserId.length > 0
-    ) {
-      const formattedLabels: any = {};
-      const formattedSummaries: any = {};
+    if (modulesByUserId && modulesByUserId.length > 0) {
+      const formattedLabels: Record<string, Label> = {};
+      const formattedSummaries: Record<string, Summary[]> = {};
 
-      const module1 =
-        modulesByUserId &&
-        modulesByUserId.find(
-          (module: any) => module.moduleNumber === "Module 1"
-        );
+      const module1 = modulesByUserId.find(
+        (module: any) => module.moduleNumber === "Module 1"
+      );
 
       if (
         module1 &&
@@ -49,10 +53,10 @@ const Home: React.FC = () => {
         module1.ai_evaluation.response_text
       ) {
         const { response_text } = module1.ai_evaluation;
-
+        console.log(response_text);
         if (response_text) {
           const coreValuesPattern =
-            /Core Value \d+: ([^-–\n\r]+)(?: - ([^·\n\r]+)(?:[^\n\r]*\n([^-–\n\r]*)|[^-–\n\r]*))/g;
+            /Core Value (\d+):\s*([^\n\r]+?)\.\s*([^\n\r]+?)\.\s*([^\n\r]+?)(?=\n|$)/g;
 
           let match;
           let i = 0;
@@ -60,17 +64,16 @@ const Home: React.FC = () => {
             (match = coreValuesPattern.exec(response_text)) !== null &&
             i < 3
           ) {
-            const [, heading, description, additionalInfo] = match;
+            const [, valueNumber, heading, description, additionalInfo] = match;
 
-            const label = `Core Value ${i + 1}: ${heading.trim()}`;
-            formattedLabels[`label${i + 1}`] = { key: String(i + 1), label };
+            const label = `Core Value ${valueNumber}: ${heading.split(" ")[0]}`;
+            formattedLabels[`label${i + 1}`] = { key: valueNumber, label };
 
             formattedSummaries[`ModuleSummary${i + 1}`] = [
               {
                 explanationHeading: heading.trim(),
-                explanationText: `${description.trim()} ${
-                  additionalInfo ? additionalInfo.trim() : ""
-                }`.trim(),
+                explanationText:
+                  `${description.trim()} ${additionalInfo.trim()}`.trim(),
               },
             ];
 
@@ -78,11 +81,13 @@ const Home: React.FC = () => {
           }
         }
       }
-
+      console.log("labels----", formattedLabels);
+      console.log("summaries----", formattedSummaries);
       setLabels(formattedLabels);
       setSummaries(formattedSummaries);
     }
   }, [modulesByUserId]);
+
   const module2 =
     modulesByUserId &&
     modulesByUserId.find((module: any) => module.moduleNumber === "Module 2");
@@ -106,6 +111,7 @@ const Home: React.FC = () => {
     const [key, value]: [any, any] = Object.entries(
       JSON.parse(module3.ai_evaluation.response_html)
     )[0];
+    console.log("3", key, "---", value);
     keys = key;
     values = value;
   }
@@ -148,8 +154,11 @@ const Home: React.FC = () => {
           }}
         >
           <Typography.Title level={3}>Module 1 Summary</Typography.Title>
+          {/* {console.log(module1.ai_evaluation.response_text)} */}
           {module1 && module1.ai_evaluation.response_text && (
-            <ModulesCollapse labels={labels} summaries={summaries} />
+            <div style={{ overflowY: "auto", height: 299 }}>
+              <ModulesCollapse labels={labels} summaries={summaries} />
+            </div>
           )}
         </Col>
         <Col
@@ -170,7 +179,9 @@ const Home: React.FC = () => {
             Module 2 Summary
           </Typography.Title>
           {module2 && module2.ai_evaluation.response_html && (
-            <div style={{ padding: 20, overflowY: "scroll", height: 270 }}>
+            <div
+              style={{ padding: "0px 20px", overflowY: "scroll", height: 270 }}
+            >
               <ReactHtmlString html={summary ?? ""} />
             </div>
           )}
@@ -212,7 +223,7 @@ const Home: React.FC = () => {
                   padding: "3px 15px",
                 }}
               >
-                <span>Your selected Fitness identity:</span>
+                <span>Who do you want to be?</span>
                 <Typography.Text
                   style={{
                     padding: "10px 0px",
@@ -225,7 +236,7 @@ const Home: React.FC = () => {
                   {keys}
                 </Typography.Text>
               </div>
-              <List
+              {/* <List
                 dataSource={values}
                 renderItem={(item: any, index: number) => {
                   return (
@@ -246,7 +257,16 @@ const Home: React.FC = () => {
                     </List.Item>
                   );
                 }}
-              />
+              /> */}
+              <Typography.Text
+                style={{
+                  padding: "0px 10px",
+                  justifyContent: "flex-start",
+                  display: "flex",
+                }}
+              >
+                {values}
+              </Typography.Text>
             </>
           )}
         </Col>

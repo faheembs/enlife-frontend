@@ -160,7 +160,7 @@ const FirstModule = ({ activeKey }: any) => {
 
   return (
     <Container
-      maxWidth="md"
+      maxWidth="lg"
       sx={{
         display: "flex",
         flexDirection: "column",
@@ -174,7 +174,8 @@ const FirstModule = ({ activeKey }: any) => {
           className="cardStyles"
           style={{
             width: "100%",
-            padding: 12,
+            height: 490,
+            // padding: 12,
             borderRadius: 12,
           }}
         >
@@ -199,7 +200,7 @@ const FirstModule = ({ activeKey }: any) => {
             <div
               style={{
                 width: "100%",
-                maxHeight: 420,
+                maxHeight: 450,
                 borderWidth: 0,
                 display: "flex",
                 flexDirection: "column",
@@ -219,7 +220,7 @@ const FirstModule = ({ activeKey }: any) => {
                 )}
               </div>
               <TextArea
-                showCount
+                // showCount
                 value={textResponse ?? ""}
                 maxLength={1000}
                 onChange={onChange}
@@ -246,9 +247,9 @@ const FirstModule = ({ activeKey }: any) => {
                 boxShadow: "none",
                 color: "#000",
               }}
-              disabled={
-                pageIndex === 0 || pageIndex === MODULES.FirstModules.length - 1
-              }
+              // disabled={
+              //   pageIndex === 0 || pageIndex === MODULES.FirstModules.length - 1
+              // }
             />
           )}
         </Col>
