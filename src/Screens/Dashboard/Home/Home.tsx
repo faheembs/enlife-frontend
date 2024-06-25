@@ -56,7 +56,7 @@ const Home: React.FC = () => {
         console.log(response_text);
         if (response_text) {
           const coreValuesPattern =
-            /Core Value (\d+):\s*([^\n\r]+?)\.\s*([^\n\r]+?)\.\s*([^\n\r]+?)(?=\n|$)/g;
+            /Core Value (\d+):\s*([^\n\r]+?)\s*-\s*([^\n\r]+?)(?=\n|$)/g;
 
           let match;
           let i = 0;
@@ -71,9 +71,8 @@ const Home: React.FC = () => {
 
             formattedSummaries[`ModuleSummary${i + 1}`] = [
               {
-                explanationHeading: heading.trim(),
-                explanationText:
-                  `${description.trim()} ${additionalInfo.trim()}`.trim(),
+                explanationHeading: heading,
+                explanationText: `${description} ${additionalInfo}`,
               },
             ];
 

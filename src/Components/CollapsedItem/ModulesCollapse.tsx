@@ -31,6 +31,9 @@ const ModulesCollapse: React.FC<ModulesCollapseProps> = ({
   labels,
   summaries,
 }) => {
+  console.log("labels", labels);
+  const check: any = Array.isArray(summaries) ? summaries : [summaries];
+  console.log("check", check, [summaries]);
   return (
     <Collapse
       style={{
@@ -44,22 +47,27 @@ const ModulesCollapse: React.FC<ModulesCollapseProps> = ({
     >
       {Object.entries(labels).map(([_, { key, label }]) => (
         <Panel header={label} key={key}>
-          {summaries[`ModuleSummary${key}`].map((item, index) => (
-            // <div style={{display:"flex", flexDirection:"row"}} key={index}>
-            //<h4>{item.explanationHeading}</h4>
-            <p
-              style={{
-                lineHeight: "1.5",
-                maxHeight: "7.5em",
-                overflow: "hidden",
-                position: "relative",
-                overflowY: "auto",
-              }}
-            >
-              {item.explanationText}
-            </p>
-            // </div>
-          ))}
+          {(summaries[`ModuleSummary${key}`] || []).map(
+            (item: any, index: any) => (
+              <div
+                style={{ display: "flex", flexDirection: "row" }}
+                key={index}
+              >
+                {/* <h4>{item.explanationHeading}</h4> */}
+                <p
+                  style={{
+                    lineHeight: "1.5",
+                    maxHeight: "7.5em",
+                    overflow: "hidden",
+                    position: "relative",
+                    overflowY: "auto",
+                  }}
+                >
+                  {item.explanationText}
+                </p>
+              </div>
+            )
+          )}
         </Panel>
       ))}
     </Collapse>
