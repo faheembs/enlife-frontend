@@ -48,9 +48,38 @@ const FourthModule = ({ activeKey }: any) => {
   useEffect(() => {
     dispatch(getAllModulesByUserID({ userId: user.id }));
   }, [dispatch, user.id]);
-  const { questionData, modulesByUserId } = useAppSelector(
+  const { questionData, modulesByUserId, maxModules } = useAppSelector(
     (state: any) => state.module
   );
+  console.log(MODULES.FourthModule.length, "length", pageIndex);
+  const currentModule = MODULES.FourthModule[pageIndex];
+  const questions = `${currentModule.question} ${currentModule.caption}`;
+  console.log(pageIndex);
+  useEffect(() => {
+    console.log("page check", pageIndex, maxModules.lastQuestion - 1);
+    const currentModules = MODULES.FourthModule[maxModules.lastQuestion - 1];
+    const question = `${currentModules.question} ${currentModules.caption}`;
+    console.log("useeffect", question, questions);
+
+    dispatch(
+      getQuestionData({
+        userId: user.id,
+        moduleNumber: MODULES_LABEL.fourthModule.label,
+        question: question,
+      })
+    );
+    if (maxModules && maxModules?.maxModuleNumber === 4) {
+      if (maxModules.lastQuestion === 0) {
+        setPageIndex(0);
+      } else if (MODULES.FourthModule.length - 1) {
+        setPageIndex(maxModules.lastQuestion - 1);
+      } else {
+        setPageIndex(maxModules.lastQuestion - 1);
+      }
+    } else if (maxModules) {
+      activeKey(maxModules.maxModuleNumber);
+    }
+  }, [activeKey, maxModules]);
   const module3 =
     modulesByUserId &&
     modulesByUserId.length > 0 &&
@@ -88,7 +117,7 @@ const FourthModule = ({ activeKey }: any) => {
     } else if (questionData?.scale_value !== null) {
       setValue(questionData.scale_value);
     }
-  }, [questionData]);
+  }, [questionData, pageIndex]);
 
   const onChange = (e: any) => {
     setTextResponse(e.target.value);
@@ -98,13 +127,11 @@ const FourthModule = ({ activeKey }: any) => {
     setValue(e.target.value);
   };
 
-  const currentModule = MODULES.FourthModule[pageIndex];
   useEffect(() => {
     if (currentModule.identities) {
       setIdentities(currentModule?.identities ?? []);
     }
   }, [currentModule.identities]);
-  const questions = `${currentModule.question} ${currentModule.caption}`;
   useEffect(() => {
     if (selectedIdentities.length > 0) {
       const [identitiesKey, identitiesValue]: [any, any] = Object.entries(
@@ -131,7 +158,9 @@ const FourthModule = ({ activeKey }: any) => {
               userId: user.id,
               moduleNumber: MODULES_LABEL.fourthModule.label,
               questionnaires: {
-                questionID: questionData?._id,
+                questionID:
+                  questionData.question_text === questions &&
+                  (questionData?._id ?? false),
                 question_text: questions,
                 response_type: currentModule.type,
                 ...(currentModule.type === "scale"
@@ -143,13 +172,15 @@ const FourthModule = ({ activeKey }: any) => {
               userId: user.id,
               moduleNumber: MODULES_LABEL.fourthModule.label,
               questionnaires: {
-                questionID: questionData?._id,
+                questionID:
+                  questionData.question_text === questions &&
+                  (questionData?._id ?? false),
                 question_text: questions,
                 response_type: currentModule.type,
               },
               ai_evaluation: {
-                response_text: JSON.stringify(selectedIdentities[0]),
-                response_html: JSON.stringify(selectedIdentities[0]),
+                response_text: JSON.stringify(selectedIdentities[0]).trim(),
+                response_html: JSON.stringify(selectedIdentities[0]).trim(),
               },
             })
       );

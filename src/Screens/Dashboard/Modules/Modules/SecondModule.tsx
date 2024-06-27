@@ -10,6 +10,7 @@ import {
   getQuestionData,
   postQuestionAssessmentByModule,
 } from "../../../../Redux/Modules/modulesAction";
+import { EditOutlined, ReloadOutlined } from "@ant-design/icons";
 import { getUserData, toastMessage } from "../../../../Utils/helperFunctions";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "../../../../Redux/store";
@@ -30,7 +31,11 @@ const SecondModule = ({ activeKey }: any) => {
   const [part2, setPart2] = useState("");
   const dispatch = useDispatch<AppDispatch>();
   const user = getUserData();
-
+  console.log(MODULES.SecondModule.length, "length", pageIndex);
+  const { maxModules } = useAppSelector(
+    (state: { module: any }) => state.module
+  );
+  console.log("questionData", questionData);
   useEffect(() => {
     setTextResponse("");
     if (pageIndex === 0) {
@@ -45,6 +50,17 @@ const SecondModule = ({ activeKey }: any) => {
       );
     }
   }, [dispatch, pageIndex, user.id]);
+  useEffect(() => {
+    if (maxModules && maxModules.maxModuleNumber === 2) {
+      if (maxModules.lastQuestion === 6) {
+        setPageIndex(maxModules.lastQuestion - 1);
+      } else {
+        setPageIndex(maxModules.lastQuestion);
+      }
+    } else if (maxModules) {
+      activeKey(maxModules.maxModuleNumber);
+    }
+  }, [activeKey, maxModules]);
 
   const currentModule = MODULES.SecondModule[pageIndex];
   const questions = `${currentModule.text} ${currentModule.question} ${currentModule.caption}`;
@@ -106,7 +122,9 @@ const SecondModule = ({ activeKey }: any) => {
         userId: user.id,
         moduleNumber: MODULES_LABEL.secondModule.label,
         questionnaires: {
-          questionID: questionData?._id ?? false,
+          questionID:
+            questionData.question_text === questions &&
+            (questionData?._id ?? false),
           question_text: questions,
           response_type: currentModule.type,
           answers: textResponse,
@@ -205,9 +223,25 @@ const SecondModule = ({ activeKey }: any) => {
             </Col>
           ) : assessmentResults &&
             pageIndex === MODULES.SecondModule.length - 1 ? (
-            <div style={{ maxHeight: 420, overflowY: "auto" }}>
-              <ReactHtmlString html={assessmentResults} />
-            </div>
+            <>
+              <div style={{ display: "flex", justifyContent: "flex-end" }}>
+                <div
+                  style={{ display: "flex", justifyContent: "space-between" }}
+                >
+                  <EditOutlined
+                    style={{ marginRight: "0.55rem", fontSize: 24 }}
+                    onClick={() => alert("Edit clicked")}
+                  />
+                  <ReloadOutlined
+                    style={{ fontSize: 24 }}
+                    onClick={() => alert("item.id")}
+                  />
+                </div>
+              </div>
+              <div style={{ maxHeight: 420, overflowY: "auto" }}>
+                <ReactHtmlString html={assessmentResults} />
+              </div>
+            </>
           ) : (
             <div
               style={{

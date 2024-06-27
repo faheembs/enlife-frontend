@@ -10,6 +10,7 @@ import {
   getQuestionData,
   postQuestionAssessmentByModule,
 } from "../../../../Redux/Modules/modulesAction";
+import { EditOutlined, ReloadOutlined } from "@ant-design/icons";
 import { getUserData, toastMessage } from "../../../../Utils/helperFunctions";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "../../../../Redux/store";
@@ -27,7 +28,21 @@ const FirstModule = ({ activeKey }: any) => {
   const [assessmentResults, setAssessmentResults] = useState<any>(null);
   const dispatch = useDispatch<AppDispatch>();
   const user = getUserData();
-
+  // console.log(MODULES.FirstModules.length - 1, "length", pageIndex);
+  const { maxModules } = useAppSelector(
+    (state: { module: any }) => state.module
+  );
+  useEffect(() => {
+    if (maxModules && maxModules.maxModuleNumber === 1) {
+      if (maxModules.lastQuestion === 5) {
+        setPageIndex(maxModules.lastQuestion - 1);
+      } else {
+        setPageIndex(maxModules.lastQuestion);
+      }
+    } else if (maxModules) {
+      activeKey(maxModules.maxModuleNumber);
+    }
+  }, []);
   useEffect(() => {
     if (pageIndex === 0) {
       const nextQuestion = `${MODULES.FirstModules[0]?.text} ${MODULES.FirstModules[0]?.question} ${MODULES.FirstModules[0]?.caption}`;
@@ -193,9 +208,25 @@ const FirstModule = ({ activeKey }: any) => {
             </Col>
           ) : assessmentResults &&
             pageIndex === MODULES.FirstModules.length - 1 ? (
-            <div style={{ maxHeight: 420, overflowX: "auto" }}>
-              <ReactHtmlString html={assessmentResults} />
-            </div>
+            <>
+              <div style={{ display: "flex", justifyContent: "flex-end" }}>
+                <div
+                  style={{ display: "flex", justifyContent: "space-between" }}
+                >
+                  <EditOutlined
+                    style={{ marginRight: "0.55rem", fontSize: 24 }}
+                    onClick={() => alert("Edit clicked")}
+                  />
+                  <ReloadOutlined
+                    style={{ fontSize: 24 }}
+                    onClick={() => alert("item.id")}
+                  />
+                </div>
+              </div>
+              <div style={{ maxHeight: 420, overflowX: "auto" }}>
+                <ReactHtmlString html={assessmentResults} />
+              </div>
+            </>
           ) : (
             <div
               style={{

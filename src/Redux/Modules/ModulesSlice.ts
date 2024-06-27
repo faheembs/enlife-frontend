@@ -3,6 +3,7 @@ import { ModuleState } from "./types";
 import {
   createOrUpdateModule,
   getAllModulesByUserID,
+  getMaxModulesByUserID,
   getQuestionData,
   postQuestionAssessmentByModule,
 } from "./modulesAction";
@@ -11,6 +12,7 @@ const initialState: ModuleState = {
   module: null,
   questionData: null,
   modulesByUserId: null,
+  maxModules:null,
   isLoading: false,
   error: null,
   assessmentResponse: null,
@@ -67,6 +69,18 @@ const moduleSlice = createSlice({
         state.assessmentResponse = action.payload;
       })
       .addCase(postQuestionAssessmentByModule.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload?.message || "An error occurred.";
+      })
+      .addCase(getMaxModulesByUserID.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(getMaxModulesByUserID.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.maxModules = action.payload;
+      })
+      .addCase(getMaxModulesByUserID.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload?.message || "An error occurred.";
       });

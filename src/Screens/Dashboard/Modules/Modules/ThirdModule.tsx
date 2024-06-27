@@ -26,6 +26,7 @@ import { useDispatch } from "react-redux";
 import { AppDispatch } from "../../../../Redux/store";
 import { useAppSelector } from "../../../../Hooks/reduxHook";
 import "./modulesContent.css";
+import AppSpinner from "../../../../Components/AppSpinner/AppSpinner";
 const { Option } = Select;
 
 const ThirdModule = ({ activeKey }: any) => {
@@ -33,6 +34,7 @@ const ThirdModule = ({ activeKey }: any) => {
   const [selectedRoles, setSelectedRoles] = useState<any>([]);
   const [selectedIdentities, setSelectedIdentities] = useState<any>([]);
   const [identityKeys, setIdentityKeys] = useState<any>(null);
+  const [loading, setLoading] = useState(false);
   const [customRoles, setCustomRoles] = useState<any>([]);
   const [inputVisible, setInputVisible] = useState(false);
   const [inputValue, setInputValue] = useState("");
@@ -43,7 +45,9 @@ const ThirdModule = ({ activeKey }: any) => {
   const [identities, setIdentities] = useState<
     { id: number; name: string }[] | undefined
   >([]);
-
+  const { maxModules } = useAppSelector(
+    (state: { module: any }) => state.module
+  );
   useEffect(() => {
     dispatch(
       getQuestionData({
@@ -57,6 +61,7 @@ const ThirdModule = ({ activeKey }: any) => {
   const { questionData } = useAppSelector(
     (state: { module: any }) => state.module
   );
+
   useEffect(() => {
     if (selectedIdentities.length > 0) {
       const [identitiesKey, identitiesValue]: [any, any] = Object.entries(
@@ -66,8 +71,27 @@ const ThirdModule = ({ activeKey }: any) => {
     }
   }, [selectedIdentities]);
   useEffect(() => {
+    if (
+      questionData?.selection !== null &&
+      questionData?.selection?.length > 0
+    ) {
+      const roles = questionData.selection;
+      setSelectedRoles(roles);
+    }
+    if (maxModules && maxModules.maxModuleNumber === 3) {
+      if (maxModules.lastQuestion === 1) {
+        setPageIndex(maxModules.lastQuestion - 1);
+      }
+    } else if (maxModules) {
+      activeKey(maxModules.maxModuleNumber);
+    }
+  }, [maxModules]);
+  useEffect(() => {
     // console.log(questionData);
-    if (questionData.selection.length > 0) {
+    if (
+      questionData?.selection !== null &&
+      questionData?.selection?.length > 0
+    ) {
       const roles = questionData.selection;
       setSelectedRoles(roles);
     }
@@ -129,12 +153,14 @@ const ThirdModule = ({ activeKey }: any) => {
   };
 
   const handleNext = async () => {
+    setLoading(true);
     if ([...selectedRoles, ...customRoles].length < 1) {
       toastMessage({
         type: "error",
         content: "Please select upto 3 options",
         duration: 5,
       });
+      setLoading(false);
       return;
     }
 
@@ -142,9 +168,11 @@ const ThirdModule = ({ activeKey }: any) => {
       const body = {
         selections: selectedRoles,
       };
-      await dispatch(postQuestionAssessmentModule3(body)).then((res) => {
+      await dispatch(postQuestionAssessmentModule3(body)).then((res: any) => {
         setAiResponse(res.payload);
       });
+      setLoading(false);
+
       // console.log(JSON.parse(aiResponse));
     } else {
       dispatch(
@@ -152,7 +180,9 @@ const ThirdModule = ({ activeKey }: any) => {
           userId: user.id,
           moduleNumber: MODULES_LABEL.thirdModule.label,
           questionnaires: {
-            questionID: questionData?._id ?? false,
+            questionID:
+              questionData.question_text === MODULES.ThirdModule[0].question &&
+              (questionData?._id ?? false),
             question_text: MODULES.ThirdModule[0].question,
             response_type: MODULES.ThirdModule[0].type,
             selection: selectedRoles,
@@ -163,6 +193,7 @@ const ThirdModule = ({ activeKey }: any) => {
           },
         })
       );
+      setLoading(false);
     }
     dispatch(
       getQuestionData({
@@ -171,17 +202,20 @@ const ThirdModule = ({ activeKey }: any) => {
         question: MODULES.ThirdModule[0].question,
       })
     );
+    setLoading(false);
     if (
       pageIndex === MODULES.ThirdModule.length - 1 &&
       selectedIdentities.length > 0
     ) {
       activeKey("4");
+      setLoading(false);
     } else {
       toastMessage({
         type: "warning",
         content: "Please select one fitness Identity",
         duration: 5,
       });
+      setLoading(false);
     }
     if (pageIndex !== 1) {
       setPageIndex((prevIndex) =>
@@ -271,76 +305,92 @@ const ThirdModule = ({ activeKey }: any) => {
             borderRadius: 12,
           }}
         >
-          {currentModule.roles && (
-            <div
+          {loading ? (
+            <Col
+              xs={24}
               style={{
-                width: "100%",
-                maxHeight: 420,
-                overflowY: "auto",
-                borderWidth: 0,
                 display: "flex",
-                flexDirection: "column",
+                justifyContent: "center",
+                alignItems: "center",
+                height: 420,
               }}
             >
-              <Typography style={{ fontWeight: "600" }}>
-                Please select up to 3 roles
-              </Typography>
+              <AppSpinner color={theme.palette.primary.dark} size={120} />
+            </Col>
+          ) : (
+            currentModule.roles && (
               <div
                 style={{
-                  paddingTop: 10,
+                  width: "100%",
+                  maxHeight: 420,
+                  overflowY: "auto",
+                  borderWidth: 0,
+                  display: "flex",
+                  flexDirection: "column",
                 }}
               >
-                {currentModule.roles?.map((role, index) => (
-                  <Tag.CheckableTag
-                    key={index}
-                    checked={selectedRoles.includes(role)}
-                    onChange={(checked) => handleTagChange(role, checked)}
-                    style={{
-                      width: 180,
-                      padding: 5,
-                      margin: 5,
-                      border: "1px solid #ccc",
-                      boxShadow: selectedRoles.includes(role)
-                        ? "rgba(0, 146, 255, 9.28) 0px 1px 5px 3px"
-                        : "none",
-                      backgroundColor: theme.palette.primary.light,
-                      color: "#000",
-                      borderRadius: 10,
-                    }}
-                  >
-                    {role}
-                  </Tag.CheckableTag>
-                ))}
-                {customRoles.map((role: any, index: any) => (
-                  <Tag
-                    key={index}
-                    closable
-                    onClose={() =>
-                      setCustomRoles(customRoles.filter((r: any) => r !== role))
-                    }
-                    style={{ width: 180, padding: 5 }}
-                  >
-                    {role}
-                  </Tag>
-                ))}
-                {inputVisible && (
-                  <Input
-                    type="text"
-                    size="middle"
-                    style={{ width: 200 }}
-                    value={inputValue}
-                    onChange={handleInputChange}
-                    onBlur={handleInputConfirm}
-                    onPressEnter={handleInputConfirm}
-                  />
-                )}
-                {!inputVisible && (
-                  <Button size="middle" onClick={showInput}>
-                    + Add Your Own Role
-                  </Button>
-                )}
+                <Typography style={{ fontWeight: "600" }}>
+                  Please select up to 3 roles
+                </Typography>
+                <div
+                  style={{
+                    paddingTop: 10,
+                  }}
+                >
+                  {currentModule.roles?.map((role, index) => (
+                    <Tag.CheckableTag
+                      key={index}
+                      checked={selectedRoles.includes(role)}
+                      onChange={(checked) => handleTagChange(role, checked)}
+                      style={{
+                        width: 180,
+                        padding: 5,
+                        margin: 5,
+                        border: "1px solid #ccc",
+                        boxShadow: selectedRoles.includes(role)
+                          ? "rgba(0, 146, 255, 9.28) 0px 1px 5px 3px"
+                          : "none",
+                        backgroundColor: theme.palette.primary.light,
+                        color: "#000",
+                        borderRadius: 10,
+                      }}
+                    >
+                      {role}
+                    </Tag.CheckableTag>
+                  ))}
+                  {customRoles.map((role: any, index: any) => (
+                    <Tag
+                      key={index}
+                      closable
+                      onClose={() =>
+                        setCustomRoles(
+                          customRoles.filter((r: any) => r !== role)
+                        )
+                      }
+                      style={{ width: 180, padding: 5 }}
+                    >
+                      {role}
+                    </Tag>
+                  ))}
+                  {inputVisible && (
+                    <Input
+                      type="text"
+                      size="middle"
+                      style={{ width: 200 }}
+                      value={inputValue}
+                      onChange={handleInputChange}
+                      onBlur={handleInputConfirm}
+                      onPressEnter={handleInputConfirm}
+                    />
+                  )}
+                  {!inputVisible && (
+                    <Button size="middle" onClick={showInput}>
+                      + Add Your Own Role
+                    </Button>
+                  )}
+                </div>
               </div>
-            </div>
+            )
           )}
           {currentModule.identities && (
             <div

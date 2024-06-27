@@ -52,12 +52,25 @@ const FifthModule = () => {
 
   const [identities, setIdentities] = useState<any>([]);
 
-  const { questionData, modulesByUserId } = useAppSelector(
+  const dispatch = useDispatch<AppDispatch>();
+  const user: any = getUserData();
+
+  const { questionData, modulesByUserId, maxModules } = useAppSelector(
     (state: any) => state.module
   );
 
-  const dispatch = useDispatch<AppDispatch>();
-  const user: any = getUserData();
+  // console.log("questionData", questionData);
+
+  useEffect(() => {
+    console.log(MODULES.FifthModule.length, "length", pageIndex);
+    if (maxModules && maxModules.maxModuleNumber === 5) {
+      if (maxModules.lastQuestion === 6) {
+        setPageIndex(maxModules.lastQuestion - 1);
+      } else {
+        setPageIndex(0);
+      }
+    }
+  }, [maxModules]);
 
   const filteredModules =
     modulesByUserId &&

@@ -25,6 +25,7 @@ export interface ModuleState {
   module: Module | null;
   questionData: QuestionData | null | undefined;
   modulesByUserId: Module | null;
+  maxModules: any | null;
   isLoading: boolean;
   error: string | null;
   assessmentResponse: any;

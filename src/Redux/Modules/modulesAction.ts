@@ -121,6 +121,39 @@ export const getAllModulesByUserID = createAsyncThunk<
   }
 });
 
+export const getMaxModulesByUserID = createAsyncThunk<
+  Module,
+  UserId,
+  { rejectValue: ApiError }
+>("module/max", async ({ userId }, { rejectWithValue }) => {
+  try {
+    const response = await fetch(
+      `${BASE_URL}${ENDPOINTS.MAX_MODULES_BY_USER_ID}/${userId}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    if (!response.ok) {
+      const errorMessage = await response.text();
+      return rejectWithValue({ message: errorMessage });
+    }
+
+    const apiResponse = await response.json();
+    if (!apiResponse.success) {
+      return rejectWithValue({
+        message: "An error occurred",
+      });
+    }
+    return apiResponse.data;
+  } catch (error) {
+    return rejectWithValue({ message: "An error occurred" });
+  }
+});
+
 export const postQuestionAssessmentByModule = createAsyncThunk<
   Module,
   UserId,
