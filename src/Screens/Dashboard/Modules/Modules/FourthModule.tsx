@@ -51,15 +51,15 @@ const FourthModule = ({ activeKey }: any) => {
   const { questionData, modulesByUserId, maxModules } = useAppSelector(
     (state: any) => state.module
   );
-  console.log(MODULES.FourthModule.length, "length", pageIndex);
+  // console.log(MODULES.FourthModule.length, "length", pageIndex);
   const currentModule = MODULES.FourthModule[pageIndex];
   const questions = `${currentModule.question} ${currentModule.caption}`;
-  console.log(pageIndex);
+  // console.log(pageIndex);
   useEffect(() => {
-    console.log("page check", pageIndex, maxModules.lastQuestion - 1);
+    // console.log("page check", pageIndex, maxModules.lastQuestion - 1);
     const currentModules = MODULES.FourthModule[maxModules.lastQuestion - 1];
     const question = `${currentModules.question} ${currentModules.caption}`;
-    console.log("useeffect", question, questions);
+    // console.log("useeffect", question, questions);
 
     dispatch(
       getQuestionData({
@@ -68,7 +68,7 @@ const FourthModule = ({ activeKey }: any) => {
         question: question,
       })
     );
-    if (maxModules && maxModules?.maxModuleNumber === 4) {
+    if (maxModules && maxModules.maxModuleNumber === 4) {
       if (maxModules.lastQuestion === 0) {
         setPageIndex(0);
       } else if (MODULES.FourthModule.length - 1) {
@@ -248,9 +248,10 @@ const FourthModule = ({ activeKey }: any) => {
       setSelectedIdentities(newSelection);
     }
   };
-  console.log(JSON.parse(aiResponse));
-  const data = aiResponse && JSON.parse(aiResponse);
+  // console.log(aiResponse);
+  const data = aiResponse && JSON.parse(aiResponse.trim());
   const renderItem = (item: any, index: number) => {
+    // console.log("item", item);
     const [key, values]: [any, any] = Object.entries(item)[0];
     // console.log(key);
     // console.log(values);
@@ -278,15 +279,13 @@ const FourthModule = ({ activeKey }: any) => {
         {/* <Typography.Text style={{ width: "190px", fontWeight: "bold" }}>
           {key}
         </Typography.Text> */}
-        <ol style={{ width: "600px" }}>
-          {values.map((value: any, idx: any) => (
-            <li key={idx}>
-              <Typography.Text style={{ width: "100%" }}>
-                {value}
-              </Typography.Text>
-            </li>
-          ))}
-        </ol>
+        {/* <ol style={{ width: "600px" }}> */}
+        {/* {values.map((value: any, idx: any) => ( */}
+        {/* <li> */}
+        <Typography.Text style={{ width: "100%" }}>{values}</Typography.Text>
+        {/* </li> */}
+        {/* ))} */}
+        {/* </ol> */}
       </List.Item>
     );
   };

@@ -38,6 +38,7 @@ const Home: React.FC = () => {
     modulesByUserId &&
     modulesByUserId.length > 0 &&
     modulesByUserId.find((module: any) => module.moduleNumber === "Module 1");
+
   useEffect(() => {
     if (modulesByUserId && modulesByUserId.length > 0) {
       const formattedLabels: Record<string, Label> = {};
@@ -152,7 +153,7 @@ const Home: React.FC = () => {
           {/* {console.log(module1.ai_evaluation.response_text)} */}
           {module1 && module1.ai_evaluation.response_text && (
             <div style={{ overflowY: "auto", height: 299 }}>
-              <ModulesCollapse labels={labels} summaries={summaries} />
+              <ModulesCollapse />
             </div>
           )}
         </Col>

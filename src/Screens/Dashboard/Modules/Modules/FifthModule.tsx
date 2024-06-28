@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useEffect, useState } from "react";
 import { Container } from "@mui/material";
 import {
@@ -62,7 +63,7 @@ const FifthModule = () => {
   // console.log("questionData", questionData);
 
   useEffect(() => {
-    console.log(MODULES.FifthModule.length, "length", pageIndex);
+    // console.log(MODULES.FifthModule.length, "length", pageIndex);
     if (maxModules && maxModules.maxModuleNumber === 5) {
       if (maxModules.lastQuestion === 6) {
         setPageIndex(maxModules.lastQuestion - 1);
@@ -77,6 +78,10 @@ const FifthModule = () => {
     modulesByUserId.filter(
       (module: any) => module.moduleNumber === MODULES_LABEL.fourthModule.label
     );
+  // console.log(
+  //   "filteredModules",
+  //   filteredModules[0].ai_evaluation.response_html
+  // );
   useEffect(() => {
     dispatch(getAllModulesByUserID({ userId: user.id }));
   }, []);
@@ -268,77 +273,82 @@ const FifthModule = () => {
   const renderItem = (item: any, index: number) => {
     const [key, values]: [any, any] = Object.entries(item)[0];
     return (
-      <List.Item
-        actions={[
-          <EditOutlined onClick={() => alert("Edit clicked")} />,
-          <ReloadOutlined />,
-        ]}
-        style={{
-          display: "flex",
-          padding: "10px",
-          flexDirection: "row",
-          border: "1px solid #f0f0f0",
-          borderRadius: "5px",
-          marginBottom: "20px",
-          cursor: "pointer",
-        }}
-        onClick={() => handleFAPRecommendationChange(item)}
-      >
-        <Typography.Text style={{ width: "190px", fontWeight: "bold" }}>
-          {key}
-        </Typography.Text>
-        <ol style={{ width: "600px" }}>
-          {values.map((value: any, idx: any) => (
-            <li key={idx}>
-              <Typography.Text>{value}</Typography.Text>
-            </li>
-          ))}
-        </ol>
-      </List.Item>
+      <>
+        <List.Item
+          actions={[
+            <EditOutlined onClick={() => alert("Edit clicked")} />,
+            <ReloadOutlined />,
+          ]}
+          style={{
+            display: "flex",
+            padding: "10px",
+            flexDirection: "row",
+            border: "1px solid #f0f0f0",
+            borderRadius: "5px",
+            marginBottom: "20px",
+            cursor: "pointer",
+          }}
+          onClick={() => handleFAPRecommendationChange(item)}
+        >
+          <Typography.Text style={{ width: "70px", fontWeight: "bold" }}>
+            {`Method ${index + 1}`}
+          </Typography.Text>
+          <ol style={{ width: "600px" }}>
+            {values.map((value: any, idx: any) => (
+              <li key={idx}>
+                <Typography.Text>{value}</Typography.Text>
+              </li>
+            ))}
+          </ol>
+        </List.Item>
+      </>
     );
   };
+  // console.log(
+  //   "filteredModules",
+  //   filteredModules[0].ai_evaluation.response_html.trim()
+  // );
+
   const renderItem2 = () => {
-    // console.log(JSON.parse(filteredModules[0].ai_evaluation.response_text));
     if (filteredModules.length > 0) {
-      // return "bb";
-      if (
-        filteredModules[0].ai_evaluation?.response_html !== null &&
-        filteredModules[0].ai_evaluation?.response_html !== undefined
-      ) {
-        let item = JSON.parse(filteredModules[0]?.ai_evaluation.response_html);
-
-        const [key, values]: [any, any] = Object.entries(item)[0];
-        // console.log(key, values);
-        return (
-          <List.Item
-            style={{
-              display: "flex",
-              padding: "10px",
-              flexDirection: "row",
-              borderRadius: "5px",
-              cursor: "pointer",
-            }}
-            // onClick={() => handleIdentityChange(item)}
-          >
-            {/* <Typography.Text style={{ width: "190px", fontWeight: "bold" }}>
-          {key}
-        </Typography.Text> */}
-            <ol style={{ width: "600px" }}>
-              {values &&
-                values.map((valuess: any, idx: any) => (
-                  <li key={idx}>
-                    <Typography.Text>{valuess}</Typography.Text>
-                  </li>
-                ))}
-            </ol>
-          </List.Item>
-        );
+      const responseHtml = filteredModules[0]?.ai_evaluation?.response_html;
+      if (responseHtml) {
+        try {
+          const item = JSON.parse(
+            responseHtml
+              .trim()
+              .replace(/'/g, '"')
+              .replace(/(\w+):/g, '"$1":')
+          );
+          const [value]: any = Object.values(item);
+          return (
+            <List.Item
+              style={{
+                display: "flex",
+                padding: "10px 0px",
+                flexDirection: "row",
+                borderRadius: "5px",
+                cursor: "pointer",
+              }}
+            >
+              {/* <ol style={{ width: "600px" }}> */}
+              {/* {item &&
+                  Object.values(item).map((values: any, idx: any) => ( */}
+              {/* <li> */}
+              <Typography.Text>{value}</Typography.Text>
+              {/* </li> */}
+              {/* ))} */}
+              {/* </ol> */}
+            </List.Item>
+          );
+        } catch (error) {
+          console.error("Error parsing JSON:", error);
+        }
       }
-    } else {
-      return "";
     }
+    return "";
   };
-
+  // console.log(renderItem2());
   const renderRecommendations = (item: any, index: number) => {
     return (
       <List.Item
@@ -570,8 +580,21 @@ const FifthModule = () => {
                       }}
                     >
                       <Typography style={{ fontWeight: "600" }}>
-                        Please select a Immediate Fitness Action Plan
+                        Please select a Immediate Action Plan
                       </Typography>
+                      <Typography.Text
+                        style={{
+                          display: "flex",
+                          flexDirection: "row",
+                          alignItems: "center",
+                          fontWeight: "bold",
+                        }}
+                      >
+                        <Typography.Text style={{ marginRight: 12 }}>
+                          Goal :
+                        </Typography.Text>
+                        {renderItem2()}
+                      </Typography.Text>
                       <List
                         dataSource={JSON.parse(identities)}
                         renderItem={renderItem}
@@ -588,8 +611,8 @@ const FifthModule = () => {
                   selectedIdentities !== null && (
                     <div>
                       <Typography>
-                        Please select an area of the Immediate Fitness Action
-                        Plan you'd like to focus on:
+                        Please select an area of the Immediate Action Plan you'd
+                        like to focus on:
                       </Typography>
                       <List
                         dataSource={selectedIdentities["30-day goal"]}

@@ -45,7 +45,7 @@ const ForgotCredentials: React.FC = () => {
         ? { email: values.email?.toLowerCase() }
         : { username: values.username };
 
-      console.log(body);
+      // console.log(body);
       //   dispatch(loginUser(body)).then((response) => {
       //     if (response) {
       //       if (!response.payload?.message) {

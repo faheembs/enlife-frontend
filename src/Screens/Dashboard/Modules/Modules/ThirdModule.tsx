@@ -245,6 +245,7 @@ const ThirdModule = ({ activeKey }: any) => {
   const data = aiResponse
     ? JSON.parse(aiResponse.replace(/'/g, '"').replace(/(\w+):/g, '"$1":'))
     : [];
+  // console.log("data", data, aiResponse);
   const renderItem = (item: any, index: number) => {
     const [key, values]: [any, any] = Object.entries(item)[0];
 

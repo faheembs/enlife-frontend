@@ -153,6 +153,38 @@ export const getMaxModulesByUserID = createAsyncThunk<
     return rejectWithValue({ message: "An error occurred" });
   }
 });
+export const getModule1Evaluation = createAsyncThunk<
+  Module,
+  UserId,
+  { rejectValue: ApiError }
+>("module/module1", async ({ userId }, { rejectWithValue }) => {
+  try {
+    const response = await fetch(
+      `${BASE_URL}${ENDPOINTS.MODULE1_EVALUATION}/${userId}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    if (!response.ok) {
+      const errorMessage = await response.text();
+      return rejectWithValue({ message: errorMessage });
+    }
+
+    const apiResponse = await response.json();
+    if (!apiResponse.success) {
+      return rejectWithValue({
+        message: "An error occurred",
+      });
+    }
+    return apiResponse.coreValues;
+  } catch (error) {
+    return rejectWithValue({ message: "An error occurred" });
+  }
+});
 
 export const postQuestionAssessmentByModule = createAsyncThunk<
   Module,

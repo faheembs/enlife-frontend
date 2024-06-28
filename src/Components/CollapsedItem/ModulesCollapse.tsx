@@ -1,36 +1,20 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Collapse, Divider } from "antd";
 import "./ModuleCollapse.css";
+import { useAppDispatch, useAppSelector } from "../../Hooks/reduxHook";
+import { getUserData } from "../../Utils/helperFunctions";
+import { getModule1Evaluation } from "../../Redux/Modules/modulesAction";
 
 const { Panel } = Collapse;
 
-interface ModuleLabel {
-  key: string;
-  label: string;
-}
-
-interface ModuleLabels {
-  [key: string]: ModuleLabel;
-}
-
-interface Explanation {
-  explanationHeading: string;
-  explanationText: string;
-}
-
-interface ModuleSummaries {
-  [key: string]: Explanation[];
-}
-
-interface ModulesCollapseProps {
-  labels: ModuleLabels;
-  summaries: ModuleSummaries;
-}
-
-const ModulesCollapse: React.FC<ModulesCollapseProps> = ({
-  labels,
-  summaries,
-}) => {
+const ModulesCollapse: React.FC = () => {
+  const dispatch = useAppDispatch();
+  useEffect(() => {
+    const user = getUserData();
+    dispatch(getModule1Evaluation({ userId: user.id }));
+  }, [dispatch]);
+  const { module1_evaluation } = useAppSelector((state: any) => state.module);
+  // console.log("module1_evaluation", module1_evaluation);
   return (
     <Collapse
       style={{
@@ -42,31 +26,26 @@ const ModulesCollapse: React.FC<ModulesCollapseProps> = ({
       accordion
       bordered={false}
     >
-      {Object.entries(labels).map(([_, { key, label }]) => (
-        <Panel header={label} key={key}>
-          {(summaries[`ModuleSummary${key}`] || []).map(
-            (item: any, index: any) => (
-              <div
-                style={{ display: "flex", flexDirection: "row" }}
-                key={index}
+      {module1_evaluation &&
+        module1_evaluation.map((coreValueObj: any, index: number) => {
+          const [coreValue, explanation]: [any, any] =
+            Object.entries(coreValueObj)[0];
+          return (
+            <Panel header={`Core Value ${index + 1}: ${coreValue}`} key={index}>
+              <p
+                style={{
+                  lineHeight: "1.5",
+                  maxHeight: "7.5em",
+                  overflow: "hidden",
+                  position: "relative",
+                  overflowY: "auto",
+                }}
               >
-                {/* <h4>{item.explanationHeading}</h4> */}
-                <p
-                  style={{
-                    lineHeight: "1.5",
-                    maxHeight: "7.5em",
-                    overflow: "hidden",
-                    position: "relative",
-                    overflowY: "auto",
-                  }}
-                >
-                  {item.explanationText}
-                </p>
-              </div>
-            )
-          )}
-        </Panel>
-      ))}
+                {explanation}
+              </p>
+            </Panel>
+          );
+        })}
     </Collapse>
   );
 };

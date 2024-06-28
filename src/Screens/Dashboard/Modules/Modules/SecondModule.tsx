@@ -31,11 +31,11 @@ const SecondModule = ({ activeKey }: any) => {
   const [part2, setPart2] = useState("");
   const dispatch = useDispatch<AppDispatch>();
   const user = getUserData();
-  console.log(MODULES.SecondModule.length, "length", pageIndex);
+  // console.log(MODULES.SecondModule.length, "length", pageIndex);
   const { maxModules } = useAppSelector(
     (state: { module: any }) => state.module
   );
-  console.log("questionData", questionData);
+  // console.log("questionData", questionData);
   useEffect(() => {
     setTextResponse("");
     if (pageIndex === 0) {

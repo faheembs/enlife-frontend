@@ -15,7 +15,7 @@ const App = () => {
   const dispatch = useAppDispatch();
   useEffect(() => {
     dispatch(getMaxModulesByUserID({ userId: user.id }));
-    console.log("app");
+    // console.log("app");
   });
 
   return (
