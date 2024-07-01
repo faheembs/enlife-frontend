@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Container } from "@mui/material";
-import { Card, Col, Input, Row, Typography, message } from "antd";
+import { Card, Col, Divider, Input, Row, Typography, message } from "antd";
 import AppButton from "../../../../Components/Button/AppButton";
 import DotPagination from "../../../../Components/DotPagination/DotPagination";
 import { MODULES, MODULES_LABEL } from "../../../../Utils/constants";
@@ -57,8 +57,6 @@ const SecondModule = ({ activeKey }: any) => {
       } else {
         setPageIndex(maxModules.lastQuestion);
       }
-    } else if (maxModules) {
-      activeKey(maxModules.maxModuleNumber);
     }
   }, [activeKey, maxModules]);
 
@@ -188,6 +186,19 @@ const SecondModule = ({ activeKey }: any) => {
     }
   };
 
+  const handleRegenarateResponse = async () => {
+    setLoading(true);
+    const body = {
+      moduleId: MODULES_LABEL.secondModule.label,
+      userId: user.id,
+    };
+    await dispatch(postQuestionAssessmentByModule(body)).then((response) => {
+      setLoading(false);
+      setAssessmentResults(response?.payload);
+    });
+    setLoading(false);
+  };
+
   return (
     <Container
       maxWidth="lg"
@@ -224,17 +235,33 @@ const SecondModule = ({ activeKey }: any) => {
           ) : assessmentResults &&
             pageIndex === MODULES.SecondModule.length - 1 ? (
             <>
-              <div style={{ display: "flex", justifyContent: "flex-end" }}>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "flex-end",
+                  marginRight: 20,
+                }}
+              >
                 <div
-                  style={{ display: "flex", justifyContent: "space-between" }}
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                  }}
                 >
                   <EditOutlined
-                    style={{ marginRight: "0.55rem", fontSize: 24 }}
+                    style={{
+                      marginRight: 10,
+                      fontSize: 18,
+                      color: "grey",
+                      fontWeight: "bold",
+                    }}
                     onClick={() => alert("Edit clicked")}
                   />
+                  <Divider type="vertical" />
                   <ReloadOutlined
-                    style={{ fontSize: 24 }}
-                    onClick={() => alert("item.id")}
+                    style={{ fontSize: 19, color: "grey", marginLeft: 10 }}
+                    onClick={handleRegenarateResponse}
                   />
                 </div>
               </div>

@@ -30,6 +30,7 @@ import {
   getQuestionData,
   postQuestionAssessmentByModule,
   postQuestionAssessmentModule5,
+  regenarateResponse,
 } from "../../../../Redux/Modules/modulesAction";
 import { useAppSelector } from "../../../../Hooks/reduxHook";
 import AppSpinner from "../../../../Components/AppSpinner/AppSpinner";
@@ -50,6 +51,7 @@ const FifthModule = () => {
   const [selectedTask, setSelectedTask] = useState<string>("");
 
   const currentModule = MODULES.FifthModule[pageIndex];
+  const questions = `${currentModule?.question}${currentModule?.caption}`;
 
   const [identities, setIdentities] = useState<any>([]);
 
@@ -60,16 +62,9 @@ const FifthModule = () => {
     (state: any) => state.module
   );
 
-  // console.log("questionData", questionData);
-
   useEffect(() => {
-    // console.log(MODULES.FifthModule.length, "length", pageIndex);
     if (maxModules && maxModules.maxModuleNumber === 5) {
-      if (maxModules.lastQuestion === 6) {
-        setPageIndex(maxModules.lastQuestion - 1);
-      } else {
-        setPageIndex(0);
-      }
+      setPageIndex(0);
     }
   }, [maxModules]);
 
@@ -105,12 +100,6 @@ const FifthModule = () => {
       setTextResponse(questionData?.answers);
     }
   }, [questionData]);
-  const questions = `${currentModule.question}${currentModule.caption}`;
-  // useEffect(() => {
-  //   if (currentModule) {
-  //     setIdentities(currentModule?.identities ?? []);
-  //   }
-  // }, [currentModule, currentModule?.identities]);
 
   const onChange = (e: any) => {
     setTextResponse(e.target.value);
@@ -159,10 +148,10 @@ const FifthModule = () => {
     }
 
     if (
-      ((currentModule.question && textResponse === "") ||
-        (currentModule.question && textResponse) === null ||
-        (currentModule.identities && value === null)) &&
-      !currentModule.identities
+      ((currentModule?.question && textResponse === "") ||
+        (currentModule?.question && textResponse) === null ||
+        (currentModule?.identities && value === null)) &&
+      !currentModule?.identities
     ) {
       message.warning("Response is required");
       setLoading(false);
@@ -176,7 +165,7 @@ const FifthModule = () => {
           questionnaires: {
             questionID: questionData?._id ?? false,
             question_text: questions,
-            response_type: currentModule.type,
+            response_type: currentModule?.type,
             answers: value === "Yes" ? textResponse : null,
             precursor_question: value,
           },
@@ -191,7 +180,7 @@ const FifthModule = () => {
           questionnaires: {
             questionID: questionData?._id ?? false,
             question_text: questions,
-            response_type: currentModule.type,
+            response_type: currentModule?.type,
           },
           ai_evaluation: {
             response_text: selectedTask,
@@ -270,6 +259,27 @@ const FifthModule = () => {
   //     <ReactHtmlString html={JSON.stringify(item)} />
   //   </List.Item>
   // );
+  // console.log("identities", identities);
+  const handleRegenarateResponse = (res: any, index: number) => {
+    // console.log(res[0]);
+
+    dispatch(
+      regenarateResponse({
+        text: res,
+        prompts: `These will be 3 so separate them with ". " and there should be only 3 dont use ""`,
+      })
+    ).then((res: any) => {
+      setIdentities((prev: any) => {
+        // Create a new array with the updated value at the specified index
+        const newState = JSON.parse(prev);
+        newState[index] = { "30-day goal": res.payload.trim().split(". ") }; // Update the value at the specific index
+        return JSON.stringify(newState);
+      });
+      // return console.log(res.payload.trim().split(". "));
+    });
+  };
+  // console.log("after identities", identities);
+
   const renderItem = (item: any, index: number) => {
     const [key, values]: [any, any] = Object.entries(item)[0];
     return (
@@ -277,7 +287,9 @@ const FifthModule = () => {
         <List.Item
           actions={[
             <EditOutlined onClick={() => alert("Edit clicked")} />,
-            <ReloadOutlined />,
+            <ReloadOutlined
+              onClick={() => handleRegenarateResponse(values, index)}
+            />,
           ]}
           style={{
             display: "flex",
@@ -288,13 +300,15 @@ const FifthModule = () => {
             marginBottom: "20px",
             cursor: "pointer",
           }}
-          onClick={() => handleFAPRecommendationChange(item)}
         >
           <Typography.Text style={{ width: "70px", fontWeight: "bold" }}>
             {`Method ${index + 1}`}
           </Typography.Text>
-          <ol style={{ width: "600px" }}>
-            {values.map((value: any, idx: any) => (
+          <ol
+            onClick={() => handleFAPRecommendationChange(item)}
+            style={{ width: "600px" }}
+          >
+            {values.slice(0, 3).map((value: any, idx: any) => (
               <li key={idx}>
                 <Typography.Text>{value}</Typography.Text>
               </li>
@@ -304,10 +318,6 @@ const FifthModule = () => {
       </>
     );
   };
-  // console.log(
-  //   "filteredModules",
-  //   filteredModules[0].ai_evaluation.response_html.trim()
-  // );
 
   const renderItem2 = () => {
     if (filteredModules.length > 0) {
@@ -438,9 +448,9 @@ const FifthModule = () => {
                 overflowY: "auto",
               }}
             >
-              {currentModule.type !== "brief-description" ? (
+              {currentModule?.type !== "brief-description" ? (
                 pageIndex === MODULES.FifthModule.length - 2 &&
-                currentModule.type === "selection" ? (
+                currentModule?.type === "selection" ? (
                   <div>
                     <Typography.Text>
                       Please select one Task to start today!
@@ -473,7 +483,7 @@ const FifthModule = () => {
                       )}
                     />
                   </div>
-                ) : currentModule.type === "single" ? (
+                ) : currentModule?.type === "single" ? (
                   <div>
                     <div
                       style={{
@@ -535,7 +545,7 @@ const FifthModule = () => {
                             alignItems: "center",
                             flexDirection: "row",
                             height: "68px",
-                            justifyContent: "flex-end",
+                            justifyContent: "space-between",
                             padding: "5px",
                             border: "1px solid #f0f0f0",
                             borderRadius: "15px",
@@ -556,16 +566,16 @@ const FifthModule = () => {
                       )}
                     />
                   </div>
-                ) : !currentModule.identities ? (
+                ) : !currentModule?.identities ? (
                   <div>
-                    <Typography>{currentModule.text}</Typography>
+                    <Typography>{currentModule?.text}</Typography>
                     <br />
                     <Typography style={{ fontWeight: "600", padding: 20 }}>
-                      {currentModule.question}
+                      {currentModule?.question}
                       {renderItem2()}
                     </Typography>
                     <br />
-                    <Typography>{currentModule.caption}</Typography>
+                    <Typography>{currentModule?.caption}</Typography>
                   </div>
                 ) : selectedIdentities === null ||
                   selectedIdentities.length === 0 ? (
@@ -615,7 +625,10 @@ const FifthModule = () => {
                         like to focus on:
                       </Typography>
                       <List
-                        dataSource={selectedIdentities["30-day goal"]}
+                        dataSource={selectedIdentities["30-day goal"].slice(
+                          0,
+                          4
+                        )}
                         renderItem={renderRecommendations}
                         style={{
                           background: theme.palette.primary.light,
@@ -743,7 +756,7 @@ const FifthModule = () => {
                 </div>
               )}
 
-              {currentModule.type === "free-response" && (
+              {currentModule?.type === "free-response" && (
                 <>
                   <TextArea
                     showCount
@@ -762,7 +775,7 @@ const FifthModule = () => {
                 </>
               )}
 
-              {currentModule.type === "precursor-question" && (
+              {currentModule?.type === "precursor-question" && (
                 <div>
                   <Radio.Group
                     onChange={onChangeOptions}
@@ -771,7 +784,7 @@ const FifthModule = () => {
                   >
                     <Space direction="horizontal">
                       {currentModule?.options &&
-                        currentModule.options.map((item) => (
+                        currentModule?.options.map((item) => (
                           <Radio key={item} value={item}>
                             {item}
                           </Radio>
@@ -780,7 +793,7 @@ const FifthModule = () => {
                   </Radio.Group>
                   {value === "Yes" && (
                     <div style={{ marginRight: "5px" }}>
-                      <Typography>{currentModule.q_conditional}</Typography>
+                      <Typography>{currentModule?.q_conditional}</Typography>
                       <TextArea
                         showCount
                         maxLength={1000}

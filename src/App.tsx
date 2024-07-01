@@ -1,11 +1,19 @@
 import React, { useEffect } from "react";
-import { Routes, Route, Navigate, useLocation } from "react-router-dom";
+import {
+  Routes,
+  Route,
+  Navigate,
+  useLocation,
+  useNavigate,
+} from "react-router-dom";
 import routes, { CustomRoute } from "./Routes/routes";
 import { getToken, getUserData } from "./Utils/helperFunctions";
 import AdminLayout from "./Layouts/AdminLayout";
 import "./index.css";
 import { useAppDispatch } from "./Hooks/reduxHook";
 import { getMaxModulesByUserID } from "./Redux/Modules/modulesAction";
+import { Result } from "antd";
+import AppButton from "./Components/Button/AppButton";
 
 const App = () => {
   const location = useLocation();
@@ -13,10 +21,11 @@ const App = () => {
   const token = getToken();
   const user = getUserData();
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+
   useEffect(() => {
     dispatch(getMaxModulesByUserID({ userId: user.id }));
-    // console.log("app");
-  });
+  }, [dispatch, user.id]);
 
   return (
     <Routes>
@@ -43,6 +52,35 @@ const App = () => {
           />
         )
       )}
+      <Route
+        path="*"
+        element={
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              height: "100vh",
+            }}
+          >
+            <Result
+              className="custom-result"
+              status="404"
+              title="404"
+              subTitle="Sorry, the page you visited does not exist."
+              style={{ color: "white" }}
+              extra={
+                <AppButton
+                  text="Back to Home"
+                  bgColor="white"
+                  onClick={() => navigate("/")}
+                  textStyle={{ color: "black" }}
+                />
+              }
+            />
+          </div>
+        }
+      />
     </Routes>
   );
 };

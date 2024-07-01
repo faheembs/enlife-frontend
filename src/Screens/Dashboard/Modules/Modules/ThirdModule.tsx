@@ -82,8 +82,6 @@ const ThirdModule = ({ activeKey }: any) => {
       if (maxModules.lastQuestion === 1) {
         setPageIndex(maxModules.lastQuestion - 1);
       }
-    } else if (maxModules) {
-      activeKey(maxModules.maxModuleNumber);
     }
   }, [maxModules]);
   useEffect(() => {
@@ -211,7 +209,7 @@ const ThirdModule = ({ activeKey }: any) => {
       setLoading(false);
     } else {
       toastMessage({
-        type: "warning",
+        type: "info",
         content: "Please select one fitness Identity",
         duration: 5,
       });

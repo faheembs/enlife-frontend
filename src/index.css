@@ -13,3 +13,7 @@ body {
     justify-content: "center";
     align-items: "center";
 }
+.custom-result .ant-result-title,
+.custom-result .ant-result-subtitle {
+  color: #ffffff; /* Change this to your desired color */
+}

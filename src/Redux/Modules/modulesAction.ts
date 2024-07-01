@@ -250,6 +250,38 @@ export const postQuestionAssessmentModule3 = createAsyncThunk<
   }
 });
 
+export const regenarateResponse = createAsyncThunk<
+  Module,
+  any,
+  { rejectValue: ApiError }
+>("module/REGENARATE_RESPONSE", async (body, { rejectWithValue }) => {
+  try {
+    const response = await fetch(`${BASE_URL}${ENDPOINTS.REGENARATE_RESPONSE}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(body),
+    });
+
+    if (!response.ok) {
+      const errorMessage = await response.text();
+      return rejectWithValue({ message: errorMessage });
+    }
+
+    const apiResponse = await response.json();
+
+    if (!apiResponse.success) {
+      return rejectWithValue({
+        message: "An error occurred",
+      });
+    }
+    return apiResponse.data;
+  } catch (error) {
+    return rejectWithValue({ message: "An error occurred" });
+  }
+});
+
 export const postQuestionAssessmentModule5 = createAsyncThunk<
   Module,
   unknown,

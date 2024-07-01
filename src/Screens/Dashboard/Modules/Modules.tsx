@@ -12,7 +12,7 @@ import FifthModule from "./Modules/FifthModule";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "../../../Redux/store";
 import { getAllModulesByUserID } from "../../../Redux/Modules/modulesAction";
-import { getUserData } from "../../../Utils/helperFunctions";
+import { getUserData, toastMessage } from "../../../Utils/helperFunctions";
 import { useAppSelector } from "../../../Hooks/reduxHook";
 
 const Modules: React.FC = () => {
@@ -21,6 +21,7 @@ const Modules: React.FC = () => {
   useEffect(() => {
     dispatch(getAllModulesByUserID({ userId: user.id }));
   }, [dispatch, user.id]);
+
   const { maxModules } = useAppSelector(
     (state: { module: any }) => state.module
   );
@@ -29,7 +30,7 @@ const Modules: React.FC = () => {
   // console.log("activeModule-------", activeModule);
   useEffect(() => {
     if (maxModules !== null) {
-      // console.log(maxModules.maxModuleNumber);
+      console.log(maxModules.maxModuleNumber);
       setActiveModule(maxModules.maxModuleNumber.toString());
     }
   }, [maxModules]);
@@ -62,10 +63,21 @@ const Modules: React.FC = () => {
   ];
 
   const onChange = (key: string) => {
-    // console.log("key", key);
-    setActiveModule(key);
+    if (
+      maxModules &&
+      (maxModules.maxModuleNumber > Number(key) ||
+        maxModules.maxModuleNumber + 1 === Number(key) ||
+        Number(key) === maxModules.maxModuleNumber)
+    ) {
+      setActiveModule(key);
+    } else {
+      toastMessage({
+        type: "info",
+        content: "You need to complete the previous modules first!",
+        duration: 6,
+      });
+    }
   };
-
   return (
     <Suspense
       fallback={

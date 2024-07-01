@@ -9,6 +9,7 @@ import { ThemeProvider } from "@emotion/react";
 import { theme } from "./Theme/theme";
 import "./index.css";
 import { ConfigProvider, Spin } from "antd";
+import ErrorBoundaryWrapper from "./Screens/Error Page/ErrorBoundaryWrapper";
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
@@ -37,7 +38,9 @@ root.render(
               },
             }}
           >
-            <App />
+            <ErrorBoundaryWrapper>
+              <App />
+            </ErrorBoundaryWrapper>
           </ConfigProvider>
         </ThemeProvider>
       </Provider>

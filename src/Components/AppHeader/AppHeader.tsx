@@ -106,7 +106,11 @@ const AppHeader = ({
   let complete: any[] = [];
   const filtered =
     modulesByUserId &&
-    modulesByUserId.map((module: any) => complete.push(module.moduleNumber));
+    modulesByUserId.map((module: any) => {
+      if (module.ai_evaluation.response_text !== null) {
+        return complete.push(module.moduleNumber);
+      }
+    });
   let modules = ["Module 1", "Module 2", "Module 3", "Module 4", "Module 5"];
   const content = (
     <>

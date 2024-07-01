@@ -17,5 +17,6 @@ export const ENDPOINTS = {
   GET_FEEBACK_BY_USER_ID:"feedback",
   MAX_MODULES_BY_USER_ID: "modules/max",
   MODULE1_EVALUATION: "modules/moudle1-evaluation",
+  REGENARATE_RESPONSE: "modules/regenerate",
 
 };

@@ -23,6 +23,7 @@ import {
   getAllModulesByUserID,
   getQuestionData,
   postQuestionAssessmentByModule,
+  regenarateResponse,
 } from "../../../../Redux/Modules/modulesAction";
 import { useAppSelector } from "../../../../Hooks/reduxHook";
 import AppSpinner from "../../../../Components/AppSpinner/AppSpinner";
@@ -57,18 +58,19 @@ const FourthModule = ({ activeKey }: any) => {
   // console.log(pageIndex);
   useEffect(() => {
     // console.log("page check", pageIndex, maxModules.lastQuestion - 1);
-    const currentModules = MODULES.FourthModule[maxModules.lastQuestion - 1];
-    const question = `${currentModules.question} ${currentModules.caption}`;
+
     // console.log("useeffect", question, questions);
 
-    dispatch(
-      getQuestionData({
-        userId: user.id,
-        moduleNumber: MODULES_LABEL.fourthModule.label,
-        question: question,
-      })
-    );
     if (maxModules && maxModules.maxModuleNumber === 4) {
+      const currentModules = MODULES.FourthModule[maxModules.lastQuestion - 1];
+      const question = `${currentModules.question} ${currentModules.caption}`;
+      dispatch(
+        getQuestionData({
+          userId: user.id,
+          moduleNumber: MODULES_LABEL.fourthModule.label,
+          question: question,
+        })
+      );
       if (maxModules.lastQuestion === 0) {
         setPageIndex(0);
       } else if (MODULES.FourthModule.length - 1) {
@@ -76,8 +78,6 @@ const FourthModule = ({ activeKey }: any) => {
       } else {
         setPageIndex(maxModules.lastQuestion - 1);
       }
-    } else if (maxModules) {
-      activeKey(maxModules.maxModuleNumber);
     }
   }, [activeKey, maxModules]);
   const module3 =
@@ -248,8 +248,23 @@ const FourthModule = ({ activeKey }: any) => {
       setSelectedIdentities(newSelection);
     }
   };
-  // console.log(aiResponse);
-  const data = aiResponse && JSON.parse(aiResponse.trim());
+  console.log("selectedIdentities", selectedIdentities);
+  console.log(aiResponse);
+  const handleRegenarateResponse = (res: any, index: number) => {
+    // console.log(res[0]);
+
+    dispatch(regenarateResponse({ text: res })).then((res: any) => {
+      setAiResponse((prev: any) => {
+        // Create a new array with the updated value at the specified index
+        const newState = JSON.parse(prev);
+        newState[index] = { "Fitness journey plan name": [res.payload.trim()] }; // Update the value at the specific index
+        return JSON.stringify(newState);
+      });
+    });
+  };
+  let data = aiResponse && JSON.parse(aiResponse.trim());
+  // console.log("data", data);
+  // console.log("after", aiResponse);
   const renderItem = (item: any, index: number) => {
     // console.log("item", item);
     const [key, values]: [any, any] = Object.entries(item)[0];
@@ -260,7 +275,9 @@ const FourthModule = ({ activeKey }: any) => {
       <List.Item
         actions={[
           <EditOutlined onClick={() => alert("Edit clicked")} />,
-          <ReloadOutlined />,
+          <ReloadOutlined
+            onClick={() => handleRegenarateResponse(values, index)}
+          />,
         ]}
         style={{
           display: "flex",
@@ -274,7 +291,6 @@ const FourthModule = ({ activeKey }: any) => {
             ? "rgb(0, 146, 255, 0.6) 1px 1px 16px"
             : "none",
         }}
-        onClick={() => handleIdentityChange(item)}
       >
         {/* <Typography.Text style={{ width: "190px", fontWeight: "bold" }}>
           {key}
@@ -282,7 +298,12 @@ const FourthModule = ({ activeKey }: any) => {
         {/* <ol style={{ width: "600px" }}> */}
         {/* {values.map((value: any, idx: any) => ( */}
         {/* <li> */}
-        <Typography.Text style={{ width: "100%" }}>{values}</Typography.Text>
+        <Typography.Text
+          onClick={() => handleIdentityChange(item)}
+          style={{ width: "100%" }}
+        >
+          {values}
+        </Typography.Text>
         {/* </li> */}
         {/* ))} */}
         {/* </ol> */}

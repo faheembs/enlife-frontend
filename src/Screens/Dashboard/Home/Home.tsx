@@ -112,6 +112,10 @@ const Home: React.FC = () => {
     values = value;
   }
   if (module4 && module4.ai_evaluation.response_text) {
+    console.log(
+      "module4.ai_evaluation.response_text",
+      JSON.parse(module4.ai_evaluation.response_text)
+    );
     const [key, value]: [any, any] = Object.entries(
       JSON.parse(module4.ai_evaluation.response_text)
     )[0];
@@ -190,7 +194,6 @@ const Home: React.FC = () => {
           style={{
             width: "100%",
             backgroundColor: theme.palette.primary.light,
-
             height: 320,
             borderRadius: 20,
             boxShadow: "#9e9e9e73 0px 2px 4px 2px",
@@ -259,6 +262,8 @@ const Home: React.FC = () => {
                   padding: "0px 10px",
                   justifyContent: "flex-start",
                   display: "flex",
+                  overflowY: "auto",
+                  maxHeight: 170,
                 }}
               >
                 {values}
@@ -316,7 +321,13 @@ const Home: React.FC = () => {
                       }}
                       key={index}
                     >
-                      <ul style={{ width: "600px" }}>
+                      <ul
+                        style={{
+                          width: "600px",
+                          overflowY: "auto",
+                          maxHeight: 170,
+                        }}
+                      >
                         <li>
                           <Typography.Text>{item}</Typography.Text>
                         </li>
