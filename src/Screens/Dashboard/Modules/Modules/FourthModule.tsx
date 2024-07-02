@@ -17,7 +17,7 @@ import { MODULES, MODULES_LABEL } from "../../../../Utils/constants";
 import { getUserData } from "../../../../Utils/helperFunctions";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "../../../../Redux/store";
-import { EditOutlined, ReloadOutlined } from "@ant-design/icons";
+import { EditOutlined, ReloadOutlined, SaveOutlined } from "@ant-design/icons";
 import {
   createOrUpdateModule,
   getAllModulesByUserID,
@@ -37,7 +37,9 @@ const FourthModule = ({ activeKey }: any) => {
   const [pageIndex, setPageIndex] = useState(0);
   const [value, setValue] = useState<string | null>(null);
   const [textResponse, setTextResponse] = useState("");
+  const [editResponse, setEditResponse] = useState<any>(null);
   const [loading, setLoading] = useState(false);
+  const [editIndex, setEditIndex] = useState<any>(null);
   const [identityKeys, setIdentityKeys] = useState<any>([]);
   const [aiResponse, setAiResponse] = useState<any>(null);
   // const [module3Identity, setModule3Identity] = useState<any>(null);
@@ -58,9 +60,7 @@ const FourthModule = ({ activeKey }: any) => {
   // console.log(pageIndex);
   useEffect(() => {
     // console.log("page check", pageIndex, maxModules.lastQuestion - 1);
-
     // console.log("useeffect", question, questions);
-
     if (maxModules && maxModules.maxModuleNumber === 4) {
       const currentModules = MODULES.FourthModule[maxModules.lastQuestion - 1];
       const question = `${currentModules.question} ${currentModules.caption}`;
@@ -248,33 +248,53 @@ const FourthModule = ({ activeKey }: any) => {
       setSelectedIdentities(newSelection);
     }
   };
-  console.log("selectedIdentities", selectedIdentities);
-  console.log(aiResponse);
-  const handleRegenarateResponse = (res: any, index: number) => {
-    // console.log(res[0]);
 
+  const handleRegenarateResponse = (res: any, index: number) => {
     dispatch(regenarateResponse({ text: res })).then((res: any) => {
       setAiResponse((prev: any) => {
-        // Create a new array with the updated value at the specified index
         const newState = JSON.parse(prev);
-        newState[index] = { "Fitness journey plan name": [res.payload.trim()] }; // Update the value at the specific index
+        newState[index] = { "Fitness journey plan name": [res.payload.trim()] };
         return JSON.stringify(newState);
       });
     });
   };
+  // console.log("after", aiResponse);
   let data = aiResponse && JSON.parse(aiResponse.trim());
   // console.log("data", data);
-  // console.log("after", aiResponse);
   const renderItem = (item: any, index: number) => {
     // console.log("item", item);
     const [key, values]: [any, any] = Object.entries(item)[0];
     // console.log(key);
-    // console.log(values);
+    console.log("aiResponse", JSON.parse(aiResponse));
     // console.log("id key", identityKeys);
+    const onChangeEdit = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+      setEditResponse(e.target.value);
+    };
+    const handleEditClick = (index: number, values: string) => {
+      setEditIndex(index);
+      setEditResponse(values);
+    };
+    const handleSave = () => {
+      setAiResponse((prev: any) => {
+        const newState = JSON.parse(prev);
+        newState[editIndex] = {
+          "Fitness journey plan name": [editResponse.trim()],
+        };
+        return JSON.stringify(newState);
+      });
+      setEditIndex(null);
+      setEditResponse(null);
+    };
+    console.log("editResponse", editResponse);
+
     return (
       <List.Item
         actions={[
-          <EditOutlined onClick={() => alert("Edit clicked")} />,
+          editIndex === index ? (
+            <SaveOutlined onClick={handleSave} />
+          ) : (
+            <EditOutlined onClick={() => handleEditClick(index, values)} />
+          ),
           <ReloadOutlined
             onClick={() => handleRegenarateResponse(values, index)}
           />,
@@ -298,12 +318,26 @@ const FourthModule = ({ activeKey }: any) => {
         {/* <ol style={{ width: "600px" }}> */}
         {/* {values.map((value: any, idx: any) => ( */}
         {/* <li> */}
-        <Typography.Text
-          onClick={() => handleIdentityChange(item)}
-          style={{ width: "100%" }}
-        >
-          {values}
-        </Typography.Text>
+        {editIndex === index ? (
+          <TextArea
+            // showCount
+            value={editResponse}
+            maxLength={1000}
+            onChange={onChangeEdit}
+            style={{
+              height: 100,
+              resize: "none",
+              marginTop: "10px",
+            }}
+          />
+        ) : (
+          <Typography.Text
+            onClick={() => handleIdentityChange(item)}
+            style={{ width: "100%" }}
+          >
+            {values}
+          </Typography.Text>
+        )}
         {/* </li> */}
         {/* ))} */}
         {/* </ol> */}

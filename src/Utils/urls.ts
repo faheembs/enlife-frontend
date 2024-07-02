@@ -18,5 +18,4 @@ export const ENDPOINTS = {
   MAX_MODULES_BY_USER_ID: "modules/max",
   MODULE1_EVALUATION: "modules/moudle1-evaluation",
   REGENARATE_RESPONSE: "modules/regenerate",
-
 };

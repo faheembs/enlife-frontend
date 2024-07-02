@@ -17,7 +17,7 @@ import AppButton from "../../../../Components/Button/AppButton";
 import DotPagination from "../../../../Components/DotPagination/DotPagination";
 import { MODULES, MODULES_LABEL } from "../../../../Utils/constants";
 import { RadioChangeEvent } from "antd/lib";
-import { EditOutlined, PlusOutlined, ReloadOutlined } from "@ant-design/icons";
+import { EditOutlined, SaveOutlined, ReloadOutlined } from "@ant-design/icons";
 // import { toastMessage } from "../../../../Utils/helperFunctions";
 import ReactHtmlString from "../../../../Components/ReactHtmlString/ReactHtmlString";
 import { theme } from "../../../../Theme/theme";
@@ -46,6 +46,8 @@ const FifthModule = () => {
   const [loading, setLoading] = useState(false);
   const [selectedFAP, setSelectedFAP] = useState<any>();
   const [inputVisible, setInputVisible] = useState(false);
+  const [editResponse, setEditResponse] = useState<any>(null);
+  const [editIndex, setEditIndex] = useState<any>(null);
   const [inputValue, setInputValue] = useState("");
   const [necessaryTasks, setNecessaryTasks] = useState<any>(null);
   const [selectedTask, setSelectedTask] = useState<string>("");
@@ -117,7 +119,7 @@ const FifthModule = () => {
       setSelectedIdentities(selectedIdentities === item ? null : item);
     }
   };
-
+  console.log("selectedIdentities", selectedIdentities);
   const handleFAPChange = (item: any) => {
     setSelectedFAP(selectedFAP === item ? null : item);
   };
@@ -270,23 +272,42 @@ const FifthModule = () => {
       })
     ).then((res: any) => {
       setIdentities((prev: any) => {
-        // Create a new array with the updated value at the specified index
         const newState = JSON.parse(prev);
-        newState[index] = { "30-day goal": res.payload.trim().split(". ") }; // Update the value at the specific index
+        newState[index] = { "30-day goal": res.payload.trim().split(". ") };
         return JSON.stringify(newState);
       });
       // return console.log(res.payload.trim().split(". "));
     });
   };
-  // console.log("after identities", identities);
+  // console.log("after identities", JSON.parse(identities));
 
   const renderItem = (item: any, index: number) => {
     const [key, values]: [any, any] = Object.entries(item)[0];
+    const onChangeEdit = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+      setEditResponse(e.target.value);
+    };
+    const handleEditClick = (index: number, values: string) => {
+      setEditIndex(index);
+      setEditResponse(values);
+    };
+    const handleSave = () => {
+      setIdentities((prev: any) => {
+        const newState = JSON.parse(prev);
+        newState[editIndex] = { "30-day goal": editResponse.split(",") };
+        return JSON.stringify(newState);
+      });
+      setEditIndex(null);
+      setEditResponse(null);
+    };
     return (
       <>
         <List.Item
           actions={[
-            <EditOutlined onClick={() => alert("Edit clicked")} />,
+            editIndex === index ? (
+              <SaveOutlined onClick={handleSave} />
+            ) : (
+              <EditOutlined onClick={() => handleEditClick(index, values)} />
+            ),
             <ReloadOutlined
               onClick={() => handleRegenarateResponse(values, index)}
             />,
@@ -301,19 +322,36 @@ const FifthModule = () => {
             cursor: "pointer",
           }}
         >
-          <Typography.Text style={{ width: "70px", fontWeight: "bold" }}>
-            {`Method ${index + 1}`}
-          </Typography.Text>
-          <ol
-            onClick={() => handleFAPRecommendationChange(item)}
-            style={{ width: "600px" }}
-          >
-            {values.slice(0, 3).map((value: any, idx: any) => (
-              <li key={idx}>
-                <Typography.Text>{value}</Typography.Text>
-              </li>
-            ))}
-          </ol>
+          {" "}
+          {editIndex === index ? (
+            <TextArea
+              // showCount
+              value={editResponse}
+              maxLength={1000}
+              onChange={onChangeEdit}
+              style={{
+                height: 100,
+                resize: "none",
+                marginTop: "10px",
+              }}
+            />
+          ) : (
+            <>
+              <Typography.Text style={{ width: "70px", fontWeight: "bold" }}>
+                {`Method ${index + 1}`}
+              </Typography.Text>
+              <ol
+                onClick={() => handleFAPRecommendationChange(item)}
+                style={{ width: "600px" }}
+              >
+                {values.slice(0, 3).map((value: any, idx: any) => (
+                  <li key={idx}>
+                    <Typography.Text>{value}</Typography.Text>
+                  </li>
+                ))}
+              </ol>
+            </>
+          )}
         </List.Item>
       </>
     );
@@ -331,6 +369,7 @@ const FifthModule = () => {
               .replace(/(\w+):/g, '"$1":')
           );
           const [value]: any = Object.values(item);
+
           return (
             <List.Item
               style={{
@@ -682,7 +721,7 @@ const FifthModule = () => {
                   >
                     <List
                       grid={{ column: 2 }}
-                      dataSource={necessaryTasks}
+                      dataSource={necessaryTasks.slice(0, 4)}
                       renderItem={(task: string) => (
                         <List.Item
                           actions={[
