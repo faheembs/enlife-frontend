@@ -233,7 +233,7 @@ const FirstModule = ({ activeKey }: any) => {
                     alignItems: "center",
                   }}
                 >
-                  <EditOutlined
+                  {/* <EditOutlined
                     style={{
                       marginRight: 10,
                       fontSize: 18,
@@ -242,7 +242,7 @@ const FirstModule = ({ activeKey }: any) => {
                     }}
                     onClick={() => alert("Edit clicked")}
                   />
-                  <Divider type="vertical" />
+                  <Divider type="vertical" /> */}
                   <ReloadOutlined
                     style={{ fontSize: 19, color: "grey", marginLeft: 10 }}
                     onClick={handleRegenarateResponse}
