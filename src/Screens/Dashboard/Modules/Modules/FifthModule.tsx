@@ -44,13 +44,14 @@ const FifthModule = () => {
   const [selectedIdentities, setSelectedIdentities] = useState<any>([]);
   const [textResponse, setTextResponse] = useState("");
   const [loading, setLoading] = useState(false);
-  const [selectedFAP, setSelectedFAP] = useState<any>();
+  const [selectedFAP, setSelectedFAP] = useState<any>({ ind: null, val: "" });
   const [inputVisible, setInputVisible] = useState(false);
   const [editResponse, setEditResponse] = useState<any>(null);
+  const [editActionIndex, setEditActionIndex] = useState<any>(null);
   const [editIndex, setEditIndex] = useState<any>(null);
   const [inputValue, setInputValue] = useState("");
   const [necessaryTasks, setNecessaryTasks] = useState<any>(null);
-  const [selectedTask, setSelectedTask] = useState<string>("");
+  const [selectedTask, setSelectedTask] = useState<any>({ ind: null, val: "" });
 
   const currentModule = MODULES.FifthModule[pageIndex];
   const questions = `${currentModule?.question}${currentModule?.caption}`;
@@ -63,7 +64,9 @@ const FifthModule = () => {
   const { questionData, modulesByUserId, maxModules } = useAppSelector(
     (state: any) => state.module
   );
-
+  useEffect(() => {
+    console.log("selected", selectedTask);
+  }, [selectedTask]);
   useEffect(() => {
     if (maxModules && maxModules.maxModuleNumber === 5) {
       setPageIndex(0);
@@ -113,15 +116,18 @@ const FifthModule = () => {
     }
   };
 
-  const handleFAPRecommendationChange = (item: any) => {
+  const handleFAPRecommendationChange = (item: any, index: any) => {
     if (identities) {
       // Toggle selection: deselect if the item is already selected, otherwise select it
-      setSelectedIdentities(selectedIdentities === item ? null : item);
+      setSelectedIdentities({
+        ind: index,
+        val: selectedIdentities === item ? null : item,
+      });
     }
   };
   console.log("selectedIdentities", selectedIdentities);
-  const handleFAPChange = (item: any) => {
-    setSelectedFAP(selectedFAP === item ? null : item);
+  const handleFAPChange = (item: any, index: any) => {
+    setSelectedFAP(selectedFAP.val === item ? null : { ind: index, val: item });
   };
   const handleInputChange = (e: any) => {
     setInputValue(e.target.value);
@@ -185,8 +191,8 @@ const FifthModule = () => {
             response_type: currentModule?.type,
           },
           ai_evaluation: {
-            response_text: selectedTask,
-            response_html: selectedTask,
+            response_text: selectedTask.val,
+            response_html: selectedTask.val,
           },
         })
       );
@@ -194,7 +200,7 @@ const FifthModule = () => {
 
     const body = {
       userId: user.id,
-      selectedPlan: selectedFAP && selectedFAP,
+      selectedPlan: selectedFAP.val !== "" && selectedFAP.val,
     };
     if (pageIndex !== MODULES.FifthModule.length - 3) {
       const response = await dispatch(postQuestionAssessmentModule5(body));
@@ -280,33 +286,87 @@ const FifthModule = () => {
     });
   };
   // console.log("after identities", JSON.parse(identities));
+  const handleRegenarateForTasks = (task: any, index: number) => {
+    // console.log(res[0]);
 
+    dispatch(
+      regenarateResponse({
+        text: task,
+        prompts: `Make it short not more than 30 words`,
+      })
+    ).then((res: any) => {
+      setNecessaryTasks((prev: any) => {
+        const newState = [...prev];
+        newState[index] = res.payload.trim();
+        return newState;
+      });
+      // return console.log("reg", res.payload.trim());
+    });
+  };
+  // console.log("after regenarate", necessaryTasks);
+  const onChangeEditMethod = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setEditResponse(e.target.value);
+  };
+  const handleEditClickMethod = (index: number, values: any) => {
+    if (Array.isArray(values)) {
+      let str: any = "";
+      values.forEach((value: any) => {
+        str += `${value},`;
+      });
+      setEditActionIndex(index);
+      setEditResponse(str.trim());
+    } else {
+      setEditActionIndex(index);
+      setEditResponse(values);
+    }
+  };
+  const handleSaveMethod = (val: any) => {
+    if (Array.isArray(val)) {
+      let str: any = "";
+      val.forEach((value: any) => {
+        str += `${value},`;
+      });
+      if (str !== editResponse) {
+        setIdentities((prev: any) => {
+          const newState = JSON.parse(prev);
+          newState[editActionIndex] = {
+            "30-day goal": editResponse.split(","),
+          };
+          return JSON.stringify(newState);
+        });
+        setEditActionIndex(null);
+        setEditResponse(null);
+      }
+    } else {
+      setSelectedIdentities((prev: any) => {
+        console.log("prev", { ...prev });
+        const newState = { ...prev };
+        newState.val = { ...prev.val };
+        newState.val["30-day goal"] = [...prev.val["30-day goal"]];
+        newState.val["30-day goal"][editActionIndex] = editResponse;
+        console.log("newState", newState);
+        return newState;
+      });
+      setEditActionIndex(null);
+      setEditResponse(null);
+    }
+    // console.log("identities", identities);
+    setEditActionIndex(null);
+    setEditResponse(null);
+  };
   const renderItem = (item: any, index: number) => {
     const [key, values]: [any, any] = Object.entries(item)[0];
-    const onChangeEdit = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-      setEditResponse(e.target.value);
-    };
-    const handleEditClick = (index: number, values: string) => {
-      setEditIndex(index);
-      setEditResponse(values);
-    };
-    const handleSave = () => {
-      setIdentities((prev: any) => {
-        const newState = JSON.parse(prev);
-        newState[editIndex] = { "30-day goal": editResponse.split(",") };
-        return JSON.stringify(newState);
-      });
-      setEditIndex(null);
-      setEditResponse(null);
-    };
+
     return (
       <>
         <List.Item
           actions={[
-            editIndex === index ? (
-              <SaveOutlined onClick={handleSave} />
+            editActionIndex === index ? (
+              <SaveOutlined onClick={() => handleSaveMethod(values)} />
             ) : (
-              <EditOutlined onClick={() => handleEditClick(index, values)} />
+              <EditOutlined
+                onClick={() => handleEditClickMethod(index, values)}
+              />
             ),
             <ReloadOutlined
               onClick={() => handleRegenarateResponse(values, index)}
@@ -322,13 +382,12 @@ const FifthModule = () => {
             cursor: "pointer",
           }}
         >
-          {" "}
-          {editIndex === index ? (
+          {editActionIndex === index ? (
             <TextArea
               // showCount
               value={editResponse}
               maxLength={1000}
-              onChange={onChangeEdit}
+              onChange={onChangeEditMethod}
               style={{
                 height: 100,
                 resize: "none",
@@ -341,20 +400,48 @@ const FifthModule = () => {
                 {`Method ${index + 1}`}
               </Typography.Text>
               <ol
-                onClick={() => handleFAPRecommendationChange(item)}
+                onClick={() => handleFAPRecommendationChange(item, index)}
                 style={{ width: "600px" }}
               >
-                {values.slice(0, 3).map((value: any, idx: any) => (
-                  <li key={idx}>
-                    <Typography.Text>{value}</Typography.Text>
-                  </li>
-                ))}
+                {values &&
+                  values.slice(0, 3).map((value: any, idx: any) => (
+                    <li key={idx}>
+                      <Typography.Text>{value}</Typography.Text>
+                    </li>
+                  ))}
               </ol>
             </>
           )}
         </List.Item>
       </>
     );
+  };
+
+  const onChangeEdit = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setEditResponse(e.target.value);
+  };
+  const handleEditClick = (index: number, value: any) => {
+    setEditIndex(index);
+    setEditResponse(value.trim());
+  };
+  const handleSave = (val: any) => {
+    // let str: any = "";
+    // val.forEach((value: any) => {
+    //   str += `${value},`;
+    // });
+    console.log("val", val);
+    console.log("save", editResponse);
+    // if (str !== editResponse) {
+    setNecessaryTasks((prev: any) => {
+      const newState = prev;
+      newState[editIndex] = editResponse.trim();
+      // console.log("new", JSON.stringify(newState));
+      return newState;
+    });
+    // }
+    // console.log("identities", identities);
+    setEditIndex(null);
+    setEditResponse(null);
   };
 
   const renderItem2 = () => {
@@ -408,9 +495,11 @@ const FifthModule = () => {
           marginBottom: "20px",
           cursor: "pointer",
           boxShadow:
-            selectedFAP === item ? "rgb(0 146 255 / 28%) 2px 2px 16px" : "none",
+            selectedFAP.ind === index
+              ? "rgb(0 146 255 / 28%) 2px 2px 16px"
+              : "none",
         }}
-        onClick={() => handleFAPChange(item)}
+        onClick={() => handleFAPChange(item, index)}
       >
         {item}
       </List.Item>
@@ -419,7 +508,13 @@ const FifthModule = () => {
   const renderRecommendationsForSummary = (item: any, index: number) => {
     return (
       <List.Item
-        actions={[<EditOutlined onClick={() => alert("Edit clicked")} />]}
+        actions={[
+          editActionIndex === index ? (
+            <SaveOutlined onClick={() => handleSaveMethod(item)} />
+          ) : (
+            <EditOutlined onClick={() => handleEditClickMethod(index, item)} />
+          ),
+        ]}
         style={{
           display: "flex",
           flexDirection: "row",
@@ -431,13 +526,29 @@ const FifthModule = () => {
           height: "103px",
           // width: "100%",
           boxShadow:
-            selectedFAP === item ? "rgb(0 146 255 / 28%) 2px 2px 16px" : "none",
+            selectedFAP.ind === index
+              ? "rgb(0 146 255 / 28%) 2px 2px 16px"
+              : "none",
           marginRight: "10px",
           justifyContent: "flex-end",
         }}
         // onClick={() => handleFAPChange(item)}
       >
-        <Typography.Text style={{ fontSize: "13px" }}>{item}</Typography.Text>
+        {editActionIndex === index ? (
+          <TextArea
+            // showCount
+            value={editResponse}
+            maxLength={1000}
+            onChange={onChangeEditMethod}
+            style={{
+              height: 100,
+              resize: "none",
+              marginTop: "10px",
+            }}
+          />
+        ) : (
+          <Typography.Text style={{ fontSize: "13px" }}>{item}</Typography.Text>
+        )}
       </List.Item>
     );
   };
@@ -498,7 +609,7 @@ const FifthModule = () => {
                       grid={{ column: 2 }}
                       dataSource={necessaryTasks}
                       style={{ marginTop: "45px" }}
-                      renderItem={(task: string) => (
+                      renderItem={(task: string, index: number) => (
                         <List.Item
                           style={{
                             display: "flex",
@@ -510,12 +621,14 @@ const FifthModule = () => {
                             marginBottom: "20px",
                             cursor: "pointer",
                             boxShadow:
-                              selectedTask === task
+                              selectedTask.ind === index
                                 ? "rgb(0 146 255 / 28%) 2px 2px 16px"
                                 : "none",
                             marginRight: "10px",
                           }}
-                          onClick={() => setSelectedTask(task)}
+                          onClick={() =>
+                            setSelectedTask({ ind: index, val: task })
+                          }
                         >
                           <Typography.Text>{task}</Typography.Text>
                         </List.Item>
@@ -551,7 +664,7 @@ const FifthModule = () => {
                         xl: 3,
                         xxl: 3,
                       }}
-                      dataSource={selectedIdentities["30-day goal"]}
+                      dataSource={selectedIdentities.val["30-day goal"]}
                       renderItem={renderRecommendationsForSummary}
                       style={{
                         background: theme.palette.primary.light,
@@ -572,12 +685,16 @@ const FifthModule = () => {
                       }}
                       dataSource={necessaryTasks}
                       style={{ marginTop: "15px" }}
-                      renderItem={(task: string) => (
+                      renderItem={(task: string, index: number) => (
                         <List.Item
                           actions={[
-                            <EditOutlined
-                              onClick={() => alert("Edit clicked")}
-                            />,
+                            editIndex === index ? (
+                              <SaveOutlined onClick={() => handleSave(task)} />
+                            ) : (
+                              <EditOutlined
+                                onClick={() => handleEditClick(index, task)}
+                              />
+                            ),
                           ]}
                           style={{
                             display: "flex",
@@ -591,16 +708,30 @@ const FifthModule = () => {
                             marginBottom: "20px",
                             cursor: "pointer",
                             boxShadow:
-                              selectedTask === task
+                              selectedTask.ind === index
                                 ? "rgb(0 146 255 / 28%) 2px 2px 16px"
                                 : "none",
                             marginRight: "10px",
                           }}
                           // onClick={() => setSelectedTask(task)}
                         >
-                          <Typography.Text style={{ fontSize: "13px" }}>
-                            {task}
-                          </Typography.Text>
+                          {editIndex === index ? (
+                            <TextArea
+                              // showCount
+                              value={editResponse}
+                              maxLength={100}
+                              onChange={onChangeEdit}
+                              style={{
+                                height: 55,
+                                resize: "none",
+                                // marginTop: "10px",
+                              }}
+                            />
+                          ) : (
+                            <Typography.Text style={{ fontSize: "13px" }}>
+                              {task}
+                            </Typography.Text>
+                          )}
                         </List.Item>
                       )}
                     />
@@ -664,9 +795,9 @@ const FifthModule = () => {
                         like to focus on:
                       </Typography>
                       <List
-                        dataSource={selectedIdentities["30-day goal"].slice(
+                        dataSource={selectedIdentities.val["30-day goal"].slice(
                           0,
-                          4
+                          3
                         )}
                         renderItem={renderRecommendations}
                         style={{
@@ -706,7 +837,7 @@ const FifthModule = () => {
                       fontWeight: "bold",
                     }}
                   >
-                    {selectedFAP}
+                    {selectedFAP.val}
                   </Typography.Text>
                   <div
                     style={{
@@ -722,13 +853,21 @@ const FifthModule = () => {
                     <List
                       grid={{ column: 2 }}
                       dataSource={necessaryTasks.slice(0, 4)}
-                      renderItem={(task: string) => (
+                      renderItem={(task: string, index: number) => (
                         <List.Item
                           actions={[
-                            <EditOutlined
-                              onClick={() => alert("Edit clicked")}
+                            editIndex === index ? (
+                              <SaveOutlined onClick={() => handleSave(task)} />
+                            ) : (
+                              <EditOutlined
+                                onClick={() => handleEditClick(index, task)}
+                              />
+                            ),
+                            <ReloadOutlined
+                              onClick={() =>
+                                handleRegenarateForTasks(task, index)
+                              }
                             />,
-                            <ReloadOutlined />,
                           ]}
                           // className="question"
                           style={{
@@ -747,13 +886,23 @@ const FifthModule = () => {
                             //     : "none",
                           }}
                         >
-                          <Typography.Text style={{ fontSize: "13px" }}>
-                            {task}
-                          </Typography.Text>
-                          <Space>
-                            {/* <Button icon={<EditOutlined />} />
-                              <Button icon={<ReloadOutlined />} /> */}
-                          </Space>
+                          {editIndex === index ? (
+                            <TextArea
+                              // showCount
+                              value={editResponse}
+                              maxLength={1000}
+                              onChange={onChangeEdit}
+                              style={{
+                                height: 100,
+                                resize: "none",
+                                marginTop: "10px",
+                              }}
+                            />
+                          ) : (
+                            <Typography.Text style={{ fontSize: "13px" }}>
+                              {task}
+                            </Typography.Text>
+                          )}
                         </List.Item>
                       )}
                     />

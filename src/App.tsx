@@ -14,14 +14,28 @@ import { useAppDispatch } from "./Hooks/reduxHook";
 import { getMaxModulesByUserID } from "./Redux/Modules/modulesAction";
 import { Result } from "antd";
 import AppButton from "./Components/Button/AppButton";
+import { logEvent, setUserProperties } from "firebase/analytics";
+import { analytics } from "./Utils/firebase";
 
 const App = () => {
   const location = useLocation();
   console.log(location.state?.from);
   const token = getToken();
-  const user = getUserData();
+  const user: any = getUserData();
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    // setUserProperties(analytics, { screen: "Home" });
+    const pageTitle = "Home";
+    const screenClass = location.pathname;
+    logEvent(analytics, "page_view", {
+      page_title: pageTitle,
+      screen_class: screenClass,
+      page_location: window.location.href,
+      page_path: location.pathname,
+    });
+  }, [location]);
 
   useEffect(() => {
     dispatch(getMaxModulesByUserID({ userId: user.id }));
