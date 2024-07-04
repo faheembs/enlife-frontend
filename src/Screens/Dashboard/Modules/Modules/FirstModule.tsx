@@ -36,6 +36,7 @@ const FirstModule = ({ activeKey }: any) => {
   useEffect(() => {
     if (maxModules && maxModules.maxModuleNumber === 1) {
       if (maxModules.lastQuestion === 5) {
+        console.log("max", maxModules.lastQuestion);
         setPageIndex(maxModules.lastQuestion - 1);
       } else {
         setPageIndex(maxModules.lastQuestion);
@@ -66,7 +67,7 @@ const FirstModule = ({ activeKey }: any) => {
     setTextResponse(e.target.value);
   };
   const currentModule = MODULES.FirstModules[pageIndex];
-  const questions = `${currentModule.text} ${currentModule.question} ${currentModule.caption}`;
+  const questions = `${currentModule?.text} ${currentModule?.question} ${currentModule?.caption}`;
   const handleNext = async () => {
     setLoading(true);
 

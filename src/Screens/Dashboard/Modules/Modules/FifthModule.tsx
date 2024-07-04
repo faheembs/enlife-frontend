@@ -449,13 +449,7 @@ const FifthModule = () => {
       const responseHtml = filteredModules[0]?.ai_evaluation?.response_html;
       if (responseHtml) {
         try {
-          const item = JSON.parse(
-            responseHtml
-              .trim()
-              .replace(/'/g, '"')
-              .replace(/(\w+):/g, '"$1":')
-          );
-          const [value]: any = Object.values(item);
+          const item = responseHtml;
 
           return (
             <List.Item
@@ -471,7 +465,7 @@ const FifthModule = () => {
               {/* {item &&
                   Object.values(item).map((values: any, idx: any) => ( */}
               {/* <li> */}
-              <Typography.Text>{value}</Typography.Text>
+              <Typography.Text>{item}</Typography.Text>
               {/* </li> */}
               {/* ))} */}
               {/* </ol> */}

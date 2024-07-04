@@ -98,7 +98,6 @@ const Home: React.FC = () => {
     modulesByUserId &&
     modulesByUserId.find((module: any) => module.moduleNumber === "Module 5");
 
-  let module4Keys = null;
   let module4Values = null;
 
   let keys = null;
@@ -112,15 +111,7 @@ const Home: React.FC = () => {
     values = value;
   }
   if (module4 && module4.ai_evaluation.response_text) {
-    console.log(
-      "module4.ai_evaluation.response_text",
-      JSON.parse(module4.ai_evaluation.response_text)
-    );
-    const [key, value]: [any, any] = Object.entries(
-      JSON.parse(module4.ai_evaluation.response_text)
-    )[0];
-    module4Keys = key;
-    module4Values = value;
+    module4Values = module4.ai_evaluation.response_text;
   }
 
   const summary =
@@ -308,7 +299,7 @@ const Home: React.FC = () => {
               >
                 <span>Your selected Fitness Journey Plan:</span>
               </div>
-              <List
+              {/* <List
                 dataSource={module4Values}
                 renderItem={(item: any, index: number) => {
                   return (
@@ -320,22 +311,21 @@ const Home: React.FC = () => {
                         border: "none",
                       }}
                       key={index}
-                    >
-                      <ul
-                        style={{
-                          width: "600px",
-                          overflowY: "auto",
-                          maxHeight: 170,
-                        }}
-                      >
-                        <li>
-                          <Typography.Text>{item}</Typography.Text>
-                        </li>
-                      </ul>
-                    </List.Item>
-                  );
+                    > */}
+              <ul
+                style={{
+                  overflowY: "auto",
+                  maxHeight: 170,
                 }}
-              />
+              >
+                <li>
+                  <Typography.Text>{module4Values}</Typography.Text>
+                </li>
+              </ul>
+              {/* </List.Item> */}
+              {/* ); */}
+              {/* }} */}
+              {/* /> */}
             </>
           )}
         </Col>

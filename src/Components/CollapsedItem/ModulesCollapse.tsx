@@ -14,7 +14,7 @@ const ModulesCollapse: React.FC = () => {
     dispatch(getModule1Evaluation({ userId: user.id }));
   }, [dispatch]);
   const { module1_evaluation } = useAppSelector((state: any) => state.module);
-  // console.log("module1_evaluation", module1_evaluation);
+  console.log("module1_evaluation", module1_evaluation);
   return (
     <Collapse
       style={{

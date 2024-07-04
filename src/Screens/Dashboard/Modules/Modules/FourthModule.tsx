@@ -41,7 +41,7 @@ const FourthModule = ({ activeKey }: any) => {
   const [loading, setLoading] = useState(false);
   const [editIndex, setEditIndex] = useState<any>(null);
   const [identityKeys, setIdentityKeys] = useState<any>([]);
-  const [aiResponse, setAiResponse] = useState<any>(null);
+  const [aiResponse, setAiResponse] = useState<any>([]);
   // const [module3Identity, setModule3Identity] = useState<any>(null);
   const [selectedIdentities, setSelectedIdentities] = useState<any>([]);
   const [identities, setIdentities] = useState<
@@ -55,15 +55,20 @@ const FourthModule = ({ activeKey }: any) => {
     (state: any) => state.module
   );
   // console.log(MODULES.FourthModule.length, "length", pageIndex);
-  const currentModule = MODULES.FourthModule[pageIndex];
-  const questions = `${currentModule.question} ${currentModule.caption}`;
-  // console.log(pageIndex);
+  const currentModule = MODULES.FourthModule[pageIndex] || {};
+  const questions = `${currentModule.question || ""} ${
+    currentModule.caption || ""
+  }`;
+  console.log("questions", questions);
   useEffect(() => {
     // console.log("page check", pageIndex, maxModules.lastQuestion - 1);
     // console.log("useeffect", question, questions);
     if (maxModules && maxModules.maxModuleNumber === 4) {
-      const currentModules = MODULES.FourthModule[maxModules.lastQuestion - 1];
-      const question = `${currentModules.question} ${currentModules.caption}`;
+      const currentModules =
+        MODULES.FourthModule[maxModules.lastQuestion - 1] || {};
+      const question = `${currentModules.question || ""} ${
+        currentModules.caption || ""
+      }`;
       dispatch(
         getQuestionData({
           userId: user.id,
@@ -73,8 +78,8 @@ const FourthModule = ({ activeKey }: any) => {
       );
       if (maxModules.lastQuestion === 0) {
         setPageIndex(0);
-      } else if (MODULES.FourthModule.length - 1) {
-        setPageIndex(maxModules.lastQuestion - 1);
+      } else if (maxModules.lastQuestion === 4) {
+        setPageIndex(maxModules.lastQuestion - 2);
       } else {
         setPageIndex(maxModules.lastQuestion - 1);
       }
@@ -110,8 +115,11 @@ const FourthModule = ({ activeKey }: any) => {
       );
     }
   }, [dispatch, pageIndex, user.id]);
-
+  console.log(pageIndex, "page");
   useEffect(() => {
+    if (pageIndex > 3) {
+      setPageIndex(2);
+    }
     if (questionData?.answers !== null) {
       setTextResponse(questionData?.answers);
     } else if (questionData?.scale_value !== null) {
@@ -140,6 +148,7 @@ const FourthModule = ({ activeKey }: any) => {
       setIdentityKeys(identitiesValue);
     }
   }, [selectedIdentities]);
+  console.log("selectedIdentities", selectedIdentities);
   const handleNext = async () => {
     try {
       setLoading(true);
@@ -179,8 +188,8 @@ const FourthModule = ({ activeKey }: any) => {
                 response_type: currentModule.type,
               },
               ai_evaluation: {
-                response_text: JSON.stringify(selectedIdentities[0]).trim(),
-                response_html: JSON.stringify(selectedIdentities[0]).trim(),
+                response_text: selectedIdentities[0].trim(),
+                response_html: selectedIdentities[0].trim(),
               },
             })
       );
@@ -248,25 +257,55 @@ const FourthModule = ({ activeKey }: any) => {
       setSelectedIdentities(newSelection);
     }
   };
-
+  const handleRetry = async () => {
+    setLoading(true);
+    const body = {
+      moduleId: MODULES_LABEL.fourthModule.label,
+      userId: user.id,
+    };
+    const response = await dispatch(postQuestionAssessmentByModule(body));
+    setLoading(false);
+    setPageIndex(3);
+    setAiResponse(response?.payload);
+    setLoading(false);
+  };
   const handleRegenarateResponse = (res: any, index: number) => {
-    dispatch(regenarateResponse({ text: res })).then((res: any) => {
+    dispatch(
+      regenarateResponse({
+        text: res,
+        prompts: "Make it short and not more than 30 words",
+      })
+    ).then((res: any) => {
       setAiResponse((prev: any) => {
-        const newState = JSON.parse(prev);
-        newState[index] = { "Fitness journey plan name": [res.payload.trim()] };
-        return JSON.stringify(newState);
+        const newState = [...prev];
+
+        const targetItem = { ...newState[index] };
+
+        if (Array.isArray(targetItem["Fitness journey plan name"])) {
+          targetItem["Fitness journey plan name"] = [res.payload.trim()];
+        } else {
+          targetItem["Fitness journey plan name"] = res.payload.trim();
+        }
+
+        newState[index] = targetItem;
+
+        console.log("newState", newState);
+        return newState;
       });
     });
   };
   // console.log("after", aiResponse);
-  let data = aiResponse && JSON.parse(aiResponse.trim());
+  let data = aiResponse;
   // console.log("data", data);
+
   const renderItem = (item: any, index: number) => {
-    // console.log("item", item);
-    const [key, values]: [any, any] = Object.entries(item)[0];
-    // console.log(key);
-    console.log("aiResponse", JSON.parse(aiResponse));
-    // console.log("id key", identityKeys);
+    let value: any = "";
+    if (Array.isArray(item["Fitness journey plan name"])) {
+      value = item["Fitness journey plan name"][0];
+    } else {
+      value = item["Fitness journey plan name"];
+    }
+    console.log("item", item["Fitness journey plan name"][0]);
     const onChangeEdit = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
       setEditResponse(e.target.value);
     };
@@ -276,16 +315,15 @@ const FourthModule = ({ activeKey }: any) => {
     };
     const handleSave = () => {
       setAiResponse((prev: any) => {
-        const newState = JSON.parse(prev);
+        const newState = prev;
         newState[editIndex] = {
           "Fitness journey plan name": [editResponse.trim()],
         };
-        return JSON.stringify(newState);
+        return newState;
       });
       setEditIndex(null);
       setEditResponse(null);
     };
-    console.log("editResponse", editResponse);
 
     return (
       <List.Item
@@ -293,10 +331,10 @@ const FourthModule = ({ activeKey }: any) => {
           editIndex === index ? (
             <SaveOutlined onClick={handleSave} />
           ) : (
-            <EditOutlined onClick={() => handleEditClick(index, values)} />
+            <EditOutlined onClick={() => handleEditClick(index, value)} />
           ),
           <ReloadOutlined
-            onClick={() => handleRegenarateResponse(values, index)}
+            onClick={() => handleRegenarateResponse(value, index)}
           />,
         ]}
         style={{
@@ -307,7 +345,7 @@ const FourthModule = ({ activeKey }: any) => {
           borderRadius: "5px",
           marginBottom: "20px",
           cursor: "pointer",
-          boxShadow: identityKeys.includes(values[0])
+          boxShadow: identityKeys.includes(value[0])
             ? "rgb(0, 146, 255, 0.6) 1px 1px 16px"
             : "none",
         }}
@@ -332,10 +370,10 @@ const FourthModule = ({ activeKey }: any) => {
           />
         ) : (
           <Typography.Text
-            onClick={() => handleIdentityChange(item)}
+            onClick={() => handleIdentityChange(value)}
             style={{ width: "100%" }}
           >
-            {values}
+            {value}
           </Typography.Text>
         )}
         {/* </li> */}
@@ -384,7 +422,7 @@ const FourthModule = ({ activeKey }: any) => {
                 // pageIndex === MODULES.FourthModule.length - 1 ? (
                 //   <ReactHtmlString html={assessmentResults} />
                 // )
-                currentModule.identities ? (
+                currentModule.identities || pageIndex === 3 ? (
                   <div
                     style={{
                       width: "100%",
@@ -398,16 +436,34 @@ const FourthModule = ({ activeKey }: any) => {
                     <Typography style={{ fontWeight: "600" }}>
                       Please select a Fitness Journey Plan
                     </Typography>
-
-                    <List
-                      dataSource={data}
-                      renderItem={renderItem}
-                      style={{
-                        background: theme.palette.primary.light,
-                        padding: "20px",
-                        width: "100%",
-                      }}
-                    />
+                    {aiResponse.length < 1 ? (
+                      <div
+                        style={{
+                          display: "flex",
+                          flexDirection: "column",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                          padding: 100,
+                        }}
+                      >
+                        <Typography.Text
+                          style={{ fontWeight: "bold", marginBottom: "30px" }}
+                        >
+                          Something went wrong! Please retry.
+                        </Typography.Text>
+                        <AppButton text="Regenerate" onClick={handleRetry} />
+                      </div>
+                    ) : (
+                      <List
+                        dataSource={data}
+                        renderItem={renderItem}
+                        style={{
+                          background: theme.palette.primary.light,
+                          padding: "20px",
+                          width: "100%",
+                        }}
+                      />
+                    )}
                   </div>
                 ) : (
                   <div
@@ -485,7 +541,7 @@ const FourthModule = ({ activeKey }: any) => {
                           // direction={windowWidth ? "vertical" : "horizontal"}
                         >
                           {currentModule?.options &&
-                            currentModule.options.map((item) => (
+                            currentModule.options.map((item: any) => (
                               <Radio key={item} value={item}>
                                 {item}
                               </Radio>
