@@ -206,7 +206,7 @@ const FifthModule = () => {
       const response = await dispatch(postQuestionAssessmentModule5(body));
       if (response.payload) {
         if (pageIndex === MODULES.FifthModule.length - 4) {
-          setNecessaryTasks(JSON.parse(response.payload));
+          setNecessaryTasks(JSON.parse(response.payload.trim()));
         } else {
           setIdentities(response.payload);
         }
