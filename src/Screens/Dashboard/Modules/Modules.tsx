@@ -30,7 +30,7 @@ const Modules: React.FC = () => {
   // console.log("activeModule-------", activeModule);
   useEffect(() => {
     if (maxModules !== null) {
-      console.log(maxModules.maxModuleNumber);
+      // console.log(maxModules.maxModuleNumber);
       setActiveModule(maxModules.maxModuleNumber.toString());
     }
   }, [maxModules]);

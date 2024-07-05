@@ -59,7 +59,7 @@ const FourthModule = ({ activeKey }: any) => {
   const questions = `${currentModule.question || ""} ${
     currentModule.caption || ""
   }`;
-  console.log("questions", questions);
+  // console.log("questions", questions);
   useEffect(() => {
     // console.log("page check", pageIndex, maxModules.lastQuestion - 1);
     // console.log("useeffect", question, questions);
@@ -115,7 +115,7 @@ const FourthModule = ({ activeKey }: any) => {
       );
     }
   }, [dispatch, pageIndex, user.id]);
-  console.log(pageIndex, "page");
+  // console.log(pageIndex, "page");
   useEffect(() => {
     if (pageIndex > 3) {
       setPageIndex(2);
@@ -148,7 +148,7 @@ const FourthModule = ({ activeKey }: any) => {
       setIdentityKeys(identitiesValue);
     }
   }, [selectedIdentities]);
-  console.log("selectedIdentities", selectedIdentities);
+  // console.log("selectedIdentities", selectedIdentities);
   const handleNext = async () => {
     try {
       setLoading(true);
@@ -289,7 +289,7 @@ const FourthModule = ({ activeKey }: any) => {
 
         newState[index] = targetItem;
 
-        console.log("newState", newState);
+        // console.log("newState", newState);
         return newState;
       });
     });
@@ -305,7 +305,7 @@ const FourthModule = ({ activeKey }: any) => {
     } else {
       value = item["Fitness journey plan name"];
     }
-    console.log("item", item["Fitness journey plan name"][0]);
+    // console.log("item", item["Fitness journey plan name"][0]);
     const onChangeEdit = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
       setEditResponse(e.target.value);
     };

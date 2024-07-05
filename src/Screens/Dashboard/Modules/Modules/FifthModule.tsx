@@ -65,7 +65,7 @@ const FifthModule = () => {
     (state: any) => state.module
   );
   useEffect(() => {
-    console.log("selected", selectedTask);
+    // console.log("selected", selectedTask);
   }, [selectedTask]);
   useEffect(() => {
     if (maxModules && maxModules.maxModuleNumber === 5) {
@@ -125,7 +125,7 @@ const FifthModule = () => {
       });
     }
   };
-  console.log("selectedIdentities", selectedIdentities);
+  // console.log("selectedIdentities", selectedIdentities);
   const handleFAPChange = (item: any, index: any) => {
     setSelectedFAP(selectedFAP.val === item ? null : { ind: index, val: item });
   };
@@ -339,12 +339,12 @@ const FifthModule = () => {
       }
     } else {
       setSelectedIdentities((prev: any) => {
-        console.log("prev", { ...prev });
+        // console.log("prev", { ...prev });
         const newState = { ...prev };
         newState.val = { ...prev.val };
         newState.val["30-day goal"] = [...prev.val["30-day goal"]];
         newState.val["30-day goal"][editActionIndex] = editResponse;
-        console.log("newState", newState);
+        // console.log("newState", newState);
         return newState;
       });
       setEditActionIndex(null);
@@ -429,8 +429,8 @@ const FifthModule = () => {
     // val.forEach((value: any) => {
     //   str += `${value},`;
     // });
-    console.log("val", val);
-    console.log("save", editResponse);
+    // console.log("val", val);
+    // console.log("save", editResponse);
     // if (str !== editResponse) {
     setNecessaryTasks((prev: any) => {
       const newState = prev;

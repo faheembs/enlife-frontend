@@ -14,7 +14,7 @@ const ModulesCollapse: React.FC = () => {
     dispatch(getModule1Evaluation({ userId: user.id }));
   }, [dispatch]);
   const { module1_evaluation } = useAppSelector((state: any) => state.module);
-  console.log("module1_evaluation", module1_evaluation);
+  // console.log("module1_evaluation", module1_evaluation);
   return (
     <Collapse
       style={{
@@ -27,11 +27,12 @@ const ModulesCollapse: React.FC = () => {
       bordered={false}
     >
       {module1_evaluation &&
-        module1_evaluation.map((coreValueObj: any, index: number) => {
-          const [coreValue, explanation]: [any, any] =
-            Object.entries(coreValueObj)[0];
+        module1_evaluation.map((item: any, index: any) => {
           return (
-            <Panel header={`Core Value ${index + 1}: ${coreValue}`} key={index}>
+            <Panel
+              header={`Core Value ${index + 1}: ${item.coreValue}`}
+              key={index}
+            >
               <p
                 style={{
                   lineHeight: "1.5",
@@ -41,7 +42,7 @@ const ModulesCollapse: React.FC = () => {
                   overflowY: "auto",
                 }}
               >
-                {explanation}
+                {item.explanation}
               </p>
             </Panel>
           );
